@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "@antfu",
+    "@unocss"
+  ],
+  "rules": {
+    "vue/no-mutating-props": "off"
+  }
+}
