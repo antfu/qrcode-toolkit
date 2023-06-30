@@ -64,13 +64,18 @@ watch(
         </OptionItem>
 
         <OptionItem title="Mask Pattern">
-          <OptionSlider v-model="state.maskPattern" :min="-1" :max="7" :step="1" />
+          <OptionSelectGroup
+            v-model="state.maskPattern"
+            :options="[-1, 0, 1, 2, 3, 4, 5, 6, 7]"
+            :titles="['Auto']"
+          />
         </OptionItem>
 
         <OptionItem title="Rotate" div>
           <OptionSelectGroup
             v-model="state.rotate"
             :options="[0, 90, 180, 270]"
+            :titles="['0°', '90°', '180°', '270°']"
           />
         </OptionItem>
 
@@ -83,17 +88,17 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Marker" nested>
-          <OptionSelectGroup
-            v-model="state.markerStyle"
-            :options="['auto', 'square', 'dot', 'squircle', 'rounded', 'mixed']"
-          />
-        </OptionItem>
-
         <OptionItem title="Marker Shape" nested>
           <OptionSelectGroup
             v-model="state.markerShape"
             :options="['square', 'circle', 'plus', 'box']"
+          />
+        </OptionItem>
+
+        <OptionItem title="Marker" nested>
+          <OptionSelectGroup
+            v-model="state.markerStyle"
+            :options="['auto', 'square', 'dot', 'squircle', 'rounded', 'mixed']"
           />
         </OptionItem>
 
