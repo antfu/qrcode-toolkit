@@ -1,186 +1,592 @@
 <script setup lang="ts">
-import { defaultCompareState } from '~/logic/state'
-import type { ComparionState } from '~/logic/state'
-import { dataUrlGeneratedSize, dataUrlQRCode, dataUrlUploadedQRCode, dataUrlUploadedImage as dataurl } from '~/logic/store'
+import { debounce } from 'perfect-debounce'
+import type { Segment, State } from '~/logic/types'
+import { HightlightFactor, compareSegments, generateMask, segmentImage } from '~/logic/image'
+import { dataUrlGeneratedQRCode, defaultCompareState, qrcode } from '~/logic/state'
 
 const props = defineProps<{
-  state: ComparionState
+  state: State
 }>()
 
-const gridSize = computed(() => props.state.gridSize < 0 ? dataUrlGeneratedSize.value : props.state.gridSize)
+const fullState = computed(() => props.state)
+const state = computed(() => props.state.compare)
+const dataurl = computed({
+  get() { return props.state.uploaded.image },
+  set(v) { props.state.uploaded.image = v },
+})
+const dataUrlQRCode = computed({
+  get() { return props.state.uploaded.qrcode },
+  set(v) { props.state.uploaded.qrcode = v },
+})
+
+const gridSize = computed(() => state.value.gridSize)
 const gridCellSize = computed(() => 100 / gridSize.value)
+const gridMarginSize = computed(() => state.value.gridMarginSize)
 
-// const output = ref('')
-// const error = ref()
-// watchEffect(() => {
-//   read()
-// })
-// async function read() {
-//   if (!dataurl.value)
-//     return
-//   const codeReader = new QRCodeReader()
-//   try {
-//     output.value = ''
-//     error.value = ''
+const highlightMismatch = ref(false)
+const highlightMismatchBorder = ref(false)
+const selectedSegment = ref<Segment | null>(null)
 
-//     const image = document.createElement('img')
-//     image.src = dataurl.value
-//     await new Promise(resolve => image.onload = resolve)
+const imageSegments = shallowRef<Segment[]>()
+const qrcodeSegments = shallowRef<Segment[]>()
 
-//     const canvas = document.createElement('canvas')
-//     canvas.style.width = `${image.naturalWidth}px`
-//     canvas.style.height = `${image.naturalHeight}px`
-//     canvas.width = image.naturalWidth
-//     canvas.height = image.naturalHeight
-//     canvas.getContext('2d')!.drawImage(
-//       image, 0, 0, image.naturalWidth, image.naturalHeight,
-//     )
+const showGridHelper = ref(false)
 
-//     const luminanceSource = new HTMLCanvasElementLuminanceSource(canvas)
-//     const hybridBinarizer = new HybridBinarizer(luminanceSource)
-//     const binaryBitmap = new BinaryBitmap(hybridBinarizer)
+// const scanResultImage = shallowRef<ScanResult>()
+// const scanResultQRCode = shallowRef<ScanResult>()
 
-//     // console.log({ luminanceSource, hybridBinarizer, binaryBitmap })
-//     const result = await codeReader.decode(binaryBitmap)
-//     output.value = result.getText()
-//   }
-//   catch (err) {
-//     console.error(err)
-//     error.value = err
-//   }
-// }
+const debouncedImageSeg = debounce(async () => {
+  imageSegments.value = dataurl.value
+    ? await segmentImage(
+      dataurl.value,
+      gridSize.value,
+    )
+    : undefined
+}, 800)
+
+const debouncedQRCodeSeg = debounce(async () => {
+  qrcodeSegments.value = dataUrlQRCode.value
+    ? await segmentImage(
+      dataUrlQRCode.value,
+      gridSize.value,
+    )
+    : undefined
+}, 800)
+
+watch(
+  () => [dataurl.value, state.value.gridSize],
+  (newValue, oldValue) => {
+    if (newValue.every((v, i) => v === oldValue?.[i]))
+      return
+    debouncedImageSeg()
+  },
+  { immediate: true },
+)
+
+watch(
+  () => [dataUrlQRCode.value, state.value.gridSize],
+  (newValue, oldValue) => {
+    if (newValue.every((v, i) => v === oldValue?.[i]))
+      return
+    debouncedQRCodeSeg()
+  },
+  { immediate: true },
+)
+
+// watch(
+//   dataUrlQRCode,
+//   async (v) => {
+//     if (!v)
+//       scanResultQRCode.value = undefined
+//     else
+//       scanResultQRCode.value = await scanQRCodeFromDataUrl(v)
+//   },
+//   { immediate: true },
+// )
+
+// watch(
+//   dataurl,
+//   async (v) => {
+//     if (!v)
+//       scanResultImage.value = undefined
+//     else
+//       scanResultImage.value = await scanQRCodeFromDataUrl(v)
+//   },
+//   { immediate: true },
+// )
+
+const diff = computed(() => {
+  if (!imageSegments.value || !qrcodeSegments.value)
+    return null
+  return compareSegments(imageSegments.value, qrcodeSegments.value, state.value.gridSize, state.value.gridMarginSize)
+})
+
+function onSegmentHover(segment: Segment) {
+  selectedSegment.value = segment
+}
+
+function onSegmentLeave(segment: Segment) {
+  setTimeout(() => {
+    if (selectedSegment.value === segment)
+      selectedSegment.value = null
+  }, 100)
+}
 
 function reset() {
   // eslint-disable-next-line no-alert
   if (confirm('Are you sure to reset all state?'))
-    Object.assign(props.state, defaultCompareState())
+    Object.assign(state.value, defaultCompareState())
 }
 
-function onQRCodeUpload(data: string) {
-  dataUrlUploadedQRCode.value = data
+function downloadMask(type: 'mask' | 'correction') {
+  if (!diff.value)
+    return
+
+  const data = generateMask(
+    diff.value,
+    state.value,
+    type,
+  )
+
+  const a = document.createElement('a')
+  a.href = data
+  a.download = `${type}-${new Date()}.png`
+  a.click()
 }
 
 const filter = computed(() => {
   const items = [
-    props.state.grayscale && 'saturate(0)',
-    `contrast(${props.state.contrast}%)`,
-    props.state.blur && `blur(${props.state.blur}px)`,
+    state.value.grayscale && 'saturate(0)',
+    `contrast(${state.value.contrast}%)`,
+    state.value.blur && `blur(${state.value.blur}px)`,
   ]
   return items.filter(Boolean).join(' ')
 })
+
+function toggleHighContrast() {
+  if (state.value.grayscale) {
+    state.value.grayscale = false
+    state.value.contrast = 100
+  }
+  else {
+    state.value.grayscale = true
+    state.value.contrast = 300
+  }
+}
+
+function applyGenerator() {
+  if (!dataUrlGeneratedQRCode.value || !qrcode.value)
+    return
+  props.state.uploaded.qrcode = dataUrlGeneratedQRCode.value
+  state.value.gridSize = qrcode.value.size + props.state.qrcode.margin * 2
+  state.value.gridMarginSize = props.state.qrcode.margin
+}
 </script>
 
 <template>
-  <div flex="~ col gap-4">
-    <div v-if="dataurl" border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
-      <img
-        :src="dataurl"
-        absolute inset-0 h-full w-full
-        :style="{ filter }"
-      >
-      <img
-        v-if="dataUrlQRCode && state.overlay"
-        :src="dataUrlQRCode"
-        absolute inset-0 h-full w-full
-        :style="{
-          filter: `blur(${state.blur}px)`,
-          opacity: state.overlayOpacity,
-          mixBlendMode: state.overlayBlendMode as any,
-        }"
-      >
-      <template v-if="state.grid">
+  <div grid="~ cols-[35rem_1fr] gap-2" relative>
+    <div flex="~ col gap-4" relative>
+      <div v-if="dataurl" border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
+        <img
+          :src="dataurl"
+          absolute inset-0 h-full w-full
+          :style="{ filter }"
+        >
         <div
-          v-for="i in gridSize"
-          :key="i"
-          absolute z-100
-          :style="{
-            left: `${(i - 1) * gridCellSize}%`,
-            height: `100%`,
-            border: '0.5px solid',
-            borderColor: state.gridColor,
-            opacity: state.gridOpacity,
-          }"
-        />
-        <div
-          v-for="i in gridSize"
-          :key="i"
-          absolute z-100
-          :style="{
-            top: `${(i - 1) * gridCellSize}%`,
-            width: `100%`,
-            border: '0.5px solid',
-            borderColor: state.gridColor,
-            opacity: state.gridOpacity,
-          }"
-        />
-      </template>
-    </div>
-
-    <div v-if="dataurl" border="~ base rounded" flex="~ col gap-2" p4>
-      <OptionItem title="Grayscale">
-        <input v-model="state.grayscale" type="checkbox">
-      </OptionItem>
-      <OptionItem title="Contrast" @reset="state.contrast = 100">
-        <OptionSlider v-model="state.contrast" :min="0" :max="300" :step="10" />
-      </OptionItem>
-      <OptionItem title="Blur">
-        <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" />
-      </OptionItem>
-
-      <OptionItem title="Grid">
-        <input v-model="state.grid" type="checkbox">
-      </OptionItem>
-      <OptionItem title="Grid Size" nested>
-        <OptionSlider v-model="state.gridSize" :min="-1" :max="100" :step="1" />
-      </OptionItem>
-      <OptionItem title="Opacity" nested>
-        <OptionSlider v-model="state.gridOpacity" :min="0" :max="1" :step="0.01" />
-      </OptionItem>
-      <OptionItem title="Color" nested>
-        <div relative h-5 w-5 rounded border-none outline-none :style="{ background: state.gridColor }">
-          <input v-model="state.gridColor" type="color" absolute inset-0 opacity-0.1>
+          v-if="state.pixelView && imageSegments"
+          :style="{ filter }" relative h-full w-full
+        >
+          <div
+            v-for="s of imageSegments"
+            :key="s.index"
+            :style="{
+              position: 'absolute',
+              left: `${s.x * gridCellSize}%`,
+              top: `${s.y * gridCellSize}%`,
+              width: `${gridCellSize}%`,
+              height: `${gridCellSize}%`,
+              background: s.hex,
+            }"
+          />
         </div>
-      </OptionItem>
 
-      <OptionItem title="Overlay">
-        <input v-model="state.overlay" type="checkbox">
-      </OptionItem>
-      <OptionItem title="Opacity" nested>
-        <OptionSlider v-model="state.overlayOpacity" :min="0" :max="1" :step="0.01" />
-      </OptionItem>
-      <OptionItem title="Blend Mode" nested>
-        <select v-model="state.overlayBlendMode" border="~ base rounded" bg-gray:10 px2 py1>
-          <option value="normal">
-            Normal
-          </option>
-          <option value="darken">
-            Darken
-          </option>
-          <option value="lighten">
-            Lighten
-          </option>
-          <option value="difference">
-            Difference
-          </option>
-        </select>
-      </OptionItem>
+        <img
+          v-if="dataUrlQRCode && state.overlay"
+          :src="dataUrlQRCode"
+          absolute inset-0 h-full w-full
+          :style="{
+            filter: `blur(${state.blur}px)`,
+            opacity: state.overlayOpacity,
+            mixBlendMode: state.overlayBlendMode as any,
+          }"
+        >
+
+        <GridLines
+          v-if="state.grid"
+          v-bind="{
+            gridSize,
+            gridColor: state.gridColor,
+            gridOpacity: state.gridOpacity,
+            gridMarginSize,
+            gridMarginColor: state.gridColor,
+          }"
+        />
+
+        <!-- Mismatches -->
+        <template v-if="highlightMismatch && diff">
+          <div
+            v-for="s of diff.mismatchDark"
+            :key="s.index"
+            :style="{
+              position: 'absolute',
+              zIndex: 200,
+              left: `${s.x * gridCellSize}%`,
+              top: `${s.y * gridCellSize}%`,
+              width: `${gridCellSize}%`,
+              height: `${gridCellSize}%`,
+              background: `rgba(255,255,255,${Math.abs(diff.lightLuminance - s.luminance) * HightlightFactor / 255})`,
+              border: highlightMismatchBorder ? '1px solid #00FFFF' : 'none',
+              filter: highlightMismatchBorder ? 'none' : 'blur(2px)',
+            }"
+          />
+          <div
+            v-for="s of diff.mismatchLight"
+            :key="s.index"
+            :style="{
+              position: 'absolute',
+              zIndex: 200,
+              left: `${s.x * gridCellSize}%`,
+              top: `${s.y * gridCellSize}%`,
+              width: `${gridCellSize}%`,
+              height: `${gridCellSize}%`,
+              background: `rgba(0,0,0,${Math.abs(diff.darkLuminance - s.luminance) * HightlightFactor / 255})`,
+              border: highlightMismatchBorder ? '1px solid #FFFF00' : 'none',
+              filter: highlightMismatchBorder ? 'none' : 'blur(2px)',
+            }"
+          />
+        </template>
+
+        <div
+          v-if="selectedSegment"
+          :style="{
+            position: 'absolute',
+            zIndex: 200,
+            left: `${selectedSegment.x * gridCellSize}%`,
+            top: `${selectedSegment.y * gridCellSize}%`,
+            width: `${gridCellSize}%`,
+            height: `${gridCellSize}%`,
+            border: '2px solid #FFFF00',
+          }"
+        >
+          <div
+            flex="~ gap-1 items-center" absolute bg-black:60 px1 py0.5
+            border="~ base rounded"
+            text-xs shadow backdrop-blur-2
+            :style="{
+              top: 'calc(100% + 5px)',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }"
+          >
+            <div
+              h-3 w-3 rounded border="~ base"
+              :style="{
+                background: selectedSegment.hex,
+              }"
+            />
+            {{ (selectedSegment.luminance / 255 * 100).toFixed(1) }}%
+          </div>
+        </div>
+      </div>
+
+      <div v-if="dataurl" border="~ base rounded" flex="~ col gap-2" p4>
+        <OptionItem title="Grayscale">
+          <OptionCheckbox v-model="state.grayscale" />
+        </OptionItem>
+        <OptionItem title="Contrast" @reset="state.contrast = 100">
+          <OptionSlider v-model="state.contrast" :min="0" :max="300" :step="10" />
+        </OptionItem>
+        <OptionItem title="Blur">
+          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" />
+        </OptionItem>
+
+        <div border="t base" my1 />
+
+        <OptionItem title="Grid" description="Toggle Grid View">
+          <OptionCheckbox v-model="state.grid" />
+          <div flex-auto />
+          <button
+            v-if="dataUrlQRCode"
+            text-xs text-button
+            @click="showGridHelper = true"
+          >
+            <div i-ri-artboard-2-line />
+            Align Grid
+          </button>
+        </OptionItem>
+        <OptionItem title="Grid Size" nested>
+          <OptionSlider v-model="state.gridSize" :min="10" :max="100" :step="1" />
+        </OptionItem>
+        <OptionItem title="Margin Size" nested>
+          <OptionSlider v-model="state.gridMarginSize" :min="0" :max="state.gridSize / 2" :step="1" />
+        </OptionItem>
+        <template v-if="state.grid">
+          <OptionItem title="Opacity" nested>
+            <OptionSlider v-model="state.gridOpacity" :min="0" :max="1" :step="0.01" />
+          </OptionItem>
+          <OptionItem title="Color" nested>
+            <OptionColor v-model="state.gridColor" />
+          </OptionItem>
+        </template>
+
+        <div border="t base" my1 />
+
+        <OptionItem title="Overlay">
+          <OptionCheckbox v-model="state.overlay" />
+        </OptionItem>
+        <template v-if="state.overlay">
+          <OptionItem title="Opacity" nested>
+            <OptionSlider v-model="state.overlayOpacity" :min="0" :max="1" :step="0.01" />
+          </OptionItem>
+          <OptionItem title="Blend Mode" nested>
+            <OptionSelectGroup
+              v-model="state.overlayBlendMode"
+              :options="['normal', 'darken', 'lighten', 'difference']"
+            />
+          </OptionItem>
+        </template>
+      </div>
+
+      <div v-if="dataurl">
+        <button
+          text-sm op75 text-button hover:text-red hover:op100
+          @click="reset()"
+        >
+          Reset State
+        </button>
+      </div>
+
+      <div grid="~ cols-[1fr_max-content_1fr] gap-4" border="~ base rounded" px2 py8>
+        <div flex="~ col items-center gap-2">
+          <div text-sm op75>
+            Target Image
+          </div>
+          <ImageDrop v-model="dataurl" title="Target image" />
+        </div>
+        <div border="l base" />
+        <div flex="~ col gap-2 items-center">
+          <div text-sm op75>
+            Source QR Code
+          </div>
+          <ImageDrop
+            v-model="dataUrlQRCode"
+            title="Source QRCode"
+            @update:model-value="e => showGridHelper = e ? true : false"
+          />
+          <button
+            text-sm op75 text-button
+            @click="applyGenerator()"
+          >
+            <div i-ri-qr-code-line />
+            Apply from generator
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div flex="~ gap-2">
-      <ImageDrop title="Generated image" :data="dataurl" @data="data => dataurl = data" />
-      <ImageDrop title="Original QRCode" @data="onQRCodeUpload" />
-    </div>
-    <!--
-    <pre v-if="output" border="~ base rounded" px4 py2>{{ output }}</pre>
-    <pre v-else-if="error" border="~ base rounded" bg-red:10 px4 py2 text-red>Error: {{ error }}</pre> -->
+    <!-- Right Panel -->
+    <div v-if="dataurl" border="~ base rounded" flex="~ col gap-2" h-max p4>
+      <template v-if="!dataUrlQRCode">
+        <div text-sm flex="~ items-center gap-2">
+          <button relative text-button>
+            <div i-ri-upload-line />
+            Upload QR Code
+            <ImageUpload v-model="dataUrlQRCode" />
+          </button>
+          <div>
+            to start comparing
+          </div>
+        </div>
+      </template>
+      <template v-else-if="!diff">
+        <div flex="~ items-center gap-2" animate-pulse text-center>
+          <div>
+            Loading...
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div relative pb4>
+          <div
+            h-10px of-hidden rounded
+            :style="{
+              background: 'linear-gradient(to right, #000000, #FFFFFF)',
+            }"
+          />
+          <div
+            i-ri-arrow-up-s-fill absolute top-1px text-xl
+            :style="{
+              left: `${diff.avarageLuminance / 255 * 100}%`,
+              transform: 'translateX(-50%)',
+            }"
+          />
+          <div
+            i-ri-arrow-up-s-fill absolute top-1px text-xl
+            :style="{
+              left: `${diff.lightLuminance / 255 * 100}%`,
+              transform: 'translateX(-50%)',
+            }"
+          />
+          <div
+            i-ri-arrow-up-s-fill absolute top-1px text-xl
+            :style="{
+              left: `${diff.darkLuminance / 255 * 100}%`,
+              transform: 'translateX(-50%)',
+            }"
+          />
+          <div
+            v-if="selectedSegment"
+            i-ri-arrow-up-s-fill absolute top-1px text-xl text-yellow
+            :style="{
+              left: `${selectedSegment.luminance / 255 * 100}%`,
+              transform: 'translateX(-50%)',
+            }"
+          />
+        </div>
+        <div grid="~ cols-[250px_110px]">
+          <div op50>
+            Average luminance
+          </div><div>{{ (diff.avarageLuminance / 255 * 100).toFixed(1) }}%</div>
+          <div op50>
+            Average luminance for Light
+          </div><div>{{ (diff.lightLuminance / 255 * 100).toFixed(1) }}%</div>
+          <div op50>
+            Average luminance for Dark
+          </div><div>{{ (diff.darkLuminance / 255 * 100).toFixed(1) }}%</div>
+          <div op50>
+            Mismatch nodes
+          </div><div>{{ diff.mismatchDark.length + diff.mismatchLight.length }} / {{ diff.mainSegments.length }}</div>
+        </div>
 
-    <div>
-      <button
-        text-sm op75 text-button hover:text-red hover:op100
-        @click="reset()"
-      >
-        Reset State
-      </button>
+        <template v-if="diff.mismatchDark.length || diff.mismatchLight.length">
+          <div my2 h-1px w-20 border-t border-base />
+
+          <div flex="~ gap-2 wrap">
+            <button
+              w-48 text-sm text-button
+              @pointerenter="highlightMismatch = true; highlightMismatchBorder = false"
+              @pointerleave="highlightMismatch = false"
+              @click="downloadMask('correction')"
+            >
+              <template v-if="!highlightMismatch">
+                <div i-ri-bring-to-front />
+                Preview Corrected
+              </template>
+              <template v-else>
+                <div i-ri-download-line />
+                Download Correction
+              </template>
+            </button>
+            <button
+              w-48 text-sm text-button
+              @pointerenter="highlightMismatch = true; highlightMismatchBorder = true"
+              @pointerleave="highlightMismatch = false"
+            >
+              <div i-ri-search-2-line />
+              Highlight Mistmatch
+            </button>
+            <button
+              w-48 text-sm text-button
+              @click="downloadMask('mask')"
+            >
+              <div i-ri-download-line />
+              Download Mask
+            </button>
+          </div>
+        </template>
+
+        <template v-if="diff.mismatchLight.length">
+          <div my2 h-1px w-20 border-t border-base />
+          <div op75>
+            Dark Mismatch ({{ diff.mismatchLight.length }})
+          </div>
+          <div flex="~ wrap gap-1">
+            <div v-for="s in diff.mismatchLight" :key="s.index">
+              <SegmentViewer
+                :segment="s"
+                @pointerenter="onSegmentHover(s)"
+                @pointerleave="onSegmentLeave(s)"
+              />
+            </div>
+          </div>
+        </template>
+        <template v-if="diff.mismatchDark.length">
+          <div my2 h-1px w-20 border-t border-base />
+          <div op75>
+            Light Mismatch ({{ diff.mismatchDark.length }})
+          </div>
+          <div flex="~ wrap gap-1">
+            <div v-for="s in diff.mismatchDark" :key="s.index">
+              <SegmentViewer
+                :segment="s"
+                @pointerenter="onSegmentHover(s)"
+                @pointerleave="onSegmentLeave(s)"
+              />
+            </div>
+          </div>
+        </template>
+      </template>
+      <!-- <div>{{ scanResultQRCode }}</div> -->
+      <!-- <div>{{ scanResultImage }}</div> -->
+    </div>
+
+    <!-- Action Panel -->
+    <div
+      v-if="dataurl" flex="~ col gap-2" absolute
+      :style="{
+        right: 'calc(100% + 1rem)',
+      }"
+    >
+      <VTooltip placement="left" distance="10">
+        <button icon-button title="Toggle grid" @click="state.grid = !state.grid">
+          <div i-ri-artboard-2-line :class="state.grid ? '' : 'op30'" />
+        </button>
+        <template #popper>
+          <div text-sm>
+            Toggle Grid View
+          </div>
+        </template>
+      </VTooltip>
+      <VTooltip placement="left" distance="10">
+        <button icon-button title="Toggle overlay" @click="state.overlay = !state.overlay">
+          <div i-ri-qr-code-fill :class="state.overlay ? '' : 'op30'" />
+        </button>
+        <template #popper>
+          <div text-sm>
+            Toggle QR Code Overlay
+          </div>
+        </template>
+      </VTooltip>
+      <VTooltip placement="left" distance="10">
+        <button icon-button title="Toggle high contrast" @click="toggleHighContrast()">
+          <div i-ri-contrast-line :class="state.grayscale ? '' : 'op30'" />
+        </button>
+        <template #popper>
+          <div text-sm>
+            Toggle High Contrast
+          </div>
+        </template>
+      </VTooltip>
+      <VTooltip v-if="imageSegments" placement="left" distance="10">
+        <button icon-button title="Toggle high contrast" @click="state.pixelView = !state.pixelView">
+          <div i-ri-grid-line :class="state.pixelView ? '' : 'op30'" />
+        </button>
+        <template #popper>
+          <div text-sm>
+            Toggle Pixel View
+          </div>
+        </template>
+      </VTooltip>
+
+      <div my4 h-1px border="t base" />
+
+      <VTooltip placement="left" distance="10">
+        <div relative icon-button>
+          <div i-ri-upload-2-line op50 />
+          <ImageUpload v-model="dataurl" />
+        </div>
+        <template #popper>
+          <div text-sm>
+            Upload Image
+          </div>
+        </template>
+      </VTooltip>
     </div>
   </div>
+
+  <DialogPopup
+    v-if="showGridHelper"
+    v-model="showGridHelper"
+    :state="fullState"
+  />
 </template>

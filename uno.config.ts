@@ -13,11 +13,14 @@ export default defineConfig({
   shortcuts: [
     {
       'bg-base': 'bg-white dark:bg-black',
-      'border-base': 'border-[#8884]',
-      'flex-prefer-row': 'flex flex-col lg:flex-row',
-      'flex-prefer-col': 'flex flex-col lg:flex-row',
+      'bg-secondary': 'bg-gray:10',
+      'bg-active': 'bg-gray:20',
+      'border-base': 'border-#333',
+      'flex-prefer-row': 'flex flex-col md:flex-row',
+      'flex-prefer-col': 'flex flex-col md:flex-row',
       'border-box': 'border border-base rounded',
-      'text-button': 'border-box bg-gray:10 hover:bg-gray:20 px3 py1',
+      'text-button': 'border-box bg-secondary hover:bg-active px3 py1 flex gap-1 items-center justify-center',
+      'icon-button': 'border-box bg-secondary hover:bg-active p1',
     },
   ],
   presets: [

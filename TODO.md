@@ -1,0 +1,8 @@
+- [x] Generate Info
+- [ ] Auto Guess Grid Size
+- [ ] Auto Scan
+- [x] Popup for griding size
+- [ ] Tooltip for options
+- [x] Try use Canvas to display segments
+- [x] Generated connected dot style
+- [x] Preset system
