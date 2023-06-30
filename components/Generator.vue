@@ -34,7 +34,7 @@ function reset() {
     Object.assign(state.value, defaultGeneratorState())
 }
 
-const debouncedRun = debounce(run, 100, { trailing: true })
+const debouncedRun = debounce(run, 300, { trailing: true })
 
 watch(
   () => state.value,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
 import type { Segment, State } from '~/logic/types'
-import { HightlightFactor, compareSegments, generateMask, segmentImage } from '~/logic/image'
+import { HightlightFactor, compareSegments, generateMask, segmentImage } from '~/logic/diff'
 import { dataUrlGeneratedQRCode, defaultCompareState, qrcode } from '~/logic/state'
 
 const props = defineProps<{

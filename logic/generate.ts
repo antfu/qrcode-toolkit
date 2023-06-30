@@ -3,6 +3,7 @@ import seedrandom from 'seedrandom'
 import { QrCode, QrCodeEcc, QrSegment } from '../vendor/qrcodegen'
 import type { QRCodeGeneratorState } from './types'
 import { qrcode } from './state'
+import { crystalizeEffect } from './filters'
 
 const eccMap = {
   L: QrCodeEcc.LOW,
@@ -284,4 +285,8 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
       square()
     }
   }
+
+  const data = ctx.getImageData(0, 0, width, width)
+  const newData = crystalizeEffect(data, 10)
+  ctx.putImageData(newData, 0, 0)
 }
