@@ -91,7 +91,7 @@ watch(
         <OptionItem title="Marker Shape" nested>
           <OptionSelectGroup
             v-model="state.markerShape"
-            :options="['square', 'circle', 'plus', 'box']"
+            :options="['square', 'circle', 'plus', 'box', 'random']"
           />
         </OptionItem>
 
@@ -100,6 +100,25 @@ watch(
             v-model="state.markerStyle"
             :options="['auto', 'square', 'dot', 'squircle', 'rounded', 'mixed']"
           />
+        </OptionItem>
+
+        <OptionItem title="Invert">
+          <OptionCheckbox v-model="state.invert" />
+        </OptionItem>
+
+        <OptionItem title="Seed">
+          <input
+            v-model.number="state.seed" type="number"
+            border="~ base rounded"
+            bg-secondary py0.5 pl2 text-sm
+          >
+          <button
+            text-sm icon-button
+            title="Randomize"
+            @click="state.seed = Math.round(Math.random() * 100000)"
+          >
+            <div i-ri-refresh-line />
+          </button>
         </OptionItem>
 
         <div border="t base" my1 />
@@ -111,20 +130,6 @@ watch(
           <OptionCheckbox v-model="state.marginNoise" />
         </OptionItem>
         <template v-if="state.marginNoise">
-          <OptionItem title="Seed" nested>
-            <input
-              v-model.number="state.marginNoiseSeed" type="number"
-              border="~ base rounded"
-              bg-secondary py0.5 pl2 text-sm
-            >
-            <button
-              text-sm icon-button
-              title="Randomize"
-              @click="state.marginNoiseSeed = Math.round(Math.random() * 100000)"
-            >
-              <div i-ri-refresh-line />
-            </button>
-          </OptionItem>
           <OptionItem title="Noise Rate" nested option-item>
             <OptionSlider v-model="state.marginNoiseRate" :min="0" :max="1" :step="0.01" />
           </OptionItem>

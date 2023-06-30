@@ -7,6 +7,7 @@ export interface QRCodeGeneratorState {
   ecc: 'L' | 'M' | 'Q' | 'H'
   margin: number
   scale: number
+  seed: number
   lightColor: string
   darkColor: string
   maskPattern: number
@@ -15,11 +16,11 @@ export interface QRCodeGeneratorState {
   maxVersion: number
   pixelStyle: PixelStyle
   markerStyle: 'auto' | PixelStyle
-  markerShape: 'square' | 'circle' | 'plus' | 'box'
+  markerShape: 'square' | 'circle' | 'plus' | 'box' | 'random'
   marginNoise: boolean
   marginNoiseRate: number
-  marginNoiseSeed: number
   marginNoiseSpace: 'none' | 'marker' | 'full'
+  invert: boolean
   rotate: 0 | 90 | 180 | 270
 }
 

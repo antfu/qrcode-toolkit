@@ -44,16 +44,18 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     scale: cell,
     rotate,
     margin,
-    lightColor,
-    darkColor,
     marginNoise,
-    marginNoiseSeed,
+    seed,
     marginNoiseRate,
     marginNoiseSpace,
     pixelStyle,
     markerStyle,
     markerShape,
+    invert,
   } = state
+
+  const lightColor = invert ? state.darkColor : state.lightColor
+  const darkColor = invert ? state.lightColor : state.darkColor
 
   if (cell <= 0 || margin < 0)
     throw new RangeError('Value out of range')
@@ -63,8 +65,9 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
   canvas.height = width
   const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
 
-  const borderRng = seedrandom(String(marginNoiseSeed))
-  const styleRng = seedrandom(String(marginNoiseSeed))
+  const borderRng = seedrandom(String(seed))
+  const styleRng = seedrandom(String(seed))
+  const markerRng = seedrandom(String(seed))
 
   ctx.fillStyle = lightColor
   ctx.fillRect(0, 0, width, width)
@@ -122,6 +125,12 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     else if (marker && markerShape === 'box') {
       if (!((marker.x >= 1 && marker.x <= 5) || (marker.y >= 1 && marker.y <= 5)))
         isDark = false
+    }
+    else if (marker && markerShape === 'random') {
+      if (!((marker.x >= 2 && marker.x <= 4) || (marker.y >= 2 && marker.y <= 4))) {
+        if (isDark)
+          isDark = markerRng() < 0.5
+      }
     }
 
     let targetX = (x + margin)

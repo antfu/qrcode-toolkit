@@ -23,9 +23,10 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     maxVersion: 40,
     boostECC: false,
     rotate: 0,
+    invert: false,
     marginNoise: false,
     marginNoiseRate: 0.5,
-    marginNoiseSeed: Math.round(Math.random() * 1000000),
+    seed: Math.round(Math.random() * 1000000),
     marginNoiseSpace: 'marker',
   }
 }
