@@ -6,4 +6,8 @@ A toolkit mainly for AI-Generated QR Codes, with the ability to generate base QR
 
 [👉 Go to the App](https://qrcode.antfu.me)
 
-<img alt="Screenshot" src="https://github.com/antfu/qrcode-toolkit/assets/11247099/46675858-2007-4fac-8cc6-1271f51219c5">
+<img alt="Screenshot" src="[https://github.com/antfu/qrcode-toolkit/assets/11247099/46675858-2007-4fac-8cc6-1271f51219c5](https://antfu.me/images/ai-qrcode-refine-compare-2.png)https://antfu.me/images/ai-qrcode-refine-compare-2.png">
+
+## License
+
+MIT
