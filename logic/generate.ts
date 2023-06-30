@@ -49,6 +49,7 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     marginNoise,
     marginNoiseSeed,
     marginNoiseRate,
+    marginNoiseSpace,
     pixelStyle,
     markerStyle,
     markerShape,
@@ -68,13 +69,22 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
   ctx.fillStyle = lightColor
   ctx.fillRect(0, 0, width, width)
 
-  const borderSpace = true
-  const boardSize = qr.size + margin * 2
+  const marginSize = qr.size + margin * 2
 
   function getInfo(x: number, y: number): PixelInfo {
-    const isBorder = borderSpace
+    let isBorder = marginNoiseSpace === 'full'
       ? x < -1 || y < -1 || x > qr.size || y > qr.size
       : x < 0 || y < 0 || x >= qr.size || y >= qr.size
+
+    if (marginNoiseSpace === 'marker') {
+      if (x >= -1 && x <= 7 && y >= -1 && y <= 7)
+        isBorder = false
+      if (x >= -1 && x <= 7 && y >= qr.size - 7 && y <= qr.size)
+        isBorder = false
+      if (x >= qr.size - 7 && x <= qr.size && y >= -1 && y <= 7)
+        isBorder = false
+    }
+
     let isDark = false
     if (isBorder && marginNoise)
       isDark = borderRng() < marginNoiseRate
@@ -118,15 +128,15 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     let targetY = (y + margin)
 
     if (rotate === 90) {
-      targetX = boardSize - targetX - 1
+      targetX = marginSize - targetX - 1
       ;[targetX, targetY] = [targetY, targetX]
     }
     else if (rotate === 180) {
-      targetX = boardSize - targetX - 1
-      targetY = boardSize - targetY - 1
+      targetX = marginSize - targetX - 1
+      targetY = marginSize - targetY - 1
     }
     else if (rotate === 270) {
-      targetY = boardSize - targetY - 1
+      targetY = marginSize - targetY - 1
       ;[targetX, targetY] = [targetY, targetX]
     }
 

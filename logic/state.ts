@@ -26,6 +26,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     marginNoise: false,
     marginNoiseRate: 0.5,
     marginNoiseSeed: Math.round(Math.random() * 1000000),
+    marginNoiseSpace: 'marker',
   }
 }
 
@@ -35,14 +36,15 @@ export function defaultCompareState(): ComparionState {
     contrast: 100,
     blur: 0,
     grid: true,
-    gridSize: 10,
-    gridMarginSize: 0,
+    gridSize: 23,
+    gridMarginSize: 1,
     gridOpacity: 0.5,
     gridColor: '#888888',
     overlay: false,
     pixelView: false,
     overlayBlendMode: 'normal',
     overlayOpacity: 0.5,
+    diffThreshold: 3,
   }
 }
 

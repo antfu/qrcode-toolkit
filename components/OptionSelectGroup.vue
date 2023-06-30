@@ -19,7 +19,12 @@ const value = defineModel<string | number>('modelValue', {
         i === value ? 'bg-active' : '',
       ]"
     >
-      <div :class="i === value ? '' : 'op50'" capitalize>{{ titles?.[idx] || i }}</div>
+      <div
+        :class="[
+          i === value ? '' : 'op50',
+          titles?.[idx] ? '' : 'capitalize',
+        ]"
+      >{{ titles?.[idx] || i }}</div>
       <input v-model="value" type="radio" :value="i" absolute inset-0 op-0.1>
     </label>
   </fieldset>

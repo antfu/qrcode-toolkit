@@ -1,7 +1,6 @@
 import type { ComparionState, Diff, Segment } from './types'
 
 export const HightlightFactor = 1.8
-export const LuminanceAmbiguity = 4
 
 export async function segmentImage(dataurl: string, gridSize = 16) {
   const img = new Image()
@@ -42,7 +41,13 @@ export async function segmentImage(dataurl: string, gridSize = 16) {
   return cells
 }
 
-export function compareSegments(segments: Segment[], qrcodeSegments: Segment[], gridSize: number, marginSize: number): Diff {
+export function compareSegments(segments: Segment[], qrcodeSegments: Segment[], state: ComparionState): Diff {
+  const {
+    gridMarginSize: marginSize,
+    gridSize,
+    diffThreshold,
+  } = state
+
   for (const seg of segments) {
     seg.expected = qrcodeSegments[seg.index].value
     const { x, y } = seg
@@ -62,7 +67,7 @@ export function compareSegments(segments: Segment[], qrcodeSegments: Segment[], 
     const dislight = Math.abs(i.luminance - lightLuminance)
     const disdark = Math.abs(i.luminance - darkLuminance)
     const dis = Math.abs(dislight - disdark)
-    i.value = dis < LuminanceAmbiguity
+    i.value = dis < diffThreshold
       ? -1
       : dislight < disdark ? 1 : 0
   })

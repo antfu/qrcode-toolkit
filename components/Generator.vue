@@ -128,6 +128,13 @@ watch(
           <OptionItem title="Noise Rate" nested option-item>
             <OptionSlider v-model="state.marginNoiseRate" :min="0" :max="1" :step="0.01" />
           </OptionItem>
+          <OptionItem title="Noise Space" nested option-item>
+            <OptionSelectGroup
+              v-model="state.marginNoiseSpace"
+              :options="['none', 'marker', 'full']"
+              :titles="['None', 'Around markers', 'Full']"
+            />
+          </OptionItem>
         </template>
 
         <div border="t base" my1 />

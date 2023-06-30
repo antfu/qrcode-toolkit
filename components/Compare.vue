@@ -98,7 +98,7 @@ watch(
 const diff = computed(() => {
   if (!imageSegments.value || !qrcodeSegments.value)
     return null
-  return compareSegments(imageSegments.value, qrcodeSegments.value, state.value.gridSize, state.value.gridMarginSize)
+  return compareSegments(imageSegments.value, qrcodeSegments.value, state.value)
 })
 
 function onSegmentHover(segment: Segment) {
@@ -289,6 +289,9 @@ function applyGenerator() {
         <OptionItem title="Blur">
           <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" />
         </OptionItem>
+        <OptionItem title="Pixelate">
+          <OptionCheckbox v-model="state.pixelView" />
+        </OptionItem>
 
         <div border="t base" my1 />
 
@@ -319,21 +322,23 @@ function applyGenerator() {
           </OptionItem>
         </template>
 
-        <div border="t base" my1 />
+        <template v-if="dataUrlQRCode">
+          <div border="t base" my1 />
 
-        <OptionItem title="Overlay">
-          <OptionCheckbox v-model="state.overlay" />
-        </OptionItem>
-        <template v-if="state.overlay">
-          <OptionItem title="Opacity" nested>
-            <OptionSlider v-model="state.overlayOpacity" :min="0" :max="1" :step="0.01" />
+          <OptionItem title="Overlay">
+            <OptionCheckbox v-model="state.overlay" />
           </OptionItem>
-          <OptionItem title="Blend Mode" nested>
-            <OptionSelectGroup
-              v-model="state.overlayBlendMode"
-              :options="['normal', 'darken', 'lighten', 'difference']"
-            />
-          </OptionItem>
+          <template v-if="state.overlay">
+            <OptionItem title="Opacity" nested>
+              <OptionSlider v-model="state.overlayOpacity" :min="0" :max="1" :step="0.01" />
+            </OptionItem>
+            <OptionItem title="Blend Mode" nested>
+              <OptionSelectGroup
+                v-model="state.overlayBlendMode"
+                :options="['normal', 'darken', 'lighten', 'difference']"
+              />
+            </OptionItem>
+          </template>
         </template>
       </div>
 
@@ -458,13 +463,13 @@ function applyGenerator() {
               @pointerleave="highlightMismatch = false"
               @click="downloadMask('correction')"
             >
-              <template v-if="!highlightMismatch">
-                <div i-ri-bring-to-front />
-                Preview Corrected
-              </template>
-              <template v-else>
+              <template v-if="highlightMismatch && !highlightMismatchBorder">
                 <div i-ri-download-line />
                 Download Correction
+              </template>
+              <template v-else>
+                <div i-ri-bring-to-front />
+                Preview Corrected
               </template>
             </button>
             <button
@@ -484,6 +489,12 @@ function applyGenerator() {
             </button>
           </div>
         </template>
+
+        <div my2 h-1px w-20 border-t border-base />
+
+        <OptionItem title="Ambiguity Threshold">
+          <OptionSlider v-model="state.diffThreshold" :min="0.1" :max="20" :step="0.01" />
+        </OptionItem>
 
         <template v-if="diff.mismatchLight.length">
           <div my2 h-1px w-20 border-t border-base />

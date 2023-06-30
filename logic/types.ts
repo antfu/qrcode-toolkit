@@ -19,6 +19,7 @@ export interface QRCodeGeneratorState {
   marginNoise: boolean
   marginNoiseRate: number
   marginNoiseSeed: number
+  marginNoiseSpace: 'none' | 'marker' | 'full'
   rotate: 0 | 90 | 180 | 270
 }
 
@@ -35,6 +36,7 @@ export interface ComparionState {
   overlayBlendMode: string
   overlayOpacity: number
   pixelView: boolean
+  diffThreshold: number
 }
 
 export interface State {

@@ -19,12 +19,11 @@ const value = defineModel<number>('modelValue', {
 .slider {
   appearance: none;
   height: 22px;
-  background: #8884;
   outline: none;
   opacity: 0.7;
   -webkit-transition: .2s;
   transition: opacity .2s;
-  --uno: border border-base rounded of-hidden;
+  --uno: border border-base rounded of-hidden bg-secondary;
 }
 
 .slider:hover {
