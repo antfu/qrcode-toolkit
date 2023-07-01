@@ -34,10 +34,10 @@ function reset() {
     Object.assign(state.value, defaultGeneratorState())
 }
 
-const debouncedRun = debounce(run, 300, { trailing: true })
+const debouncedRun = debounce(run, 250, { trailing: true })
 
 const maybeNotScannable = computed(() => {
-  if (state.value.marginNoise && state.value.marginNoiseSpace === 'full')
+  if (state.value.marginNoise && state.value.marginNoiseSpace === 'none')
     return true
   if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius > 6)
     return true
@@ -140,7 +140,7 @@ watch(
           <OptionItem title="Noise Rate" nested option-item>
             <OptionSlider v-model="state.marginNoiseRate" :min="0" :max="1" :step="0.01" />
           </OptionItem>
-          <OptionItem title="Noise Space" nested option-item>
+          <OptionItem title="Safe Space" nested option-item>
             <OptionSelectGroup
               v-model="state.marginNoiseSpace"
               :options="['none', 'marker', 'full']"

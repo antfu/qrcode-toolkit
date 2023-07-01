@@ -1,11 +1,14 @@
 import Delaunator from 'delaunator'
+import seedrandom from 'seedrandom'
 
 type FlatPoint = [number, number]
 
 // Define the crystalize effect function
-export function crystalize(imageData: ImageData, radius: number) {
+export function crystalize(imageData: ImageData, radius: number, seed: number) {
   const { width, height, data } = imageData
   const outputData = new Uint8ClampedArray(data.length)
+
+  const rng = seedrandom(String(seed))
 
   const triangleHeight = radius * Math.sqrt(3) / 2
   const xCount = Math.ceil(width / radius + 1)
@@ -18,8 +21,8 @@ export function crystalize(imageData: ImageData, radius: number) {
     for (let yi = 0; yi < yCount; yi++) {
       let x = xi * radius + (yi % 2 ? radius / 2 : 0)
       let y = yi * triangleHeight
-      x += (Math.random() - 0.5) * radius * DISTORSION
-      y += (Math.random() - 0.5) * triangleHeight * DISTORSION
+      x += (rng() - 0.5) * radius * DISTORSION
+      y += (rng() - 0.5) * triangleHeight * DISTORSION
       points.push([x, y])
     }
   }

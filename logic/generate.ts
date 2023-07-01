@@ -288,7 +288,7 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
 
   if (state.effect === 'crystalize') {
     const data = ctx.getImageData(0, 0, width, width)
-    const newData = effects.crystalize(data, state.effectCrystalizeRadius)
+    const newData = effects.crystalize(data, state.effectCrystalizeRadius, state.seed)
     ctx.putImageData(newData, 0, 0)
   }
 }
