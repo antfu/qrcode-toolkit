@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
 import type { Segment, State } from '~/logic/types'
-import { HightlightFactor, compareSegments, generateMask, segmentImage } from '~/logic/diff'
-import { dataUrlGeneratedQRCode, defaultCompareState, qrcode } from '~/logic/state'
+import { HightlightFactor, compareSegments, segmentImage } from '~/logic/diff'
+import { dataUrlGeneratedQRCode, defaultCompareState, qrcode, showDownloadDialog, showGridHelper } from '~/logic/state'
 
 const props = defineProps<{
   state: State
@@ -29,8 +29,6 @@ const selectedSegment = ref<Segment | null>(null)
 
 const imageSegments = shallowRef<Segment[]>()
 const qrcodeSegments = shallowRef<Segment[]>()
-
-const showGridHelper = ref(false)
 
 // const scanResultImage = shallowRef<ScanResult>()
 // const scanResultQRCode = shallowRef<ScanResult>()
@@ -118,22 +116,6 @@ function reset() {
     Object.assign(state.value, defaultCompareState())
 }
 
-function downloadMask(type: 'mask' | 'correction') {
-  if (!diff.value)
-    return
-
-  const data = generateMask(
-    diff.value,
-    state.value,
-    type,
-  )
-
-  const a = document.createElement('a')
-  a.href = data
-  a.download = `${type}-${new Date()}.png`
-  a.click()
-}
-
 const filter = computed(() => {
   const items = [
     state.value.grayscale && 'saturate(0)',
@@ -164,7 +146,7 @@ function applyGenerator() {
 </script>
 
 <template>
-  <div grid="~ cols-[35rem_1fr] gap-2" relative>
+  <div grid="~ cols-[35rem_1fr] gap-4" relative>
     <div flex="~ col gap-4" relative>
       <div v-if="dataurl" border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
         <img
@@ -224,9 +206,10 @@ function applyGenerator() {
               top: `${s.y * gridCellSize}%`,
               width: `${gridCellSize}%`,
               height: `${gridCellSize}%`,
-              background: `rgba(255,255,255,${Math.abs(diff.lightLuminance - s.luminance) * HightlightFactor / 255})`,
+              background: `rgba(255,255,255,${Math.abs(diff.lightLuminance - s.luminance) * HightlightFactor * state.correctionOpacity / 255})`,
               border: highlightMismatchBorder ? '1px solid #00FFFF' : 'none',
-              filter: highlightMismatchBorder ? 'none' : 'blur(2px)',
+              filter: highlightMismatchBorder ? 'none' : `blur(${state.correctionBlur}px)`,
+              mixBlendMode: highlightMismatchBorder ? 'none' : state.correctionBlendMode as any,
             }"
           />
           <div
@@ -239,9 +222,10 @@ function applyGenerator() {
               top: `${s.y * gridCellSize}%`,
               width: `${gridCellSize}%`,
               height: `${gridCellSize}%`,
-              background: `rgba(0,0,0,${Math.abs(diff.darkLuminance - s.luminance) * HightlightFactor / 255})`,
+              background: `rgba(0,0,0,${Math.abs(diff.darkLuminance - s.luminance) * HightlightFactor * state.correctionOpacity / 255})`,
               border: highlightMismatchBorder ? '1px solid #FFFF00' : 'none',
-              filter: highlightMismatchBorder ? 'none' : 'blur(2px)',
+              filter: highlightMismatchBorder ? 'none' : `blur(${state.correctionBlur}px)`,
+              mixBlendMode: highlightMismatchBorder ? 'none' : state.correctionBlendMode as any,
             }"
           />
         </template>
@@ -335,7 +319,7 @@ function applyGenerator() {
             <OptionItem title="Blend Mode" nested>
               <OptionSelectGroup
                 v-model="state.overlayBlendMode"
-                :options="['normal', 'darken', 'lighten', 'difference']"
+                :options="['normal', 'overlay', 'darken', 'lighten', 'difference']"
               />
             </OptionItem>
           </template>
@@ -461,16 +445,9 @@ function applyGenerator() {
               w-48 text-sm text-button
               @pointerenter="highlightMismatch = true; highlightMismatchBorder = false"
               @pointerleave="highlightMismatch = false"
-              @click="downloadMask('correction')"
             >
-              <template v-if="highlightMismatch && !highlightMismatchBorder">
-                <div i-ri-download-line />
-                Download Correction
-              </template>
-              <template v-else>
-                <div i-ri-bring-to-front />
-                Preview Corrected
-              </template>
+              <div i-ri-bring-to-front />
+              Preview Correction
             </button>
             <button
               w-48 text-sm text-button
@@ -482,10 +459,10 @@ function applyGenerator() {
             </button>
             <button
               w-48 text-sm text-button
-              @click="downloadMask('mask')"
+              @click="showDownloadDialog = true"
             >
               <div i-ri-download-line />
-              Download Mask
+              Download
             </button>
           </div>
         </template>
@@ -595,9 +572,10 @@ function applyGenerator() {
     </div>
   </div>
 
-  <DialogPopup
-    v-if="showGridHelper"
-    v-model="showGridHelper"
+  <DialogDownload
+    v-if="showDownloadDialog"
+    v-model="showDownloadDialog"
     :state="fullState"
+    :diff="diff"
   />
 </template>
