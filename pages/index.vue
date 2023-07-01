@@ -8,7 +8,7 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
   <div flex px20 py50 text-center op50 md:hidden>
     This app is not supported on mobile devices. Please try with a bigger screen.
   </div>
-  <div flex="justify-center" hidden p10 md:flex>
+  <div flex="justify-center" hidden p10 pb15 md:flex>
     <div w-250 flex="~ col gap-4">
       <div flex="~ gap-2">
         <button
@@ -52,8 +52,10 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
 
       <StateProvider :key="storeIndex" :index="storeIndex" :view="view" />
 
-      <div mt-10>
-        <span op55>Anthony's</span> <span op75>QR Code</span> <span op50>Toolkit</span> ·  <span i-ri-lightbulb-line />  <a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
+      <div mt-15>
+        <div flex="~ gap-1 items-center">
+          <span op55>Anthony's</span> <span op75>QR Code</span> <span op50>Toolkit</span> <span i-ri-arrow-right-line ml2 inline-block h-1em op75 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
+        </div>
         <span op35>Made with </span> <a mt--1 href="https://nuxt.com" target="_blank" flex="~ inline gap-1 items-center" translate-y-0.9 op75 hover:op100><div i-logos-nuxt-icon /> <span font-bold op65>Nuxt</span></a><br>
       </div>
       <div flex="~ gap-3">
