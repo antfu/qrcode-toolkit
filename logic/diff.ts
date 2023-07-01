@@ -13,7 +13,18 @@ export async function segmentImage(dataurl: string, gridSize = 16) {
   canvas.width = canvasSize
   canvas.height = canvasSize
   const ctx = canvas.getContext('2d', { willReadFrequently: true })!
-  ctx.drawImage(img, 0, 0, canvasSize, canvasSize)
+
+  const shortSide = Math.min(img.width, img.height)
+  ctx.drawImage(img,
+    (img.width - shortSide) / 2,
+    (img.height - shortSide) / 2,
+    shortSide,
+    shortSide,
+    0,
+    0,
+    canvasSize,
+    canvasSize,
+  )
 
   const cellSize = canvasSize / gridSize
   const cells: Segment[] = []

@@ -12,7 +12,7 @@ const value = defineModel<number>('modelValue', {
 
 <template>
   <input v-model.number="value" type="range" class="slider" v-bind="props" w-60 flex-auto>
-  <input v-model.number="value" type="number" v-bind="props" border="~ base rounded" bg-secondary h-22px w-20 pl2 text-sm>
+  <input v-model.number="value" type="number" v-bind="props" border="~ base rounded" h-22px w-20 bg-secondary pl2 text-sm>
 </template>
 
 <style>

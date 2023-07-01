@@ -29,6 +29,7 @@ export function getAverageColor(data: ImageData): [number, number, number, numbe
 
   return [r, g, b, a]
 }
+
 export function rgbaToHex(r: number, g: number, b: number, a: number) {
   return `#${[r, g, b, a].map(c => c.toString(16).padStart(2, '0')).join('')}`
 }

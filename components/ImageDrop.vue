@@ -21,8 +21,7 @@ function clear() {
     <img
       v-if="value"
       :src="value"
-      absolute bottom-0 left-0 right-0 top-0 rounded op100
-      style="object-fit: contain"
+      absolute inset-0 aspect-ratio-1 rounded object-contain op100
     >
     <template v-else>
       <div i-ri-upload-line text-lg op50 />

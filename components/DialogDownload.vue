@@ -40,6 +40,9 @@ async function run() {
   c.height = image.value.height
   const ctx = c.getContext('2d')!
   ctx.clearRect(0, 0, c.width, c.height)
+  const shortSide = Math.min(c.width, c.height)
+  const dx = (c.width - shortSide) / 2
+  const dy = (c.height - shortSide) / 2
 
   const state = props.state.compare
   const diff = props.diff
@@ -49,11 +52,22 @@ async function run() {
 
   function drawPoint(x: number, y: number, type: 'square' | 'circle' = 'square') {
     if (type === 'square') {
-      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+      ctx.fillRect(
+        x * cellSize + dx,
+        y * cellSize + dy,
+        cellSize,
+        cellSize,
+      )
     }
     else if (type === 'circle') {
       ctx.beginPath()
-      ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize / 2 * sqrt2, 0, 2 * Math.PI)
+      ctx.arc(
+        x * cellSize + cellSize / 2 + dx,
+        y * cellSize + cellSize / 2 + dy,
+        cellSize / 2 * sqrt2,
+        0,
+        2 * Math.PI,
+      )
       ctx.fill()
     }
   }
@@ -120,7 +134,7 @@ onKeyStroke('Escape', close)
       @click="close()"
     />
     <div class="relative z-10 max-w-full w-[35rem] rounded-lg p-6" flex="~ col gap-4" border="~ base">
-      <div border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
+      <div border="~ base rounded-lg" relative of-hidden>
         <canvas ref="canvas" w-full />
         <div absolute inset-0 z--1 class="transparent-background" />
       </div>
@@ -145,20 +159,7 @@ onKeyStroke('Escape', close)
             />
           </OptionItem>
 
-          <OptionItem title="Correction Opacity" @reset="state.compare.correctionOpacity = 1">
-            <OptionSlider v-model="state.compare.correctionOpacity" :min="0" :max="2" :step="0.01" />
-          </OptionItem>
-
-          <OptionItem title="Correction Blur" @reset="state.compare.correctionBlur = 0">
-            <OptionSlider v-model="state.compare.correctionBlur" :min="0" :max="20" :step="0.05" />
-          </OptionItem>
-
-          <OptionItem title="Correction Blend">
-            <OptionSelectGroup
-              v-model="state.compare.correctionBlendMode"
-              :options="['none', 'overlay', 'darken', 'lighten', 'difference']"
-            />
-          </OptionItem>
+          <SettingsCorrection :state="state.compare" />
         </template>
         <template v-else>
           <OptionItem title="Color">

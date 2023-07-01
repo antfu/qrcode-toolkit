@@ -151,12 +151,13 @@ function applyGenerator() {
       <div v-if="dataurl" border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
         <img
           :src="dataurl"
-          absolute inset-0 h-full w-full
+          absolute inset-0 h-full w-full object-cover
           :style="{ filter }"
         >
         <div
           v-if="state.pixelView && imageSegments"
-          :style="{ filter }" relative h-full w-full
+          relative h-full w-full object-cover
+          :style="{ filter }"
         >
           <div
             v-for="s of imageSegments"
@@ -175,7 +176,7 @@ function applyGenerator() {
         <img
           v-if="dataUrlQRCode && state.overlay"
           :src="dataUrlQRCode"
-          absolute inset-0 h-full w-full
+          absolute inset-0 h-full w-full object-cover
           :style="{
             filter: `blur(${state.blur}px)`,
             opacity: state.overlayOpacity,
@@ -467,11 +468,13 @@ function applyGenerator() {
           </div>
         </template>
 
-        <div my2 h-1px w-20 border-t border-base />
-
-        <OptionItem title="Ambiguity Threshold">
-          <OptionSlider v-model="state.diffThreshold" :min="0.1" :max="20" :step="0.01" />
-        </OptionItem>
+        <div
+          flex="~ col gap-2" px-1 py2
+          @pointerenter="highlightMismatch = true; highlightMismatchBorder = false"
+          @pointerleave="highlightMismatch = false"
+        >
+          <SettingsCorrection :state="state" />
+        </div>
 
         <template v-if="diff.mismatchLight.length">
           <div my2 h-1px w-20 border-t border-base />
