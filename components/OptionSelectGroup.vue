@@ -10,10 +10,10 @@ const value = defineModel<string | number>('modelValue', {
 </script>
 
 <template>
-  <fieldset flex="~" border="~ base rounded" of-hidden>
+  <fieldset flex="~" border="~ base rounded" of-hidden text-sm>
     <label
       v-for="i, idx of options" :key="i"
-      relative px2
+      relative hover:bg-secondary px-2 py-0.5
       :class="[
         idx ? 'border-l border-base' : '',
         i === value ? 'bg-active' : '',

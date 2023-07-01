@@ -116,47 +116,45 @@ onKeyStroke('Escape', close)
       class="fixed inset-0 bg-black/20 backdrop-blur-10"
       @click="close()"
     />
-    <div class="relative z-10 max-w-full w-[35rem] rounded-lg p-4" flex="~ col gap-4" border="~ base">
-      <h1 text-xl>
-        Download
-      </h1>
+    <div class="relative z-10 max-w-full w-[35rem] rounded-lg p-6" flex="~ col gap-4" border="~ base">
       <div border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
         <canvas ref="canvas" w-full />
         <div absolute inset-0 z--1 class="transparent-background" />
       </div>
 
-      <OptionItem title="Include image">
-        <OptionCheckbox v-model="state.compare.downloadShowImage" />
-      </OptionItem>
+      <div my-2 flex="~ col gap-3">
+        <OptionItem title="Include image">
+          <OptionCheckbox v-model="state.compare.downloadShowImage" />
+        </OptionItem>
 
-      <OptionItem title="Correction opacity" @reset="state.compare.correctionOpacity = 1">
-        <OptionSlider v-model="state.compare.correctionOpacity" :min="0" :max="2" :step="0.01" />
-      </OptionItem>
+        <OptionItem title="Correction opacity" @reset="state.compare.correctionOpacity = 1">
+          <OptionSlider v-model="state.compare.correctionOpacity" :min="0" :max="2" :step="0.01" />
+        </OptionItem>
 
-      <OptionItem title="Correction Blur" @reset="state.compare.correctionBlur = 0">
-        <OptionSlider v-model="state.compare.correctionBlur" :min="0" :max="20" :step="0.05" />
-      </OptionItem>
+        <OptionItem title="Correction Blur" @reset="state.compare.correctionBlur = 0">
+          <OptionSlider v-model="state.compare.correctionBlur" :min="0" :max="20" :step="0.05" />
+        </OptionItem>
 
-      <OptionItem title="Correction Blend">
-        <OptionSelectGroup
-          v-model="state.compare.correctionBlendMode"
-          :options="['none', 'overlay', 'darken', 'lighten', 'difference']"
-        />
-      </OptionItem>
+        <OptionItem title="Correction Blend">
+          <OptionSelectGroup
+            v-model="state.compare.correctionBlendMode"
+            :options="['none', 'overlay', 'darken', 'lighten', 'difference']"
+          />
+        </OptionItem>
+      </div>
 
-      <div flex="~ gap-2" mt-5>
+      <div flex="~ gap-2">
         <button
-          w-48 text-sm text-button
+          text-sm text-button
           @click="downloadMask('mask')"
         >
-          <div i-ri-download-line />
           Download Mask
         </button>
-        <div />
-        <button px5 op75 text-button @click="close()">
+        <div flex-auto />
+        <button text-sm op75 text-button @click="close()">
           Close
         </button>
-        <button w-35 text-button @click="download()">
+        <button text-sm text-button @click="download()">
           <div i-ri-download-line />
           Download
         </button>

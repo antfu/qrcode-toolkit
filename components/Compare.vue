@@ -442,7 +442,7 @@ function applyGenerator() {
 
           <div flex="~ gap-2 wrap">
             <button
-              w-48 text-sm text-button
+              text-sm text-button
               @pointerenter="highlightMismatch = true; highlightMismatchBorder = false"
               @pointerleave="highlightMismatch = false"
             >
@@ -450,7 +450,7 @@ function applyGenerator() {
               Preview Correction
             </button>
             <button
-              w-48 text-sm text-button
+              text-sm text-button
               @pointerenter="highlightMismatch = true; highlightMismatchBorder = true"
               @pointerleave="highlightMismatch = false"
             >
@@ -458,7 +458,7 @@ function applyGenerator() {
               Highlight Mistmatch
             </button>
             <button
-              w-48 text-sm text-button
+              text-sm text-button
               @click="showDownloadDialog = true"
             >
               <div i-ri-download-line />
