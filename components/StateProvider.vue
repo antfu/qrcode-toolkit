@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
-import { defaultState, showGridHelper, storeIndex } from '~/logic/state'
+import { defaultState, hasParentWindow, showGridHelper, storeIndex } from '~/logic/state'
 import type { State } from '~/logic/types'
 
 defineProps<{
   index: number
-  view: 'generator' | 'compare'
 }>()
+
+const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
 
 const uploadTarget = ref<'image' | 'qrcode'>()
 
@@ -57,9 +58,55 @@ const { isOverDropZone } = useDropZone(document.body, {
       uploadTarget.value = undefined
   },
 })
+
+// API for iframe communication
+useEventListener(window, 'message', (event) => {
+  if (event.source === window)
+    return
+  const { data } = event
+  if (typeof data !== 'string' || !data.startsWith('{'))
+    return
+  try {
+    const json = JSON.parse(data)
+    if (json.app !== 'qrcode-toolkit')
+      return
+    switch (json.type) {
+      case 'setImage':
+        state.value.uploaded.image = json.value
+        view.value = 'compare'
+        break
+      case 'init':
+        hasParentWindow.value = true
+        break
+    }
+  }
+  catch (e) {
+    console.error('Failed to parse message from parent window', e)
+  }
+})
 </script>
 
 <template>
+  <div flex="~ gap-2">
+    <button
+      flex="~ gap-1.5 items-center" text-button
+      :class="view === 'generator' ? 'bg-secondary' : 'op50'"
+      @click="view = 'generator'"
+    >
+      <div i-ri-qr-code-line />
+      Generator
+    </button>
+    <button
+      flex="~ gap-1.5 items-center" text-button
+      :class="view === 'compare' ? 'bg-secondary' : 'op50'"
+      @click="view = 'compare'"
+    >
+      <div i-ri-compasses-2-line />
+      Compare
+    </button>
+    <div flex-auto />
+  </div>
+
   <div v-show="view === 'generator'" w-full>
     <Generator :state="state" />
   </div>

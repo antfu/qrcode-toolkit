@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { storeIndex } from '~/logic/state'
-
-const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
 </script>
 
 <template>
@@ -10,26 +8,6 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
   </div>
   <div flex="justify-center" hidden p10 pb15 md:flex>
     <div w-250 flex="~ col gap-4">
-      <div flex="~ gap-2">
-        <button
-          flex="~ gap-1.5 items-center" text-button
-          :class="view === 'generator' ? 'bg-secondary' : 'op50'"
-          @click="view = 'generator'"
-        >
-          <div i-ri-qr-code-line />
-          Generator
-        </button>
-        <button
-          flex="~ gap-1.5 items-center" text-button
-          :class="view === 'compare' ? 'bg-secondary' : 'op50'"
-          @click="view = 'compare'"
-        >
-          <div i-ri-compasses-2-line />
-          Compare
-        </button>
-        <div flex-auto />
-      </div>
-
       <div fixed right-5 top-14 flex="col gap-2" hidden xl:flex>
         <VTooltip v-for="n in 10" :key="n" placement="left" distance="10">
           <button
@@ -50,7 +28,7 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
         </VTooltip>
       </div>
 
-      <StateProvider :key="storeIndex" :index="storeIndex" :view="view" />
+      <StateProvider :key="storeIndex" :index="storeIndex" />
 
       <div mt-15>
         <div flex="~ gap-1 items-center">
