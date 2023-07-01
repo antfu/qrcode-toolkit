@@ -53,11 +53,8 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
       <StateProvider :key="storeIndex" :index="storeIndex" :view="view" />
 
       <div mt-10>
-        <span op55>Anthony's</span> <span op75>QR Code</span> <span op50>Toolkit</span><br>
+        <span op55>Anthony's</span> <span op75>QR Code</span> <span op50>Toolkit</span> ·  <span i-ri-lightbulb-line />  <a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
         <span op35>Made with </span> <a mt--1 href="https://nuxt.com" target="_blank" flex="~ inline gap-1 items-center" translate-y-0.9 op75 hover:op100><div i-logos-nuxt-icon /> <span font-bold op65>Nuxt</span></a><br>
-        <br>
-        <span op45>Built for marking</span> <a href="https://antfu.me/posts/ai-qrcode" target="_blank" op50 hover:op100>AI blended QR Code</a><br>
-        <a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a>
       </div>
       <div flex="~ gap-3">
         <a href="https://github.com/antfu/qrcode-toolkit" target="_blank" text-lg op50 hover:op100>
@@ -69,6 +66,11 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
         <a href="https://antfu.me" target="_blank" ml--0.5 text-lg op50 hover:op100>
           <img src="https://antfu.me/favicon.svg" h-1.2em w-1.2em>
         </a>
+      </div>
+      <div mt4>
+        <span op50>If you find this app useful,</span>
+        <br>
+        <a href="https://github.com/sponsors/antfu" target="_blank" op75 hover:text-rose hover:underline hover:op100>Sponsor to support my work</a>
       </div>
     </div>
   </div>
