@@ -68,11 +68,11 @@ useEventListener(window, 'message', (event) => {
     const json = JSON.parse(data)
     // eslint-disable-next-line no-console
     console.log('Message from parent window', json)
-    if (json.app !== 'qrcode-toolkit')
+    if (json.source !== 'qrtoolkit-parent')
       return
-    switch (json.type) {
+    switch (json.event) {
       case 'setImage':
-        state.value.uploaded.image = json.value
+        state.value.uploaded.image = json.data
         view.value = 'compare'
         break
       case 'init':

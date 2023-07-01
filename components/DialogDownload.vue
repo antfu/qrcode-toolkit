@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
+import { sendParentEvent } from '~/logic/messaging'
+import { hasParentWindow } from '~/logic/state'
 import { HightlightFactor } from '~/logic/diff'
 import type { Diff, State } from '~/logic/types'
 
@@ -120,6 +122,18 @@ function download() {
   a.click()
 }
 
+function sendToInpaint() {
+  if (!canvas.value)
+    return
+  sendParentEvent('setInpaint', canvas.value.toDataURL())
+}
+
+function sendToI2I() {
+  if (!canvas.value)
+    return
+  sendParentEvent('setImg2img', canvas.value.toDataURL())
+}
+
 onKeyStroke('Escape', close)
 </script>
 
@@ -139,7 +153,7 @@ onKeyStroke('Escape', close)
         <div absolute inset-0 z--1 class="transparent-background" />
       </div>
 
-      <div my-2 flex="~ col gap-2" h-48>
+      <div my-2 flex="~ col gap-2" h-55>
         <div mb-2>
           <OptionSelectGroup
             v-model="state.compare.downloadType"
@@ -181,10 +195,23 @@ onKeyStroke('Escape', close)
       </div>
 
       <div flex="~ gap-2">
+        <template v-if="hasParentWindow">
+          <template v-if="state.compare.downloadType === 'correction' && state.compare.downloadShowImage">
+            <button text-sm text-button @click="sendToInpaint()">
+              <div i-ri-brush-line />
+              Send to inpaint
+            </button>
+            <button text-sm text-button @click="sendToI2I()">
+              <div i-ri-image-2-line />
+              Send to img2img
+            </button>
+          </template>
+        </template>
         <div flex-auto />
         <button text-sm op75 text-button @click="close()">
           Close
         </button>
+
         <button text-sm text-button @click="download()">
           <div i-ri-download-line />
           Download

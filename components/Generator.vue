@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
+import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
-import { dataUrlGeneratedQRCode, defaultGeneratorState, qrcode } from '~/logic/state'
+import { dataUrlGeneratedQRCode, defaultGeneratorState, hasParentWindow, qrcode } from '~/logic/state'
 import type { State } from '~/logic/types'
 
 const props = defineProps<{
@@ -42,6 +43,10 @@ const maybeNotScannable = computed(() => {
   if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius > 6)
     return true
 })
+
+function sendToWebUI() {
+  sendParentEvent('setControlNet', dataUrlGeneratedQRCode.value!)
+}
 
 watch(
   () => state.value,
@@ -215,6 +220,14 @@ watch(
         @click="download()"
       >
         Download
+      </button>
+      <button
+        v-if="hasParentWindow"
+        py2 text-sm text-button
+        @click="sendToWebUI()"
+      >
+        <div i-ri-file-upload-line />
+        Send to ControlNet
       </button>
       <div v-if="maybeNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px4 py3 text-sm text-amber-6>
         This QR Code may or may not be scannable. Please verify before using.

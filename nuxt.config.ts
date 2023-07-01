@@ -15,11 +15,22 @@ export default defineNuxtConfig({
     typedPages: true,
   },
 
+  nitro: {
+    routeRules: {
+      '/*': {
+        cors: true,
+      },
+    },
+  },
+
   vite: {
     vue: {
       script: {
         defineModel: true,
       },
+    },
+    server: {
+      cors: true,
     },
   },
 
@@ -32,6 +43,6 @@ export default defineNuxtConfig({
   ],
 
   devtools: {
-    enabled: true,
+    enabled: false,
   },
 })
