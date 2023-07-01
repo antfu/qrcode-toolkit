@@ -61,13 +61,13 @@ const { isOverDropZone } = useDropZone(document.body, {
 
 // API for iframe communication
 useEventListener(window, 'message', (event) => {
-  if (event.source === window)
-    return
   const { data } = event
-  if (typeof data !== 'string' || !data.startsWith('{'))
+  if (typeof data !== 'string')
     return
   try {
     const json = JSON.parse(data)
+    // eslint-disable-next-line no-console
+    console.log('Message from parent window', json)
     if (json.app !== 'qrcode-toolkit')
       return
     switch (json.type) {
