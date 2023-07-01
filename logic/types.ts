@@ -42,7 +42,11 @@ export interface ComparionState {
   pixelView: boolean
   diffThreshold: number
 
+  downloadType: 'correction' | 'mask'
   downloadShowImage: boolean
+  maskColor: string
+  maskShape: 'square' | 'circle'
+  correctionShape: 'square' | 'circle'
   correctionOpacity: number
   correctionBlur: number
   correctionBlendMode: GlobalCompositeOperation | 'none'

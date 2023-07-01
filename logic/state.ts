@@ -53,6 +53,10 @@ export function defaultCompareState(): ComparionState {
     diffThreshold: 3,
 
     downloadShowImage: false,
+    downloadType: 'correction',
+    maskColor: '#000000',
+    maskShape: 'square',
+    correctionShape: 'square',
     correctionOpacity: 1,
     correctionBlur: 2,
     correctionBlendMode: 'none',

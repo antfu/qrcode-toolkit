@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
-import { HightlightFactor, generateMask } from '~/logic/diff'
+import { HightlightFactor } from '~/logic/diff'
 import type { Diff, State } from '~/logic/types'
 
 const props = defineProps<{
@@ -44,30 +44,49 @@ async function run() {
   const state = props.state.compare
   const diff = props.diff
 
-  if (state.downloadShowImage)
-    ctx.drawImage(image.value, 0, 0)
-
   const cellSize = image.value.width / state.gridSize
+  const sqrt2 = Math.sqrt(2)
 
-  function getOpacity(luminance: number) {
-    return Math.min(255, Math.abs(diff.darkLuminance - luminance) * HightlightFactor * state.correctionOpacity) / 255
+  function drawPoint(x: number, y: number, type: 'square' | 'circle' = 'square') {
+    if (type === 'square') {
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+    }
+    else if (type === 'circle') {
+      ctx.beginPath()
+      ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize / 2 * sqrt2, 0, 2 * Math.PI)
+      ctx.fill()
+    }
   }
 
-  ctx.filter = `blur(${state.correctionBlur * cellSize / 30}px)`
-  if (state.correctionBlendMode !== 'none')
-    ctx.globalCompositeOperation = state.correctionBlendMode
+  if (state.downloadType === 'correction') {
+    if (state.downloadShowImage)
+      ctx.drawImage(image.value, 0, 0)
 
-  ctx.fillStyle = '#000000'
-  for (const segment of diff.mismatchLight) {
-    ctx.globalAlpha = getOpacity(segment.luminance)
-    ctx.fillRect(segment.x * cellSize, segment.y * cellSize, cellSize, cellSize)
+    function getOpacity(luminance: number) {
+      return Math.min(255, Math.abs(diff.darkLuminance - luminance) * HightlightFactor * state.correctionOpacity) / 255
+    }
+
+    ctx.filter = `blur(${state.correctionBlur * cellSize / 30}px)`
+    if (state.correctionBlendMode !== 'none')
+      ctx.globalCompositeOperation = state.correctionBlendMode
+
+    ctx.fillStyle = '#000000'
+    for (const segment of diff.mismatchLight) {
+      ctx.globalAlpha = getOpacity(segment.luminance)
+      drawPoint(segment.x, segment.y, state.correctionShape)
+    }
+    ctx.fillStyle = '#ffffff'
+    for (const segment of diff.mismatchDark) {
+      ctx.globalAlpha = getOpacity(segment.luminance)
+      drawPoint(segment.x, segment.y, state.correctionShape)
+    }
+    ctx.globalAlpha = 1
   }
-  ctx.fillStyle = '#ffffff'
-  for (const segment of diff.mismatchDark) {
-    ctx.globalAlpha = getOpacity(segment.luminance)
-    ctx.fillRect(segment.x * cellSize, segment.y * cellSize, cellSize, cellSize)
+  else if (state.downloadType === 'mask') {
+    ctx.fillStyle = state.maskColor
+    for (const segment of [...diff.mismatchLight, ...diff.mismatchDark])
+      drawPoint(segment.x, segment.y, state.maskShape)
   }
-  ctx.globalAlpha = 1
 }
 
 const debouncedRun = debounce(run, 100, { trailing: true })
@@ -84,22 +103,6 @@ function download() {
   const a = document.createElement('a')
   a.href = canvas.value.toDataURL()
   a.download = `qrcode-output-${new Date()}.png`
-  a.click()
-}
-
-function downloadMask(type: 'mask' | 'correction') {
-  if (!props.diff)
-    return
-
-  const data = generateMask(
-    props.diff,
-    props.state.compare,
-    type,
-  )
-
-  const a = document.createElement('a')
-  a.href = data
-  a.download = `${type}-${new Date()}.png`
   a.click()
 }
 
@@ -122,34 +125,61 @@ onKeyStroke('Escape', close)
         <div absolute inset-0 z--1 class="transparent-background" />
       </div>
 
-      <div my-2 flex="~ col gap-3">
-        <OptionItem title="Include image">
-          <OptionCheckbox v-model="state.compare.downloadShowImage" />
-        </OptionItem>
-
-        <OptionItem title="Correction opacity" @reset="state.compare.correctionOpacity = 1">
-          <OptionSlider v-model="state.compare.correctionOpacity" :min="0" :max="2" :step="0.01" />
-        </OptionItem>
-
-        <OptionItem title="Correction Blur" @reset="state.compare.correctionBlur = 0">
-          <OptionSlider v-model="state.compare.correctionBlur" :min="0" :max="20" :step="0.05" />
-        </OptionItem>
-
-        <OptionItem title="Correction Blend">
+      <div my-2 flex="~ col gap-2" h-48>
+        <div mb-2>
           <OptionSelectGroup
-            v-model="state.compare.correctionBlendMode"
-            :options="['none', 'overlay', 'darken', 'lighten', 'difference']"
+            v-model="state.compare.downloadType"
+            :options="['correction', 'mask']"
           />
-        </OptionItem>
+        </div>
+
+        <template v-if="state.compare.downloadType === 'correction'">
+          <OptionItem title="Include image">
+            <OptionCheckbox v-model="state.compare.downloadShowImage" />
+          </OptionItem>
+
+          <OptionItem title="Correction Shape">
+            <OptionSelectGroup
+              v-model="state.compare.correctionShape"
+              :options="['square', 'circle']"
+            />
+          </OptionItem>
+
+          <OptionItem title="Correction Opacity" @reset="state.compare.correctionOpacity = 1">
+            <OptionSlider v-model="state.compare.correctionOpacity" :min="0" :max="2" :step="0.01" />
+          </OptionItem>
+
+          <OptionItem title="Correction Blur" @reset="state.compare.correctionBlur = 0">
+            <OptionSlider v-model="state.compare.correctionBlur" :min="0" :max="20" :step="0.05" />
+          </OptionItem>
+
+          <OptionItem title="Correction Blend">
+            <OptionSelectGroup
+              v-model="state.compare.correctionBlendMode"
+              :options="['none', 'overlay', 'darken', 'lighten', 'difference']"
+            />
+          </OptionItem>
+        </template>
+        <template v-else>
+          <OptionItem title="Color">
+            <OptionColor v-model="state.compare.maskColor" />
+            <OptionSelectGroup
+              v-model="state.compare.maskColor"
+              :options="['#ffffff', '#000000']"
+              :titles="['White', 'Black']"
+            />
+          </OptionItem>
+
+          <OptionItem title="Mask shape">
+            <OptionSelectGroup
+              v-model="state.compare.maskShape"
+              :options="['square', 'circle']"
+            />
+          </OptionItem>
+        </template>
       </div>
 
       <div flex="~ gap-2">
-        <button
-          text-sm text-button
-          @click="downloadMask('mask')"
-        >
-          Download Mask
-        </button>
         <div flex-auto />
         <button text-sm op75 text-button @click="close()">
           Close
