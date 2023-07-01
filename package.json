@@ -15,7 +15,9 @@
   "dependencies": {
     "@antfu/utils": "^0.7.4",
     "@zxing/library": "^0.20.0",
+    "d3-delaunay": "^6.0.4",
     "delaunator": "^5.0.0",
+    "delaunay-triangulate": "^1.1.6",
     "perfect-debounce": "^1.0.0",
     "seedrandom": "^3.0.5"
   },
@@ -28,6 +30,7 @@
     "@nuxt/devtools": "^0.6.4",
     "@nuxtjs/color-mode": "^3.3.0",
     "@pinia/nuxt": "^0.4.11",
+    "@types/d3-delaunay": "^6.0.1",
     "@types/delaunator": "^5.0.0",
     "@types/seedrandom": "^3.0.5",
     "@unocss/eslint-config": "^0.53.4",
