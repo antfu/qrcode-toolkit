@@ -38,15 +38,24 @@ export interface ComparionState {
   overlayOpacity: number
   pixelView: boolean
   diffThreshold: number
+
+  downloadShowImage: boolean
+  correctionOpacity: number
+  correctionBlur: number
+  correctionBlendMode: GlobalCompositeOperation | 'none'
+}
+
+export interface UploadState {
+  image?: string
+  qrcode?: string
+  qrcodeWidth?: number
+  qrcodeHeight?: number
 }
 
 export interface State {
   qrcode: QRCodeGeneratorState
   compare: ComparionState
-  uploaded: {
-    image?: string
-    qrcode?: string
-  }
+  uploaded: UploadState
 }
 
 export interface Segment {

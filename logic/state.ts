@@ -3,6 +3,7 @@ import type { ComparionState, QRCodeGeneratorState, State } from './types'
 
 export const storeIndex = useLocalStorage('qrd-state-index', 1, { listenToStorageChanges: false })
 export const showGridHelper = ref<boolean>(false)
+export const showDownloadDialog = ref<boolean>(false)
 
 export const qrcode = shallowRef<QrCode>()
 export const dataUrlGeneratedQRCode = ref<string>()
@@ -47,6 +48,11 @@ export function defaultCompareState(): ComparionState {
     overlayBlendMode: 'normal',
     overlayOpacity: 0.5,
     diffThreshold: 3,
+
+    downloadShowImage: false,
+    correctionOpacity: 1,
+    correctionBlur: 2,
+    correctionBlendMode: 'none',
   }
 }
 
@@ -57,6 +63,8 @@ export function defaultState(): State {
     uploaded: {
       image: undefined,
       qrcode: undefined,
+      qrcodeWidth: undefined,
+      qrcodeHeight: undefined,
     },
   }
 }
