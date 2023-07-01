@@ -27,7 +27,7 @@ async function read(e: Event) {
 <template>
   <input
     type="file" accept="image/*"
-    absolute bottom-0 left-0 right-0 top-0 z-10 opacity-0.1
+    absolute bottom-0 left-0 right-0 top-0 z-10 cursor-pointer opacity-0.1
     @input="read"
   >
 </template>
