@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
-import { defaultState, storeIndex } from '~/logic/state'
+import { defaultState, showGridHelper, storeIndex } from '~/logic/state'
 import type { State } from '~/logic/types'
 
 defineProps<{
@@ -30,10 +30,13 @@ const { isOverDropZone } = useDropZone(document.body, {
       const reader = new FileReader()
       reader.onload = () => {
         const data = reader.result as string
-        if (uploadTarget.value === 'image')
+        if (uploadTarget.value === 'image') {
           state.value.uploaded.image = data
-        else if (uploadTarget.value === 'qrcode')
+        }
+        else if (uploadTarget.value === 'qrcode') {
           state.value.uploaded.qrcode = data
+          showGridHelper.value = true
+        }
       }
       reader.readAsDataURL(file)
     }
@@ -85,4 +88,10 @@ const { isOverDropZone } = useDropZone(document.body, {
       </div>
     </div>
   </div>
+
+  <DialogGridAlign
+    v-if="showGridHelper"
+    v-model="showGridHelper"
+    :state="state"
+  />
 </template>

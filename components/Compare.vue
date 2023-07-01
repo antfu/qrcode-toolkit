@@ -2,13 +2,12 @@
 import { debounce } from 'perfect-debounce'
 import type { Segment, State } from '~/logic/types'
 import { HightlightFactor, compareSegments, generateMask, segmentImage } from '~/logic/image'
-import { dataUrlGeneratedQRCode, defaultCompareState, qrcode } from '~/logic/state'
+import { dataUrlGeneratedQRCode, defaultCompareState, qrcode, showGridHelper } from '~/logic/state'
 
 const props = defineProps<{
   state: State
 }>()
 
-const fullState = computed(() => props.state)
 const state = computed(() => props.state.compare)
 const dataurl = computed({
   get() { return props.state.uploaded.image },
@@ -29,8 +28,6 @@ const selectedSegment = ref<Segment | null>(null)
 
 const imageSegments = shallowRef<Segment[]>()
 const qrcodeSegments = shallowRef<Segment[]>()
-
-const showGridHelper = ref(false)
 
 // const scanResultImage = shallowRef<ScanResult>()
 // const scanResultQRCode = shallowRef<ScanResult>()
@@ -594,10 +591,4 @@ function applyGenerator() {
       </VTooltip>
     </div>
   </div>
-
-  <DialogPopup
-    v-if="showGridHelper"
-    v-model="showGridHelper"
-    :state="fullState"
-  />
 </template>
