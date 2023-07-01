@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
-import { HightlightFactor, generateMask } from '~/logic/image'
+import { HightlightFactor, generateMask } from '~/logic/diff'
 import type { Diff, State } from '~/logic/types'
 
 const props = defineProps<{

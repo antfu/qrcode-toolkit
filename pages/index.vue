@@ -59,11 +59,14 @@ const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
         <span op45>Built for marking</span> <a href="https://antfu.me/posts/ai-qrcode" target="_blank" op50 hover:op100>AI blended QR Code</a><br>
         <a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a>
       </div>
-      <div flex="~ gap-2">
+      <div flex="~ gap-3">
         <a href="https://github.com/antfu/qrcode-toolkit" target="_blank" text-lg op50 hover:op100>
           <div i-ri-github-fill />
         </a>
-        <a href="https://antfu.me" target="_blank" text-lg op50 hover:op100>
+        <a href="https://chat.antfu.me" target="_blank" text-lg op50 hover:op100>
+          <div i-ri-discord-fill />
+        </a>
+        <a href="https://antfu.me" target="_blank" ml--0.5 text-lg op50 hover:op100>
           <img src="https://antfu.me/favicon.svg" h-1.2em w-1.2em>
         </a>
       </div>

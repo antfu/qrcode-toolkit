@@ -34,7 +34,14 @@ function reset() {
     Object.assign(state.value, defaultGeneratorState())
 }
 
-const debouncedRun = debounce(run, 100, { trailing: true })
+const debouncedRun = debounce(run, 300, { trailing: true })
+
+const maybeNotScannable = computed(() => {
+  if (state.value.marginNoise && state.value.marginNoiseSpace === 'full')
+    return true
+  if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius > 6)
+    return true
+})
 
 watch(
   () => state.value,
@@ -155,6 +162,21 @@ watch(
         <OptionItem title="Scale">
           <OptionSlider v-model="state.scale" :min="1" :max="30" :step="1" />
         </OptionItem>
+
+        <div border="t base" my1 />
+
+        <OptionItem title="Effect">
+          <OptionSelectGroup
+            v-model="state.effect"
+            :options="['none', 'crystalize']"
+          />
+        </OptionItem>
+
+        <template v-if="state.effect === 'crystalize'">
+          <OptionItem title="Radius" nested>
+            <OptionSlider v-model="state.effectCrystalizeRadius" :min="1" :max="20" :step="0.5" />
+          </OptionItem>
+        </template>
       </div>
       <div>
         <button
@@ -194,6 +216,9 @@ watch(
       >
         Download
       </button>
+      <div v-if="maybeNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px4 py3 text-sm text-amber-6>
+        This QR Code may or may not be scannable. Please verify before using.
+      </div>
     </div>
   </div>
 </template>

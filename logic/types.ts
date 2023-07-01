@@ -22,6 +22,9 @@ export interface QRCodeGeneratorState {
   marginNoiseSpace: 'none' | 'marker' | 'full'
   invert: boolean
   rotate: 0 | 90 | 180 | 270
+
+  effect: 'none' | 'crystalize'
+  effectCrystalizeRadius: number
 }
 
 export interface ComparionState {
