@@ -32,7 +32,7 @@ import { storeIndex } from '~/logic/state'
 
       <div mt-15>
         <div flex="~ gap-1 items-center">
-          <span op55>Anthony's</span> <span op75>QR Code</span> <span op50>Toolkit</span> <span i-ri-arrow-right-line ml2 inline-block h-1em op75 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
+          <span op50>Anthony's</span> <span op75>QR</span> <span op65>Toolkit</span> <span i-ri-arrow-right-line ml2 inline-block h-1em op50 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
         </div>
         <span op35>Made with </span> <a mt--1 href="https://nuxt.com" target="_blank" flex="~ inline gap-1 items-center" translate-y-0.9 op75 hover:op100><div i-logos-nuxt-icon /> <span font-bold op65>Nuxt</span></a><br>
       </div>

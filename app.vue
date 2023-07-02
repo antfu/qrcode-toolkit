@@ -16,7 +16,7 @@ useHead({
 })
 
 useSeoMeta({
-  title: 'Anthony\'s QR Code Toolkit',
+  title: 'Anthony\'s QR Toolkit',
 })
 </script>
 
