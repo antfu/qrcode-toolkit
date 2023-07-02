@@ -240,7 +240,7 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
           corner(i)
       }
     }
-    else if (_pixelStyle === 'rounded') {
+    else if (_pixelStyle === 'rounded' || _pixelStyle === 'row' || _pixelStyle === 'column') {
       const top = pixels.find(p => p.x === x && p.y === y - 1)?.isDark !== false
       const bottom = pixels.find(p => p.x === x && p.y === y + 1)?.isDark !== false
       const left = pixels.find(p => p.x === x - 1 && p.y === y)?.isDark !== false
@@ -251,19 +251,19 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
       const bottomRight = pixels.find(p => p.x === x + 1 && p.y === y + 1)?.isDark !== false
 
       if (isDark) {
-        if (top) {
+        if (top && _pixelStyle !== 'row') {
           corner(0)
           corner(2)
         }
-        if (bottom) {
+        if (bottom && _pixelStyle !== 'row') {
           corner(1)
           corner(3)
         }
-        if (left) {
+        if (left && _pixelStyle !== 'column') {
           corner(0)
           corner(1)
         }
-        if (right) {
+        if (right && _pixelStyle !== 'column') {
           corner(2)
           corner(3)
         }

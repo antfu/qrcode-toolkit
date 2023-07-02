@@ -1,6 +1,6 @@
 import type QrScanner from 'qr-scanner'
 
-export type PixelStyle = 'square' | 'dot' | 'squircle' | 'mixed' | 'rounded'
+export type PixelStyle = 'square' | 'dot' | 'squircle' | 'mixed' | 'rounded' | 'row' | 'column'
 
 export interface QRCodeGeneratorState {
   text: string

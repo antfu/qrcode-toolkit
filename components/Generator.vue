@@ -101,7 +101,18 @@ watch(
         <OptionItem title="Pixel" nested>
           <OptionSelectGroup
             v-model="state.pixelStyle"
-            :options="['square', 'dot', 'squircle', 'rounded', 'mixed']"
+            :options="['square', 'dot', 'squircle', 'rounded', 'row', 'column']"
+          />
+        </OptionItem>
+
+        <OptionItem title="Marker" nested>
+          <OptionSelectGroup
+            v-model="state.markerStyle"
+            :options="['square', 'dot', 'squircle', 'rounded', 'row', 'column']"
+          />
+          <OptionSelectGroup
+            v-model="state.markerStyle"
+            :options="['auto']"
           />
         </OptionItem>
 
@@ -109,13 +120,6 @@ watch(
           <OptionSelectGroup
             v-model="state.markerShape"
             :options="['square', 'circle', 'plus', 'box', 'random']"
-          />
-        </OptionItem>
-
-        <OptionItem title="Marker" nested>
-          <OptionSelectGroup
-            v-model="state.markerStyle"
-            :options="['auto', 'square', 'dot', 'squircle', 'rounded', 'mixed']"
           />
         </OptionItem>
 
