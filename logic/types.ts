@@ -1,6 +1,25 @@
 import type QrScanner from 'qr-scanner'
 
-export type PixelStyle = 'square' | 'dot' | 'squircle' | 'mixed' | 'rounded' | 'row' | 'column'
+export const PixelStyles = [
+  'square',
+  'dot',
+  'squircle',
+  'rounded',
+  'row',
+  'column',
+] as const
+
+export const MarkerShapes = [
+  'square',
+  'circle',
+  'plus',
+  'box',
+  'octagon',
+  'random',
+] as const
+
+export type PixelStyle = typeof PixelStyles[number]
+export type MarkerShape = typeof MarkerShapes[number]
 
 export interface QRCodeGeneratorState {
   text: string
@@ -15,8 +34,8 @@ export interface QRCodeGeneratorState {
   minVersion: number
   maxVersion: number
   pixelStyle: PixelStyle
-  markerStyle: 'auto' | PixelStyle
-  markerShape: 'square' | 'circle' | 'plus' | 'box' | 'random'
+  markerStyle: PixelStyle | 'auto'
+  markerShape: MarkerShape
   marginNoise: boolean
   marginNoiseRate: number
   marginNoiseSpace: 'none' | 'marker' | 'full'

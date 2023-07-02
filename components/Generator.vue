@@ -3,7 +3,7 @@ import { debounce } from 'perfect-debounce'
 import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
 import { dataUrlGeneratedQRCode, defaultGeneratorState, hasParentWindow, qrcode, view } from '~/logic/state'
-import type { State } from '~/logic/types'
+import { MarkerShapes, PixelStyles, type State } from '~/logic/types'
 
 const props = defineProps<{
   state: State
@@ -101,14 +101,15 @@ watch(
         <OptionItem title="Pixel" nested>
           <OptionSelectGroup
             v-model="state.pixelStyle"
-            :options="['square', 'dot', 'squircle', 'rounded', 'row', 'column']"
+            :options="PixelStyles"
           />
         </OptionItem>
 
         <OptionItem title="Marker" nested>
           <OptionSelectGroup
+            v-if="state.markerShape !== 'circle'"
             v-model="state.markerStyle"
-            :options="['square', 'dot', 'squircle', 'rounded', 'row', 'column']"
+            :options="state.markerShape === 'octagon' ? ['square', 'rounded'] : PixelStyles"
           />
           <OptionSelectGroup
             v-model="state.markerStyle"
@@ -119,7 +120,7 @@ watch(
         <OptionItem title="Marker Shape" nested>
           <OptionSelectGroup
             v-model="state.markerShape"
-            :options="['square', 'circle', 'plus', 'box', 'random']"
+            :options="MarkerShapes"
           />
         </OptionItem>
 

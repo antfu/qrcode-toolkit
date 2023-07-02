@@ -1,7 +1,8 @@
 <script setup lang="ts">
 defineProps<{
-  options: string[] | number[]
+  options: readonly string[] | number[]
   titles?: string[]
+  classes?: string[]
 }>()
 
 const value = defineModel<string | number>('modelValue', {
@@ -23,8 +24,10 @@ const value = defineModel<string | number>('modelValue', {
         :class="[
           i === value ? '' : 'op50',
           titles?.[idx] ? '' : 'capitalize',
+          classes?.[idx] || '',
         ]"
-      >{{ titles?.[idx] || i }}</div>
+        :title="titles?.[idx]"
+      >{{ titles?.[idx] ?? i }}</div>
       <input v-model="value" type="radio" :value="i" absolute inset-0 op-0.1>
     </label>
   </fieldset>

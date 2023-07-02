@@ -200,6 +200,91 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
         ctx.arc(cX, cY, cell * 1.5, 0, Math.PI * 2)
         ctx.fill()
       }
+      else if (markerShape === 'octagon') {
+        if (marker.x !== 3 || marker.y !== 3)
+          continue
+
+        const cX = x * cell + halfcell
+        const cY = y * cell + halfcell
+
+        const octagonFor = (dx: number, dy: number) => {
+          return [
+            [dx, dy],
+            [-dx, dy],
+            [-dy, dx],
+            [-dy, -dx],
+            [-dx, -dy],
+            [dx, -dy],
+            [dy, -dx],
+            [dy, dx],
+          ] as const
+        }
+
+        function drawOctagon(size: number) {
+          ctx.beginPath()
+          const points = octagonFor(1.5 / 3.5 * size, size)
+
+          if (_pixelStyle === 'rounded') {
+            const innerPoints = octagonFor(1.5 / 3.5 * (size - 1), size - 1)
+            const startPoint = [
+              (points[0][0] + points[1][0]) / 2,
+              (points[0][1] + points[1][1]) / 2,
+            ]
+            ctx.moveTo(cX + startPoint[0] * cell, cY + startPoint[1] * cell)
+            ;[...points, points[0]]
+              .forEach(([x, y], i) => {
+                const previous = points.at(i - 1)!
+                const next = points.at((i + 1) % points.length)!
+                const inner = innerPoints.at(i % innerPoints.length)!
+                const p1 = pointToLineProjection(
+                  ...inner,
+                  ...previous,
+                  x,
+                  y,
+                )
+                const p2 = pointToLineProjection(
+                  ...inner,
+                  ...next,
+                  x,
+                  y,
+                )
+                ctx.lineTo(cX + p1[0] * cell, cY + p1[1] * cell)
+                ctx.arcTo(
+                  cX + x * cell,
+                  cY + y * cell,
+                  cX + p2[0] * cell,
+                  cY + p2[1] * cell,
+                  cell,
+                )
+                ctx.lineTo(cX + p2[0] * cell, cY + p2[1] * cell)
+              })
+          }
+          else {
+            points.forEach(([x, y], i) => {
+              ctx[i === 0 ? 'moveTo' : 'lineTo'](cX + x * cell, cY + y * cell)
+            })
+          }
+          ctx.closePath()
+          ctx.fill()
+        }
+
+        ctx.fillStyle = darkColor
+        drawOctagon(3.5)
+
+        ctx.fillStyle = lightColor
+        drawOctagon(2.5)
+
+        if (_pixelStyle === 'rounded') {
+          ctx.beginPath()
+          ctx.fillStyle = darkColor
+          ctx.arc(cX, cY, cell * 1.5, 0, Math.PI * 2)
+          ctx.fill()
+        }
+        else {
+          ctx.fillStyle = darkColor
+          drawOctagon(1.5)
+        }
+      }
     }
 
     function square() {
@@ -226,9 +311,6 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
 
     if (!isDark && _pixelStyle !== 'rounded')
       continue
-
-    if (_pixelStyle === 'mixed')
-      _pixelStyle = styleRng() < 0.5 ? 'squircle' : 'square'
 
     if (_pixelStyle === 'dot') {
       dot()
@@ -291,4 +373,14 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     const newData = effects.crystalize(data, state.effectCrystalizeRadius, state.seed)
     ctx.putImageData(newData, 0, 0)
   }
+}
+
+function pointToLineProjection(px: number, py: number, x1: number, y1: number, x2: number, y2: number) {
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const d = dx * dx + dy * dy
+  const u = ((px - x1) * dx + (py - y1) * dy) / d
+  const x = x1 + u * dx
+  const y = y1 + u * dy
+  return [x, y] as const
 }

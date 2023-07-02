@@ -22,6 +22,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.39.6",
     "@iconify-json/carbon": "^1.1.18",
+    "@iconify-json/ic": "^1.1.13",
     "@iconify-json/logos": "^1.1.33",
     "@iconify-json/ri": "^1.1.10",
     "@iconify-json/twemoji": "^1.1.11",
