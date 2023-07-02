@@ -1,5 +1,6 @@
 import { getAverageColor, rgbaToHex } from './image'
 import type { ComparionState, Diff, Segment } from './types'
+import { resolveMargin } from './utils'
 
 export const HightlightFactor = 1.8
 
@@ -55,10 +56,12 @@ export async function segmentImage(dataurl: string, gridSize = 16) {
 
 export function compareSegments(segments: Segment[], qrcodeSegments: Segment[], state: ComparionState): Diff {
   const {
-    gridMarginSize: marginSize,
     gridSize,
     diffThreshold,
   } = state
+
+  const margin = resolveMargin(state.gridMarginSize)
+  const marginSize = Math.min(margin.left, margin.top, margin.right, margin.bottom)
 
   for (const seg of segments) {
     seg.expected = qrcodeSegments[seg.index].value

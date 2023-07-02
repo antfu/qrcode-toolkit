@@ -45,7 +45,7 @@ function apply() {
       <div border="~ base rounded-lg" relative aspect-ratio-1 of-hidden>
         <img
           :src="state.uploaded.qrcode"
-          absolute inset-0 h-full w-full op65
+          absolute inset-0 h-full w-full object-cover op65
         >
 
         <GridLines
