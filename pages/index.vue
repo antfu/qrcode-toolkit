@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { storeIndex } from '~/logic/state'
+import { hasParentWindow, storeIndex } from '~/logic/state'
 </script>
 
 <template>
@@ -7,7 +7,7 @@ import { storeIndex } from '~/logic/state'
     This app is not supported on mobile devices. Please try with a bigger screen.
   </div>
   <div flex="justify-center" hidden p10 pb15 md:flex>
-    <div w-250 flex="~ col gap-4">
+    <div flex="~ col gap-4" class="min-h-[calc(100vh-100px)] w-250">
       <div fixed right-5 top-14 flex="col gap-2" hidden xl:flex>
         <VTooltip v-for="n in 10" :key="n" placement="left" distance="10">
           <button
@@ -30,12 +30,31 @@ import { storeIndex } from '~/logic/state'
 
       <StateProvider :key="storeIndex" :index="storeIndex" />
 
-      <div mt-15>
-        <div flex="~ gap-1 items-center">
-          <span op50>Anthony's</span> <span op75>QR</span> <span op65>Toolkit</span> <span i-ri-arrow-right-line ml2 inline-block h-1em op50 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
+      <div flex-auto />
+
+      <div mt-15 flex="~ col gap-2">
+        <div>
+          <span op50>Anthony's </span> <span font-600 op75>QR</span><span font-400 op65> Toolkit</span>
         </div>
-        <span op35>Made with </span> <a mt--1 href="https://nuxt.com" target="_blank" flex="~ inline gap-1 items-center" translate-y-0.9 op75 hover:op100><div i-logos-nuxt-icon /> <span font-bold op65>Nuxt</span></a><br>
+        <div flex="~ gap-1 items-center">
+          <span i-ri-arrow-right-line ml1 inline-block h-1em op50 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-refine" target="_blank">Learn more</a><br>
+        </div>
+        <div v-if="!hasParentWindow" flex="~ gap-1 items-center">
+          <span i-ri-arrow-right-line ml1 inline-block h-1em op50 />
+          <a
+            href="https://github.com/antfu/sd-webui-qrcode-toolkit"
+            target="_blank"
+            flex="~ inline gap-1 items-center" op75 hover:op100
+          >Web UI Extension</a>
+        </div>
       </div>
+      <div>
+        <span op50>If you find this app useful, </span>
+        <a href="https://github.com/sponsors/antfu" target="_blank" op75 hover:text-rose hover:underline hover:op100>Sponsor to support my work</a>
+      </div>
+
+      <div my4 h-1px border="t base" w-10 />
+
       <div flex="~ gap-3">
         <a href="https://github.com/antfu/qrcode-toolkit" target="_blank" text-lg op50 hover:op100>
           <div i-ri-github-fill />
@@ -46,11 +65,9 @@ import { storeIndex } from '~/logic/state'
         <a href="https://antfu.me" target="_blank" ml--0.5 text-lg op50 hover:op100>
           <img src="https://antfu.me/favicon.svg" h-1.2em w-1.2em>
         </a>
-      </div>
-      <div mt4>
-        <span op50>If you find this app useful,</span>
-        <br>
-        <a href="https://github.com/sponsors/antfu" target="_blank" op75 hover:text-rose hover:underline hover:op100>Sponsor to support my work</a>
+        <div flex="~ gap-1 items-center" ml-3>
+          <span op35>Made with </span> <a mt--2 href="https://nuxt.com" target="_blank" flex="~ inline gap-1 items-center" translate-y-0.9 op75 hover:op100><div i-logos-nuxt-icon /> <span font-bold op65>Nuxt</span></a><br>
+        </div>
       </div>
     </div>
   </div>

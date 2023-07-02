@@ -514,9 +514,7 @@ function applyGenerator() {
     <!-- Action Panel -->
     <div
       v-if="dataurl" flex="~ col gap-2" absolute
-      :style="{
-        right: 'calc(100% + 1rem)',
-      }"
+      :style="{ right: 'calc(100% + 1rem)' }"
     >
       <VTooltip placement="left" distance="10">
         <button icon-button title="Toggle grid" @click="state.grid = !state.grid">
