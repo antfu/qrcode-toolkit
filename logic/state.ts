@@ -1,15 +1,16 @@
 import type { QrCode } from '../vendor/qrcodegen'
-import type { ComparionState, QRCodeGeneratorState, State } from './types'
+import type { ComparionState, GeneratedQRInfo, QRCodeGeneratorState, State } from './types'
 
 export const storeIndex = useLocalStorage('qrd-state-index', 1, { listenToStorageChanges: false })
 export const showGridHelper = ref<boolean>(false)
 export const showDownloadDialog = ref<boolean>(false)
 export const hasParentWindow = ref<boolean>(false)
-export const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
+export const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator', { listenToStorageChanges: false })
 
 export const qrcode = shallowRef<QrCode>()
 export const dataUrlGeneratedQRCode = ref<string>()
 export const dataUrlGeneratedSize = ref<number>(25)
+export const generateQRCodeInfo = ref<GeneratedQRInfo>()
 
 export function defaultGeneratorState(): QRCodeGeneratorState {
   return {

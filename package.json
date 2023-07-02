@@ -13,7 +13,7 @@
     "start:generate": "npx serve .output/public"
   },
   "dependencies": {
-    "@antfu/utils": "^0.7.4",
+    "@antfu/utils": "^0.7.5",
     "@zxing/library": "^0.20.0",
     "delaunator": "^5.0.0",
     "perfect-debounce": "^1.0.0",
@@ -26,7 +26,7 @@
     "@iconify-json/logos": "^1.1.33",
     "@iconify-json/ri": "^1.1.10",
     "@iconify-json/twemoji": "^1.1.11",
-    "@nuxt/devtools": "^0.6.4",
+    "@nuxt/devtools": "^0.6.6",
     "@nuxtjs/color-mode": "^3.3.0",
     "@types/delaunator": "^5.0.0",
     "@types/seedrandom": "^3.0.5",
@@ -34,12 +34,12 @@
     "@unocss/nuxt": "^0.53.4",
     "@vueuse/nuxt": "^10.2.1",
     "consola": "^3.2.2",
-    "eslint": "^8.43.0",
+    "eslint": "^8.44.0",
     "floating-vue": "2.0.0-beta.24",
     "nuxt": "^3.6.1",
     "pinia": "^2.1.4",
     "qr-scanner": "^1.4.2",
-    "typescript": "^5.1.5",
+    "typescript": "^5.1.6",
     "vue-tsc": "^1.8.3"
   }
 }

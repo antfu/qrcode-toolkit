@@ -2,8 +2,9 @@ import seedrandom from 'seedrandom'
 
 import { QrCode, QrCodeEcc, QrSegment } from '../vendor/qrcodegen'
 import type { QRCodeGeneratorState } from './types'
-import { qrcode } from './state'
+import { generateQRCodeInfo, qrcode } from './state'
 import { effects } from './effects'
+import { resolveMargin } from './utils'
 
 const eccMap = {
   L: QrCodeEcc.LOW,
@@ -58,22 +59,31 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
   const lightColor = invert ? state.darkColor : state.lightColor
   const darkColor = invert ? state.lightColor : state.darkColor
 
-  if (cell <= 0 || margin < 0)
-    throw new RangeError('Value out of range')
+  const {
+    top: marginTop,
+    right: marginRight,
+    bottom: marginBottom,
+    left: marginLeft,
+  } = resolveMargin(margin)
+
   const halfcell = cell / 2
-  const width: number = (qr.size + margin * 2) * cell
+  const width: number = (qr.size + marginLeft + marginRight) * cell
+  const height: number = (qr.size + marginTop + marginBottom) * cell
   canvas.width = width
-  canvas.height = width
+  canvas.height = height
   const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+
+  generateQRCodeInfo.value = {
+    width,
+    height,
+  }
 
   const borderRng = seedrandom(String(seed))
   const styleRng = seedrandom(String(seed))
   const markerRng = seedrandom(String(seed))
 
   ctx.fillStyle = lightColor
-  ctx.fillRect(0, 0, width, width)
-
-  const marginSize = qr.size + margin * 2
+  ctx.fillRect(0, 0, width, height)
 
   function getInfo(x: number, y: number): PixelInfo {
     let isBorder = marginNoiseSpace === 'full'
@@ -83,9 +93,9 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     if (marginNoiseSpace === 'marker') {
       if (x >= -1 && x <= 7 && y >= -1 && y <= 7)
         isBorder = false
-      if (x >= -1 && x <= 7 && y >= qr.size - 7 && y <= qr.size)
+      if (x >= -1 && x <= 7 && y >= qr.size - 8 && y <= qr.size)
         isBorder = false
-      if (x >= qr.size - 7 && x <= qr.size && y >= -1 && y <= 7)
+      if (x >= qr.size - 8 && x <= qr.size && y >= -1 && y <= 7)
         isBorder = false
     }
 
@@ -134,21 +144,29 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
       }
     }
 
-    let targetX = (x + margin)
-    let targetY = (y + margin)
+    let targetX = x
+    let targetY = y
 
-    if (rotate === 90) {
-      targetX = marginSize - targetX - 1
-      ;[targetX, targetY] = [targetY, targetX]
+    // Rotate the QR code
+    if (x >= -1 && y >= -1 && x < qr.size + 1 && y < qr.size + 1) {
+      targetX = x
+      targetY = y
+      if (rotate === 90) {
+        targetX = qr.size - targetX - 1
+        ;[targetX, targetY] = [targetY, targetX]
+      }
+      else if (rotate === 180) {
+        targetX = qr.size - targetX - 1
+        targetY = qr.size - targetY - 1
+      }
+      else if (rotate === 270) {
+        targetY = qr.size - targetY - 1
+        ;[targetX, targetY] = [targetY, targetX]
+      }
     }
-    else if (rotate === 180) {
-      targetX = marginSize - targetX - 1
-      targetY = marginSize - targetY - 1
-    }
-    else if (rotate === 270) {
-      targetY = marginSize - targetY - 1
-      ;[targetX, targetY] = [targetY, targetX]
-    }
+
+    targetX += marginLeft
+    targetY += marginTop
 
     return {
       isDark,
@@ -162,8 +180,8 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
 
   const pixels: PixelInfo[] = []
 
-  for (let y = -margin; y < qr.size + margin; y++) {
-    for (let x = -margin; x < qr.size + margin; x++)
+  for (let y = -marginTop; y < qr.size + marginBottom; y++) {
+    for (let x = -marginLeft; x < qr.size + marginRight; x++)
       pixels.push(getInfo(x, y))
   }
 
@@ -369,7 +387,7 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
   }
 
   if (state.effect === 'crystalize') {
-    const data = ctx.getImageData(0, 0, width, width)
+    const data = ctx.getImageData(0, 0, width, height)
     const newData = effects.crystalize(data, state.effectCrystalizeRadius, state.seed)
     ctx.putImageData(newData, 0, 0)
   }

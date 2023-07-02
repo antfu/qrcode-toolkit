@@ -64,13 +64,13 @@ function apply() {
         Slide the Margin slider to make the green box align with the QR Code body.
       </p>
 
-      <OptionItem title="Grid">
-        <OptionSlider v-model="gridSize" :min="0" :max="50" :step="1" />
-      </OptionItem>
+      <div flex="~ col gap-2">
+        <OptionItem title="Grid">
+          <OptionSlider v-model="gridSize" :min="0" :max="50" :step="1" />
+        </OptionItem>
 
-      <OptionItem title="Margin">
-        <OptionSlider v-model="gridMarginSize" :min="0" :max="gridSize / 2" :step="1" />
-      </OptionItem>
+        <SettingsMargin v-model="gridMarginSize" />
+      </div>
 
       <div flex="~ gap-2 justify-end" mt-5>
         <button px5 op75 text-button @click="cancel()">

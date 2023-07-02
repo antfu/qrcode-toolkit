@@ -14,7 +14,8 @@ const state = useLocalStorage<State>(
   defaultState(),
   {
     mergeDefaults(storageValue, defaults) {
-      return deepMerge({}, defaults, storageValue)
+      const result = deepMerge({}, defaults, storageValue)
+      return result
     },
   },
 )

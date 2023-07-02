@@ -21,10 +21,22 @@ export const MarkerShapes = [
 export type PixelStyle = typeof PixelStyles[number]
 export type MarkerShape = typeof MarkerShapes[number]
 
+export interface GeneratedQRInfo {
+  width: number
+  height: number
+}
+
+export interface MarginObject {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
 export interface QRCodeGeneratorState {
   text: string
   ecc: 'L' | 'M' | 'Q' | 'H'
-  margin: number
+  margin: number | MarginObject
   scale: number
   seed: number
   lightColor: string
@@ -52,7 +64,7 @@ export interface ComparionState {
   blur: number
   grid: boolean
   gridSize: number
-  gridMarginSize: number
+  gridMarginSize: number | MarginObject
   gridOpacity: number
   gridColor: string
   overlay: boolean

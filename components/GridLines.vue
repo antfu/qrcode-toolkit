@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import type { MarginObject } from '~/logic/types'
+import { resolveMargin } from '~/logic/utils'
+
 const props = defineProps<{
   gridSize: number
   gridColor: string
   gridOpacity: number
-  gridMarginSize: number
+  gridMarginSize: number | MarginObject
   gridMarginColor: string
 }>()
 
 const gridCellSize = computed(() => 100 / props.gridSize)
+
+const margin = computed(() => resolveMargin(props.gridMarginSize))
 </script>
 
 <template>
@@ -41,10 +46,10 @@ const gridCellSize = computed(() => 100 / props.gridSize)
     v-if="gridMarginSize"
     absolute z-100
     :style="{
-      left: `${gridCellSize * gridMarginSize}%`,
-      right: `${gridCellSize * gridMarginSize}%`,
-      bottom: `${gridCellSize * gridMarginSize}%`,
-      top: `${gridCellSize * gridMarginSize}%`,
+      left: `${gridCellSize * margin.left}%`,
+      right: `${gridCellSize * margin.right}%`,
+      bottom: `${gridCellSize * margin.bottom}%`,
+      top: `${gridCellSize * margin.top}%`,
       border: '2px solid',
       borderColor: gridMarginColor,
       opacity: gridOpacity * 1.5,

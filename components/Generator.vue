@@ -2,8 +2,9 @@
 import { debounce } from 'perfect-debounce'
 import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
-import { dataUrlGeneratedQRCode, defaultGeneratorState, hasParentWindow, qrcode, view } from '~/logic/state'
+import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode, view } from '~/logic/state'
 import { MarkerShapes, PixelStyles, type State } from '~/logic/types'
+import { getAspectRatio } from '~/logic/utils'
 
 const props = defineProps<{
   state: State
@@ -144,10 +145,8 @@ watch(
         </OptionItem>
 
         <div border="t base" my1 />
+        <SettingsMargin v-model="state.margin" />
 
-        <OptionItem title="Margin">
-          <OptionSlider v-model="state.margin" :min="0" :max="20" :step="1" />
-        </OptionItem>
         <OptionItem title="Margin Noise">
           <OptionCheckbox v-model="state.marginNoise" />
         </OptionItem>
@@ -205,24 +204,40 @@ watch(
     <div flex="~ col gap-2">
       <canvas ref="canvas" w-full width="1000" height="1000" border="~ base rounded" />
 
-      <div v-if="qrcode" border="~ base rounded" grid="~ gap-1 cols-6 items-center" p1 pl6 pr0>
-        <div text-sm op50>
-          Size
+      <div v-if="qrcode" border="~ base rounded" p3 pl6 pr0 flex="~ col gap-2">
+        <div grid="~ gap-1 cols-6 items-center">
+          <div text-sm op50>
+            Size
+          </div>
+          <div>
+            {{ qrcode.size }}
+          </div>
+          <div text-sm op50>
+            Mask
+          </div>
+          <div>
+            {{ qrcode.mask }}
+          </div>
+          <div text-sm op50>
+            Version
+          </div>
+          <div>
+            {{ qrcode.version }}
+          </div>
         </div>
-        <div>
-          {{ qrcode.size }}
-        </div>
-        <div text-sm op50>
-          Mask
-        </div>
-        <div>
-          {{ qrcode.mask }}
-        </div>
-        <div text-sm op50>
-          Version
-        </div>
-        <div>
-          {{ qrcode.version }}
+        <div v-if="generateQRCodeInfo" grid="~ gap-1 cols-[1.5fr_2fr_1fr_1.5fr] items-center">
+          <div text-sm op50>
+            Dimension
+          </div>
+          <div text-sm>
+            {{ generateQRCodeInfo.width }} x {{ generateQRCodeInfo.height }}
+          </div>
+          <div text-sm op50>
+            Aspect
+          </div>
+          <div text-sm>
+            {{ getAspectRatio(generateQRCodeInfo.width, generateQRCodeInfo.height) }}
+          </div>
         </div>
       </div>
       <button
