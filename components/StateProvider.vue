@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
-import { defaultState, hasParentWindow, showGridHelper, storeIndex } from '~/logic/state'
+import { defaultState, hasParentWindow, showGridHelper, storeIndex, view } from '~/logic/state'
 import type { State } from '~/logic/types'
 
 defineProps<{
   index: number
 }>()
-
-const view = useLocalStorage<'generator' | 'compare'>('qrd-tab', 'generator')
 
 const uploadTarget = ref<'image' | 'qrcode'>()
 

@@ -2,7 +2,7 @@
 import { debounce } from 'perfect-debounce'
 import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
-import { dataUrlGeneratedQRCode, defaultGeneratorState, hasParentWindow, qrcode } from '~/logic/state'
+import { dataUrlGeneratedQRCode, defaultGeneratorState, hasParentWindow, qrcode, view } from '~/logic/state'
 import type { State } from '~/logic/types'
 
 const props = defineProps<{
@@ -43,6 +43,11 @@ const maybeNotScannable = computed(() => {
   if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius > 6)
     return true
 })
+
+function sendCompare() {
+  props.state.uploaded.qrcode = dataUrlGeneratedQRCode.value!
+  view.value = 'compare'
+}
 
 function sendToWebUI() {
   sendParentEvent('setControlNet', dataUrlGeneratedQRCode.value!)
@@ -219,7 +224,15 @@ watch(
         py2 text-sm text-button
         @click="download()"
       >
+        <div i-ri-download-line />
         Download
+      </button>
+      <button
+        py2 text-sm text-button
+        @click="sendCompare()"
+      >
+        <div i-ri-compasses-2-line />
+        Send to Compare
       </button>
       <button
         v-if="hasParentWindow"
