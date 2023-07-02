@@ -38,10 +38,10 @@ function reset() {
 
 const debouncedRun = debounce(run, 250, { trailing: true })
 
-const maybeNotScannable = computed(() => {
+const mayNotScannable = computed(() => {
   if (state.value.marginNoise && state.value.marginNoiseSpace === 'none')
     return true
-  if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius > 6)
+  if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius / state.value.scale > 0.4)
     return true
 })
 
@@ -262,7 +262,7 @@ watch(
         <div i-ri-file-upload-line />
         Send to ControlNet
       </button>
-      <div v-if="maybeNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px4 py3 text-sm text-amber-6>
+      <div v-if="mayNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px4 py3 text-sm text-amber-6>
         This QR Code may or may not be scannable. Please verify before using.
       </div>
     </div>
