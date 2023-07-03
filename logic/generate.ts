@@ -143,6 +143,10 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
           isDark = markerRng() < 0.5
       }
     }
+    else if (marker && markerShape === 'tiny-plus') {
+      if (!((marker.x >= 3 && marker.x <= 3) || (marker.y >= 3 && marker.y <= 3)))
+        isDark = false
+    }
 
     let targetX = x
     let targetY = y

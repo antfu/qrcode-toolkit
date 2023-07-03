@@ -30,7 +30,7 @@ export default defineConfig({
     presetIcons({
       scale: 1.2,
       collections: {
-        custom: FileSystemIconLoader('./icons'),
+        custom: FileSystemIconLoader('./icons', svg => svg.replace('black', 'currentColor')),
       },
     }),
     presetTypography(),

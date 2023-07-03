@@ -26,6 +26,7 @@ export const MarkerShapes = [
   'box',
   'octagon',
   'random',
+  'tiny-plus',
 ] as const
 
 export const MarkerShapeIcons = [
@@ -35,6 +36,7 @@ export const MarkerShapeIcons = [
   'i-custom-marker-box',
   'i-custom-marker-octagon',
   'i-custom-marker-random',
+  'i-custom-marker-tiny-plus',
 ]
 
 export type PixelStyle = typeof PixelStyles[number]
