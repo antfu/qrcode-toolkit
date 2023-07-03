@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
-import { resolveMargin } from 'logic/utils'
+import { resolveMargin } from '~/logic/utils'
 import type { Segment, State } from '~/logic/types'
 import { HightlightFactor, compareSegments, segmentImage } from '~/logic/diff'
 import { dataUrlGeneratedQRCode, defaultCompareState, qrcode, showDownloadDialog, showGridHelper } from '~/logic/state'
