@@ -82,6 +82,9 @@ devDependencies:
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
+  vite-svg-loader:
+    specifier: ^4.0.0
+    version: 4.0.0
   vue-tsc:
     specifier: ^1.8.3
     version: 1.8.3(typescript@5.1.6)
@@ -8957,6 +8960,13 @@ packages:
       vite: 4.3.9(@types/node@20.2.0)
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /vite-svg-loader@4.0.0:
+    resolution: {integrity: sha512-0MMf1yzzSYlV4MGePsLVAOqXsbF5IVxbn4EEzqRnWxTQl8BJg/cfwIzfQNmNQxZp5XXwd4kyRKF1LytuHZTnqA==}
+    dependencies:
+      '@vue/compiler-sfc': 3.3.4
+      svgo: 3.0.2
     dev: true
 
   /vite@4.3.9(@types/node@20.2.0):

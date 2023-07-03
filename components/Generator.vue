@@ -3,7 +3,8 @@ import { debounce } from 'perfect-debounce'
 import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
 import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode, view } from '~/logic/state'
-import { MarkerShapes, PixelStyles, type State } from '~/logic/types'
+import type { State } from '~/logic/types'
+import { MarkerShapeIcons, MarkerShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
 import { getAspectRatio } from '~/logic/utils'
 
 const props = defineProps<{
@@ -103,6 +104,7 @@ watch(
           <OptionSelectGroup
             v-model="state.pixelStyle"
             :options="PixelStyles"
+            :classes="PixelStyleIcons"
           />
         </OptionItem>
 
@@ -110,7 +112,8 @@ watch(
           <OptionSelectGroup
             v-if="state.markerShape !== 'circle'"
             v-model="state.markerStyle"
-            :options="state.markerShape === 'octagon' ? ['square', 'rounded'] : PixelStyles"
+            :options="state.markerShape === 'octagon' ? PixelStyles.slice(0, 2) : PixelStyles"
+            :classes="state.markerShape === 'octagon' ? PixelStyleIcons.slice(0, 2) : PixelStyleIcons"
           />
           <OptionSelectGroup
             v-model="state.markerStyle"
@@ -122,6 +125,7 @@ watch(
           <OptionSelectGroup
             v-model="state.markerShape"
             :options="MarkerShapes"
+            :classes="MarkerShapeIcons"
           />
         </OptionItem>
 

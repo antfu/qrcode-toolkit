@@ -2,12 +2,22 @@ import type QrScanner from 'qr-scanner'
 
 export const PixelStyles = [
   'square',
+  'rounded',
   'dot',
   'squircle',
-  'rounded',
   'row',
   'column',
 ] as const
+
+// @unocss-include
+export const PixelStyleIcons = [
+  'i-custom-pixel-square',
+  'i-custom-pixel-rounded',
+  'i-custom-pixel-dot',
+  'i-custom-pixel-squircle',
+  'i-custom-pixel-row',
+  'i-custom-pixel-column',
+]
 
 export const MarkerShapes = [
   'square',
@@ -17,6 +27,15 @@ export const MarkerShapes = [
   'octagon',
   'random',
 ] as const
+
+export const MarkerShapeIcons = [
+  'i-custom-marker-square',
+  'i-custom-marker-circle',
+  'i-custom-marker-plus',
+  'i-custom-marker-box',
+  'i-custom-marker-octagon',
+  'i-custom-marker-random',
+]
 
 export type PixelStyle = typeof PixelStyles[number]
 export type MarkerShape = typeof MarkerShapes[number]
