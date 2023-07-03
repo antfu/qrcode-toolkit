@@ -104,6 +104,14 @@ useEventListener(window, 'message', (event) => {
       Compare
     </button>
     <div flex-auto />
+    <button
+      flex="~ gap-1.5 items-center" text-button
+      :class="view === 'credit' ? 'bg-secondary' : 'op50'"
+      @click="view = 'credit'"
+    >
+      <div i-ri-user-heart-line />
+      Credits
+    </button>
   </div>
 
   <div v-show="view === 'generator'" w-full>
@@ -112,6 +120,10 @@ useEventListener(window, 'message', (event) => {
   <div v-show="view === 'compare'" w-full>
     <Compare :state="state" />
   </div>
+  <div v-if="view === 'credit'" w-full>
+    <Credits />
+  </div>
+
   <div v-if="isOverDropZone" grid="~ cols-2" fixed bottom-0 left-0 right-0 top-0 z-200 bg-black:20 backdrop-blur-10>
     <div
       id="upload-zone-image" flex="~ col gap-3 items-center justify-center" m10 mr-1 op40
