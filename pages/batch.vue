@@ -31,7 +31,7 @@ function randomSelect<T>(arr: readonly T[]) {
   return arr[randomRange(0, arr.length - 1)]
 }
 
-function download() {
+async function download() {
   const c = canvas.value!
   const a = document.createElement('a')
 
@@ -55,6 +55,8 @@ function download() {
     a.download = `${options.value.filenamePrefix}${i}-${c.width}x${c.height}-${text}.distorted.png`
     a.click()
 
+    await new Promise(resolve => setTimeout(resolve, 50))
+
     state.effect = 'none'
     state.pixelStyle = 'square'
     state.markerShape = 'square'
@@ -63,6 +65,8 @@ function download() {
     a.href = c.toDataURL('image/png')
     a.download = `${options.value.filenamePrefix}${i}-${c.width}x${c.height}-${text}.normal.png`
     a.click()
+
+    await new Promise(resolve => setTimeout(resolve, 50))
   }
 }
 </script>
