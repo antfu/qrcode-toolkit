@@ -177,8 +177,8 @@ watch(
           <OptionSlider v-model="state.maxVersion" :min="state.minVersion" :max="40" :step="1" />
         </OptionItem>
 
-        <OptionItem title="Scale">
-          <OptionSlider v-model="state.scale" :min="1" :max="30" :step="1" />
+        <OptionItem title="Pixel Size">
+          <OptionSlider v-model="state.scale" :min="1" :max="50" :step="1" />
         </OptionItem>
 
         <div border="t base" my1 />
