@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
+import { resolveMargin } from 'logic/utils'
 import type { Segment, State } from '~/logic/types'
 import { HightlightFactor, compareSegments, segmentImage } from '~/logic/diff'
 import { dataUrlGeneratedQRCode, defaultCompareState, qrcode, showDownloadDialog, showGridHelper } from '~/logic/state'
@@ -140,7 +141,8 @@ function applyGenerator() {
   if (!dataUrlGeneratedQRCode.value || !qrcode.value)
     return
   props.state.uploaded.qrcode = dataUrlGeneratedQRCode.value
-  state.value.gridSize = qrcode.value.size + props.state.qrcode.margin * 2
+  const margin = resolveMargin(props.state.qrcode.margin)
+  state.value.gridSize = qrcode.value.size + margin.left + margin.right
   state.value.gridMarginSize = props.state.qrcode.margin
 }
 </script>
@@ -295,9 +297,7 @@ function applyGenerator() {
         <OptionItem title="Grid Size" nested>
           <OptionSlider v-model="state.gridSize" :min="10" :max="100" :step="1" />
         </OptionItem>
-        <OptionItem title="Margin Size" nested>
-          <OptionSlider v-model="state.gridMarginSize" :min="0" :max="state.gridSize / 2" :step="1" />
-        </OptionItem>
+        <SettingsMargin v-model="state.gridMarginSize" />
         <template v-if="state.grid">
           <OptionItem title="Opacity" nested>
             <OptionSlider v-model="state.gridOpacity" :min="0" :max="1" :step="0.01" />
