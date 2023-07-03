@@ -29,6 +29,14 @@ export const MarkerShapes = [
   'tiny-plus',
 ] as const
 
+export const MarkerInnerShapes = [
+  'square',
+  'circle',
+  'plus',
+  'diamond',
+  'eye',
+] as const
+
 export const MarkerShapeIcons = [
   'i-custom-marker-square',
   'i-custom-marker-circle',
@@ -39,8 +47,17 @@ export const MarkerShapeIcons = [
   'i-custom-marker-tiny-plus',
 ]
 
+export const MarkerInnerShapeIcons = [
+  'i-custom-marker-inner-square',
+  'i-custom-marker-inner-circle',
+  'i-custom-marker-inner-plus',
+  'i-custom-marker-inner-diamond',
+  'i-custom-marker-inner-eye',
+]
+
 export type PixelStyle = typeof PixelStyles[number]
 export type MarkerShape = typeof MarkerShapes[number]
+export type MarkerInnerShape = typeof MarkerInnerShapes[number]
 
 export interface GeneratedQRInfo {
   width: number
@@ -69,6 +86,7 @@ export interface QRCodeGeneratorState {
   pixelStyle: PixelStyle
   markerStyle: PixelStyle | 'auto'
   markerShape: MarkerShape
+  markerInnerShape: MarkerInnerShape | 'auto'
   marginNoise: boolean
   marginNoiseRate: number
   marginNoiseSpace: 'none' | 'marker' | 'full'

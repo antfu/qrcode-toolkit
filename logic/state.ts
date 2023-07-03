@@ -23,6 +23,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     pixelStyle: 'rounded',
     markerStyle: 'auto',
     markerShape: 'square',
+    markerInnerShape: 'auto',
     maskPattern: -1,
     minVersion: 1,
     maxVersion: 40,

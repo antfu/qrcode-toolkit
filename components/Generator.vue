@@ -4,7 +4,7 @@ import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
 import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode, view } from '~/logic/state'
 import type { State } from '~/logic/types'
-import { MarkerShapeIcons, MarkerShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
+import { MarkerInnerShapeIcons, MarkerInnerShapes, MarkerShapeIcons, MarkerShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
 import { getAspectRatio } from '~/logic/utils'
 
 const props = defineProps<{
@@ -126,6 +126,18 @@ watch(
             v-model="state.markerShape"
             :options="MarkerShapes"
             :classes="MarkerShapeIcons"
+          />
+        </OptionItem>
+
+        <OptionItem title="Inner Marker" nested>
+          <OptionSelectGroup
+            v-model="state.markerInnerShape"
+            :options="MarkerInnerShapes"
+            :classes="MarkerInnerShapeIcons"
+          />
+          <OptionSelectGroup
+            v-model="state.markerInnerShape"
+            :options="['auto']"
           />
         </OptionItem>
 
