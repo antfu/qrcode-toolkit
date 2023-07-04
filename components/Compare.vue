@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
-import { resolveMargin } from '~/logic/utils'
+import { sendQRCodeToCompare } from '~/logic/utils'
 import type { Segment, State } from '~/logic/types'
 import { HightlightFactor, compareSegments, segmentImage } from '~/logic/diff'
-import { dataUrlGeneratedQRCode, defaultCompareState, qrcode, showDownloadDialog, showGridHelper } from '~/logic/state'
+import { defaultCompareState, showDownloadDialog, showGridHelper } from '~/logic/state'
 
 const props = defineProps<{
   state: State
@@ -135,15 +135,6 @@ function toggleHighContrast() {
     state.value.grayscale = true
     state.value.contrast = 300
   }
-}
-
-function applyGenerator() {
-  if (!dataUrlGeneratedQRCode.value || !qrcode.value)
-    return
-  props.state.uploaded.qrcode = dataUrlGeneratedQRCode.value
-  const margin = resolveMargin(props.state.qrcode.margin)
-  state.value.gridSize = qrcode.value.size + margin.left + margin.right
-  state.value.gridMarginSize = props.state.qrcode.margin
 }
 </script>
 
@@ -355,7 +346,7 @@ function applyGenerator() {
           />
           <button
             text-sm op75 text-button
-            @click="applyGenerator()"
+            @click="sendQRCodeToCompare(fullState)"
           >
             <div i-ri-qr-code-line />
             Apply from generator

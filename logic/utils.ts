@@ -1,4 +1,5 @@
-import type { MarginObject } from './types'
+import { dataUrlGeneratedQRCode, qrcode } from './state'
+import type { MarginObject, State } from './types'
 
 export function resolveMargin(margin: number | MarginObject) {
   return typeof margin === 'number'
@@ -21,4 +22,13 @@ export function getAspectRatio(width: number, height: number) {
   if (ratio > 3)
     return `${width / ratio}:${height / ratio}`
   return `${width}:${height}`
+}
+
+export function sendQRCodeToCompare(state: State) {
+  if (!dataUrlGeneratedQRCode.value || !qrcode.value)
+    return
+  state.uploaded.qrcode = dataUrlGeneratedQRCode.value
+  const margin = resolveMargin(state.qrcode.margin)
+  state.compare.gridSize = qrcode.value.size + margin.left + margin.right
+  state.compare.gridMarginSize = Math.min(margin.left, margin.right, margin.top, margin.bottom)
 }

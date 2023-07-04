@@ -5,7 +5,7 @@ import { generateQRCode } from '~/logic/generate'
 import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode, view } from '~/logic/state'
 import type { State } from '~/logic/types'
 import { MarkerInnerShapeIcons, MarkerInnerShapes, MarkerShapeIcons, MarkerShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
-import { getAspectRatio } from '~/logic/utils'
+import { getAspectRatio, sendQRCodeToCompare } from '~/logic/utils'
 
 const props = defineProps<{
   state: State
@@ -47,7 +47,7 @@ const mayNotScannable = computed(() => {
 })
 
 function sendCompare() {
-  props.state.uploaded.qrcode = dataUrlGeneratedQRCode.value!
+  sendQRCodeToCompare(props.state)
   view.value = 'compare'
 }
 
