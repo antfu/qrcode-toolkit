@@ -11,6 +11,7 @@ const props = defineProps<{
   state: State
 }>()
 
+const uploadTarget = ref<'image' | 'qrcode'>()
 const state = computed(() => props.state.qrcode)
 
 const canvas = ref<HTMLCanvasElement>()
@@ -54,6 +55,45 @@ function sendCompare() {
 function sendToWebUI() {
   sendParentEvent('setControlNet', dataUrlGeneratedQRCode.value!)
 }
+
+const uploadQR = ref<string>()
+
+const { isOverDropZone } = useDropZone(document.body, {
+  onDrop(files) {
+    if (view.value !== 'generator')
+      return
+    if (!files || !uploadTarget.value)
+      return
+
+    const file = files[0]
+    if (file.type === 'image/png' || file.type === 'image/jpeg') {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const data = reader.result as string
+        if (uploadTarget.value === 'qrcode')
+          uploadQR.value = data
+      }
+      reader.readAsDataURL(file)
+    }
+  },
+  onLeave() {
+    uploadTarget.value = undefined
+  },
+  onOver(_, event) {
+    if (uploadQR.value)
+      uploadQR.value = undefined
+    if (view.value !== 'generator')
+      return
+    if (!isOverDropZone.value)
+      return
+
+    const chain = Array.from(document.elementsFromPoint(event.clientX, event.clientY))
+    if (chain.find(el => el.id === 'upload-zone-qrcode'))
+      uploadTarget.value = 'qrcode'
+    else
+      uploadTarget.value = undefined
+  },
+})
 
 watch(
   () => state.value,
@@ -283,4 +323,25 @@ watch(
       </div>
     </div>
   </div>
+
+  <div v-if="isOverDropZone" fixed bottom-0 left-0 right-0 top-0 z-200 flex bg-black:20 backdrop-blur-10>
+    <div
+      id="upload-zone-qrcode" flex="~ col gap-3 items-center justify-center" m10 ml-1 w-full op40
+      :class="uploadTarget === 'qrcode' ? 'bg-gray:20 op100 border-base' : ''"
+      border="3 dashed transparent rounded-xl"
+    >
+      <div i-carbon-qr-code text-20 />
+      <div text-xl>
+        Scan QR Code
+      </div>
+    </div>
+  </div>
+
+  <DialogScan
+    v-if="uploadQR"
+    :model-value="true"
+    :qrcode="uploadQR"
+    :state="props.state"
+    @update:model-value="uploadQR = undefined"
+  />
 </template>
