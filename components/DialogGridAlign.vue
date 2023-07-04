@@ -55,6 +55,7 @@ function apply() {
             gridOpacity: 0.8,
             gridMarginSize,
             gridMarginColor: 'lime',
+            darkenMargin: true,
           }"
         />
       </div>

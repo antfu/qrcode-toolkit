@@ -8,6 +8,7 @@ const props = defineProps<{
   gridOpacity: number
   gridMarginSize: number | MarginObject
   gridMarginColor: string
+  darkenMargin?: boolean
 }>()
 
 const gridCellSize = computed(() => 100 / props.gridSize)
@@ -55,4 +56,47 @@ const margin = computed(() => resolveMargin(props.gridMarginSize))
       opacity: gridOpacity * 1.5,
     }"
   />
+
+  <template v-if="darkenMargin">
+    <div
+      absolute z-110
+      :style="{
+        left: 0,
+        width: `${gridCellSize * margin.left}%`,
+        bottom: 0,
+        top: 0,
+        background: '#0005',
+      }"
+    />
+    <div
+      absolute z-110
+      :style="{
+        right: 0,
+        width: `${gridCellSize * margin.right}%`,
+        bottom: 0,
+        top: 0,
+        background: '#0005',
+      }"
+    />
+    <div
+      absolute z-110
+      :style="{
+        left: `${gridCellSize * margin.left}%`,
+        right: `${gridCellSize * margin.right}%`,
+        top: 0,
+        height: `${gridCellSize * margin.top}%`,
+        background: '#0005',
+      }"
+    />
+    <div
+      absolute z-110
+      :style="{
+        left: `${gridCellSize * margin.left}%`,
+        right: `${gridCellSize * margin.right}%`,
+        bottom: 0,
+        height: `${gridCellSize * margin.bottom}%`,
+        background: '#0005',
+      }"
+    />
+  </template>
 </template>
