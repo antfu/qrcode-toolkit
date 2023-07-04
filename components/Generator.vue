@@ -207,16 +207,24 @@ watch(
           <OptionCheckbox v-model="state.marginNoise" />
         </OptionItem>
         <template v-if="state.marginNoise">
-          <OptionItem title="Noise Rate" nested option-item>
+          <OptionItem title="Noise Rate" nested>
             <OptionSlider v-model="state.marginNoiseRate" :min="0" :max="1" :step="0.01" />
           </OptionItem>
-          <OptionItem title="Safe Space" nested option-item>
+          <OptionItem title="Safe Space" nested>
             <OptionSelectGroup
               v-model="state.marginNoiseSpace"
               :options="['none', 'marker', 'full']"
               :titles="['None', 'Around markers', 'Full']"
             />
           </OptionItem>
+          <SettingsRandomRange
+            v-model="state.marginNoiseOpacity"
+            title="Opacity"
+            nested
+            :min="0"
+            :max="1"
+            :step="0.01"
+          />
         </template>
 
         <div border="t base" my1 />

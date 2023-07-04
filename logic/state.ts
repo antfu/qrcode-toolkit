@@ -32,6 +32,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     invert: false,
     marginNoise: false,
     marginNoiseRate: 0.5,
+    marginNoiseOpacity: 1,
     seed: Math.round(Math.random() * 1000000),
     marginNoiseSpace: 'marker',
 

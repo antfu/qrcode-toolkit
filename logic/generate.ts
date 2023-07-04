@@ -26,6 +26,7 @@ interface PixelInfo {
   x: number
   y: number
   isDark: boolean
+  isBorder: boolean
   marker?: MarkerInfo
 }
 
@@ -71,9 +72,6 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
       innerMarkerShape = 'square'
   }
 
-  const lightColor = invert ? state.darkColor : state.lightColor
-  const darkColor = invert ? state.lightColor : state.darkColor
-
   const {
     top: marginTop,
     right: marginRight,
@@ -94,11 +92,19 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
   }
 
   const borderRng = seedrandom(String(seed))
+  const borderOpacityRng = seedrandom(String(seed))
   const styleRng = seedrandom(String(seed))
   const markerRng = seedrandom(String(seed))
 
-  ctx.fillStyle = lightColor
+  ctx.fillStyle = invert ? state.darkColor : state.lightColor
   ctx.fillRect(0, 0, width, height)
+
+  function getBorderOpacity() {
+    if (typeof state.marginNoiseOpacity === 'number')
+      return state.marginNoiseOpacity
+    const [min, max] = state.marginNoiseOpacity
+    return borderOpacityRng() * (max - min) + min
+  }
 
   function getInfo(x: number, y: number): PixelInfo {
     let isBorder = marginNoiseSpace === 'full'
@@ -196,13 +202,12 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
 
     return {
       isDark,
+      isBorder,
       marker,
       x: targetX,
       y: targetY,
     }
   }
-
-  ctx.fillStyle = darkColor
 
   const pixels: PixelInfo[] = []
 
@@ -225,12 +230,20 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     return getOrder(a) - getOrder(b)
   })
 
-  for (const { isDark, marker, x, y } of pixels) {
+  for (const { isDark, marker, x, y, isBorder } of pixels) {
     let _pixelStyle = pixelStyle
     let _markerStyle = markerStyle
 
     if (_markerStyle === 'auto')
       _markerStyle = pixelStyle
+
+    const opacity = isBorder ? getBorderOpacity() : 1
+    const darkColorHex = (Math.round((1 - opacity) * 255)).toString(16).padStart(2, '0')
+    const _darkColor = `#${darkColorHex}${darkColorHex}${darkColorHex}`
+
+    const lightColor = invert ? _darkColor : state.lightColor
+    const darkColor = invert ? state.lightColor : _darkColor
+    ctx.fillStyle = darkColor
 
     if (marker) {
       _pixelStyle = _markerStyle
