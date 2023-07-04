@@ -49,7 +49,7 @@ async function run() {
   const state = props.state.compare
   const diff = props.diff
 
-  const cellSize = image.value.width / state.gridSize
+  const cellSize = shortSide / state.gridSize
   const sqrt2 = Math.sqrt(2)
 
   function drawPoint(x: number, y: number, type: 'square' | 'circle' = 'square') {
