@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
+import { sendParentEvent } from '~/logic/messaging'
 import { defaultState, hasParentWindow, showGridHelper, storeIndex, view } from '~/logic/state'
 import type { State } from '~/logic/types'
 
@@ -31,6 +32,7 @@ useEventListener(window, 'message', (event) => {
       return
     switch (json.event) {
       case 'setImage':
+        hasParentWindow.value = true
         state.value.uploaded.image = json.data
         view.value = 'compare'
         break
@@ -42,6 +44,11 @@ useEventListener(window, 'message', (event) => {
   catch (e) {
     console.error('Failed to parse message from parent window', e)
   }
+})
+
+onMounted(() => {
+  // send message to parent window to let it know we're ready
+  sendParentEvent('init', {})
 })
 </script>
 
