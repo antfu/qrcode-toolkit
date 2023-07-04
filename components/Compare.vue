@@ -3,12 +3,13 @@ import { debounce } from 'perfect-debounce'
 import { sendQRCodeToCompare } from '~/logic/utils'
 import type { Segment, State } from '~/logic/types'
 import { HightlightFactor, compareSegments, segmentImage } from '~/logic/diff'
-import { defaultCompareState, showDownloadDialog, showGridHelper } from '~/logic/state'
+import { defaultCompareState, showDownloadDialog, showGridHelper, view } from '~/logic/state'
 
 const props = defineProps<{
   state: State
 }>()
 
+const uploadTarget = ref<'image' | 'qrcode'>()
 const fullState = computed(() => props.state)
 const state = computed(() => props.state.compare)
 const dataurl = computed({
@@ -93,6 +94,48 @@ watch(
 //   },
 //   { immediate: true },
 // )
+
+const { isOverDropZone } = useDropZone(document.body, {
+  onDrop(files) {
+    if (view.value !== 'compare')
+      return
+    if (!files || !uploadTarget.value)
+      return
+
+    const file = files[0]
+    if (file.type === 'image/png' || file.type === 'image/jpeg') {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const data = reader.result as string
+        if (uploadTarget.value === 'image') {
+          fullState.value.uploaded.image = data
+        }
+        else if (uploadTarget.value === 'qrcode') {
+          fullState.value.uploaded.qrcode = data
+          showGridHelper.value = true
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  },
+  onLeave() {
+    uploadTarget.value = undefined
+  },
+  onOver(_, event) {
+    if (view.value !== 'compare')
+      return
+    if (!isOverDropZone.value)
+      return
+
+    const chain = Array.from(document.elementsFromPoint(event.clientX, event.clientY))
+    if (chain.find(el => el.id === 'upload-zone-image'))
+      uploadTarget.value = 'image'
+    else if (chain.find(el => el.id === 'upload-zone-qrcode'))
+      uploadTarget.value = 'qrcode'
+    else
+      uploadTarget.value = undefined
+  },
+})
 
 const diff = computed(() => {
   if (!imageSegments.value || !qrcodeSegments.value)
@@ -570,4 +613,27 @@ function toggleHighContrast() {
     :state="fullState"
     :diff="diff"
   />
+
+  <div v-if="isOverDropZone" grid="~ cols-2" fixed bottom-0 left-0 right-0 top-0 z-200 bg-black:20 backdrop-blur-10>
+    <div
+      id="upload-zone-image" flex="~ col gap-3 items-center justify-center" m10 mr-1 op40
+      :class="uploadTarget === 'image' ? 'bg-gray:20 op100 border-base' : ''"
+      border="3 dashed transparent rounded-xl"
+    >
+      <div i-carbon-image text-20 />
+      <div text-xl>
+        Upload as target image
+      </div>
+    </div>
+    <div
+      id="upload-zone-qrcode" flex="~ col gap-3 items-center justify-center" m10 ml-1 op40
+      :class="uploadTarget === 'qrcode' ? 'bg-gray:20 op100 border-base' : ''"
+      border="3 dashed transparent rounded-xl"
+    >
+      <div i-carbon-qr-code text-20 />
+      <div text-xl>
+        Upload as QR Code reference
+      </div>
+    </div>
+  </div>
 </template>

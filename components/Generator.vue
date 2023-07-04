@@ -267,7 +267,7 @@ watch(
         py2 text-sm text-button
         @click="sendCompare()"
       >
-        <div i-ri-compasses-2-line />
+        <div i-ri-send-backward />
         Send to Compare
       </button>
       <button
