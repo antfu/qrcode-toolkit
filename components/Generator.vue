@@ -206,16 +206,12 @@ watch(
         <OptionItem title="Margin Noise">
           <OptionCheckbox v-model="state.marginNoise" />
         </OptionItem>
+
         <template v-if="state.marginNoise">
           <OptionItem title="Noise Rate" nested>
             <OptionSlider v-model="state.marginNoiseRate" :min="0" :max="1" :step="0.01" />
           </OptionItem>
-          <OptionItem title="Safe Space" nested>
-            <OptionSelectGroup
-              v-model="state.marginNoiseSpace"
-              :options="['full', 'marker', 'minimal', 'none']"
-            />
-          </OptionItem>
+
           <SettingsRandomRange
             v-model="state.marginNoiseOpacity"
             title="Opacity"
@@ -225,6 +221,28 @@ watch(
             :step="0.01"
           />
         </template>
+        <OptionItem title="Safe Space">
+          <OptionSelectGroup
+            v-model="state.marginNoiseSpace"
+            :options="['full', 'marker', 'minimal', 'none']"
+          />
+        </OptionItem>
+        <OptionItem title="Background">
+          <button relative text-xs text-button>
+            <img
+              v-if="state.backgroundImage" :src="state.backgroundImage"
+              absolute inset-0 z-0 h-full w-full object-cover op50
+            >
+            <div i-ri-upload-line z-1 />
+            <div z-1>
+              Upload Image
+            </div>
+            <ImageUpload v-model="state.backgroundImage" />
+          </button>
+          <div v-if="state.backgroundImage" icon-button>
+            <div i-carbon-close @click="state.backgroundImage = undefined" />
+          </div>
+        </OptionItem>
 
         <div border="t base" my1 />
 

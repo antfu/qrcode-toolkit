@@ -93,9 +93,9 @@ export interface QRCodeGeneratorState {
   marginNoiseOpacity: number | [number, number]
   invert: boolean
   rotate: 0 | 90 | 180 | 270
-
   effect: 'none' | 'crystalize'
   effectCrystalizeRadius: number
+  backgroundImage?: string
 }
 
 export interface ComparionState {

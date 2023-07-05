@@ -11,7 +11,7 @@ const value = defineModel<string | number>('modelValue', {
 </script>
 
 <template>
-  <fieldset flex="~ inline" border="~ base rounded" of-hidden text-sm>
+  <fieldset flex="~ inline" border="~ base rounded" of-hidden text-xs>
     <label
       v-for="i, idx of options" :key="i"
       relative hover:bg-secondary px-2 py-1
