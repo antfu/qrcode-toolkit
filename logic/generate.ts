@@ -201,24 +201,26 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         isDark = false
     }
 
-    if (marginNoiseSpace === 'extreme') {
-      if (
-        (x <= 1 && y <= 1)
-        || (x <= 1 && y >= qr.size - 2)
-        || (x >= qr.size - 2 && y <= 1)
-        || (y <= 1 && x >= 5 && x <= 7)
-        || (y <= 1 && x >= qr.size - 8 && x <= qr.size - 6)
-        || (x <= 1 && y >= qr.size - 8 && y <= qr.size - 6)
-        || (x <= 1 && y >= 5 && y <= 7)
-        || (x >= 5 && x <= 7 && y >= 5 && y <= 7)
-        || (x >= qr.size - 8 && x <= qr.size - 6 && y >= 5 && y <= 7)
-        || (x >= 5 && x <= 7 && y >= qr.size - 8 && y <= qr.size - 6)
-        || (x >= qr.size - 1 && y >= 5 && y <= 7)
-        || (y >= qr.size - 1 && x >= 5 && x <= 7)
-      ) {
-        isBorder = true
+    function cutOut(ix: number, iy: number, w: number, h: number) {
+      if (x >= ix && x < ix + w && y >= iy && y < iy + h) {
         isDark = false
+        isBorder = true
       }
+    }
+
+    if (marginNoiseSpace === 'extreme') {
+      cutOut(-1, -1, 3, 3)
+      cutOut(-1, 5, 3, 3)
+      cutOut(-1, qr.size - 2, 3, 3)
+      cutOut(-1, qr.size - 8, 3, 3)
+      cutOut(5, -1, 3, 3)
+      cutOut(5, 5, 3, 3)
+      cutOut(5, qr.size - 2, 3, 3)
+      cutOut(5, qr.size - 8, 3, 3)
+      cutOut(qr.size - 2, -1, 3, 3)
+      cutOut(qr.size - 2, 5, 3, 3)
+      cutOut(qr.size - 8, -1, 3, 3)
+      cutOut(qr.size - 8, 5, 3, 3)
     }
 
     let targetX = x
