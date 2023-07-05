@@ -16,10 +16,10 @@ const state = computed(() => props.state.qrcode)
 
 const canvas = ref<HTMLCanvasElement>()
 
-function run() {
+async function run() {
   if (!canvas.value)
     return
-  generateQRCode(canvas.value, state.value)
+  await generateQRCode(canvas.value, state.value)
   dataUrlGeneratedQRCode.value = canvas.value.toDataURL()
 }
 

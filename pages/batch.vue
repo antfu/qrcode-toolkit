@@ -50,7 +50,7 @@ async function download() {
       marginNoiseRate: Math.random() * 0.5 + 0.1,
     }
 
-    generateQRCode(c, state)
+    await generateQRCode(c, state)
     a.href = c.toDataURL('image/png')
     a.download = `${options.value.filenamePrefix}${i}-${c.width}x${c.height}-${text}.distorted.png`
     a.click()
@@ -61,7 +61,7 @@ async function download() {
     state.pixelStyle = 'square'
     state.markerShape = 'square'
     state.markerInnerShape = 'square'
-    generateQRCode(c, state)
+    await generateQRCode(c, state)
     a.href = c.toDataURL('image/png')
     a.download = `${options.value.filenamePrefix}${i}-${c.width}x${c.height}-${text}.normal.png`
     a.click()
