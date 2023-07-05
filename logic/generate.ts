@@ -300,6 +300,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           continue
 
         if (marker.isCenter) {
+          ctx.fillStyle = lightColor
+          ctx.fillRect(cX - cell * 3.5, cY - cell * 3.5, cell * 7, cell * 7)
+
           ctx.beginPath()
           ctx.fillStyle = darkColor
           ctx.arc(cX, cY, cell * 3.5, 0, Math.PI * 2)
@@ -318,6 +321,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           continue
 
         if (marker.isCenter) {
+          ctx.fillStyle = lightColor
+          ctx.fillRect(cX - cell * 3.5, cY - cell * 3.5, cell * 7, cell * 7)
+
           const octagonFor = (dx: number, dy: number) => {
             return [
               [dx, dy],
@@ -404,6 +410,8 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         // inner markers
         if (innerMarkerShape === 'circle') {
           if (marker.isCenter) {
+            ctx.fillStyle = lightColor
+            ctx.fillRect(cX - cell * 1.5, cY - cell * 1.5, cell * 3, cell * 3)
             ctx.beginPath()
             ctx.fillStyle = darkColor
             ctx.arc(cX, cY, cell * 1.5, 0, Math.PI * 2)
@@ -413,6 +421,8 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         }
         else if (innerMarkerShape === 'eye') {
           if (marker.isCenter) {
+            ctx.fillStyle = lightColor
+            ctx.fillRect(cX - cell * 1.5, cY - cell * 1.5, cell * 3, cell * 3)
             ctx.beginPath()
             ctx.fillStyle = darkColor
             ctx.moveTo(cX, cY - cell * 1.5)
@@ -425,6 +435,8 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         }
         else if (innerMarkerShape === 'diamond') {
           if (marker.isCenter) {
+            ctx.fillStyle = lightColor
+            ctx.fillRect(cX - cell * 1.5, cY - cell * 1.5, cell * 3, cell * 3)
             ctx.beginPath()
             ctx.fillStyle = darkColor
             ctx.moveTo(cX, cY - cell * 1.5)
