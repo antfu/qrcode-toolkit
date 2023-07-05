@@ -66,7 +66,7 @@ const childNested = computed(() => {
 </script>
 
 <template>
-  <template v-if="(typeof model === 'number')">
+  <template v-if="(typeof model === 'number' || model === null)">
     <OptionItem :title="title" :nested="nested">
       <OptionSlider v-model="model" :min="min" :max="max" :step="step" />
       <button

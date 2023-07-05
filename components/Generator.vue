@@ -213,8 +213,7 @@ watch(
           <OptionItem title="Safe Space" nested>
             <OptionSelectGroup
               v-model="state.marginNoiseSpace"
-              :options="['none', 'marker', 'full']"
-              :titles="['None', 'Around markers', 'Full']"
+              :options="['full', 'marker', 'minimal', 'none']"
             />
           </OptionItem>
           <SettingsRandomRange

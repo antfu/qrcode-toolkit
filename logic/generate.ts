@@ -30,11 +30,14 @@ interface PixelInfo {
   marker?: MarkerInfo
 }
 
+const markerCorner = false
+const disconnectBorder = false
+
 export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGeneratorState) {
   if (!canvas)
     return
 
-  const seg = QrSegment.makeSegments(state.text)
+  const seg = QrSegment.makeSegments(state.text || 'qrcode.antfu.me')
   const qr = QrCode.encodeSegments(
     seg,
     eccMap[state.ecc],
@@ -119,6 +122,16 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
       if (x >= qr.size - 8 && x <= qr.size && y >= -1 && y <= 7)
         isBorder = false
     }
+    else if (marginNoiseSpace === 'minimal') {
+      if (y >= 2 && y <= 4 && x >= -1 && x <= qr.size)
+        isBorder = false
+      if (x >= 2 && x <= 4 && y >= -1 && y <= qr.size)
+        isBorder = false
+      if (y >= qr.size - 5 && y <= qr.size - 3 && x >= -1 && x <= 7)
+        isBorder = false
+      if (x >= qr.size - 5 && x <= qr.size - 3 && y >= -1 && y <= 7)
+        isBorder = false
+    }
 
     let isDark = false
     if (isBorder && marginNoise)
@@ -174,6 +187,26 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
     if (marker?.isInner && innerMarkerShape === 'plus') {
       if (marker.x !== 3 && marker.y !== 3)
         isDark = false
+    }
+
+    if (markerCorner) {
+      if (
+        (x <= 1 && y <= 1)
+        || (x <= 1 && y >= qr.size - 2)
+        || (x >= qr.size - 2 && y <= 1)
+        || (y <= 1 && x >= 5 && x <= 7)
+        || (y <= 1 && x >= qr.size - 8 && x <= qr.size - 6)
+        || (x <= 1 && y >= qr.size - 8 && y <= qr.size - 6)
+        || (x <= 1 && y >= 5 && y <= 7)
+        || (x >= 5 && x <= 7 && y >= 5 && y <= 7)
+        || (x >= qr.size - 8 && x <= qr.size - 6 && y >= 5 && y <= 7)
+        || (x >= 5 && x <= 7 && y >= qr.size - 8 && y <= qr.size - 6)
+        || (x >= qr.size - 1 && y >= 5 && y <= 7)
+        || (y >= qr.size - 1 && x >= 5 && x <= 7)
+      ) {
+        isBorder = true
+        isDark = true
+      }
     }
 
     let targetX = x
@@ -431,14 +464,24 @@ export function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGenerator
       }
     }
     else if (_pixelStyle === 'rounded' || _pixelStyle === 'row' || _pixelStyle === 'column') {
-      const top = pixels.find(p => p.x === x && p.y === y - 1)?.isDark !== false
-      const bottom = pixels.find(p => p.x === x && p.y === y + 1)?.isDark !== false
-      const left = pixels.find(p => p.x === x - 1 && p.y === y)?.isDark !== false
-      const right = pixels.find(p => p.x === x + 1 && p.y === y)?.isDark !== false
-      const topLeft = pixels.find(p => p.x === x - 1 && p.y === y - 1)?.isDark !== false
-      const topRight = pixels.find(p => p.x === x + 1 && p.y === y - 1)?.isDark !== false
-      const bottomLeft = pixels.find(p => p.x === x - 1 && p.y === y + 1)?.isDark !== false
-      const bottomRight = pixels.find(p => p.x === x + 1 && p.y === y + 1)?.isDark !== false
+      function shouldConnect(dx: number, dy: number) {
+        const pixel = pixels.find(p => p.x === x + dx && p.y === y + dy)
+        if (!pixel)
+          return false
+        if (disconnectBorder)
+          return pixel.isDark && pixel.isBorder === isBorder
+        else
+          return pixel.isDark
+      }
+
+      const top = shouldConnect(0, -1)
+      const bottom = shouldConnect(0, 1)
+      const left = shouldConnect(-1, 0)
+      const right = shouldConnect(1, 0)
+      const topLeft = shouldConnect(-1, -1)
+      const topRight = shouldConnect(1, -1)
+      const bottomLeft = shouldConnect(-1, 1)
+      const bottomRight = shouldConnect(1, 1)
 
       if (isDark) {
         if (top && _pixelStyle !== 'row') {
