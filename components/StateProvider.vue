@@ -46,6 +46,9 @@ useEventListener(window, 'message', (event) => {
   }
 })
 
+// eslint-disable-next-line no-console
+console.log('State', state.value)
+
 onMounted(() => {
   // send message to parent window to let it know we're ready
   sendParentEvent('init', {})

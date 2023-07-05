@@ -30,7 +30,6 @@ interface PixelInfo {
   marker?: MarkerInfo
 }
 
-const markerCorner = false
 const disconnectBorder = false
 
 export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGeneratorState) {
@@ -135,7 +134,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       if (x >= qr.size - 8 && x <= qr.size && y >= -1 && y <= 7)
         isBorder = false
     }
-    else if (marginNoiseSpace === 'minimal') {
+    else if (marginNoiseSpace === 'minimal' || marginNoiseSpace === 'extreme') {
       if (y >= 2 && y <= 4 && x >= -1 && x <= qr.size)
         isBorder = false
       if (x >= 2 && x <= 4 && y >= -1 && y <= qr.size)
@@ -202,7 +201,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         isDark = false
     }
 
-    if (markerCorner) {
+    if (marginNoiseSpace === 'extreme') {
       if (
         (x <= 1 && y <= 1)
         || (x <= 1 && y >= qr.size - 2)
@@ -218,7 +217,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         || (y >= qr.size - 1 && x >= 5 && x <= 7)
       ) {
         isBorder = true
-        isDark = true
+        isDark = false
       }
     }
 

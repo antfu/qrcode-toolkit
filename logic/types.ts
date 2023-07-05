@@ -89,7 +89,7 @@ export interface QRCodeGeneratorState {
   markerInnerShape: MarkerInnerShape | 'auto'
   marginNoise: boolean
   marginNoiseRate: number
-  marginNoiseSpace: 'none' | 'marker' | 'full' | 'minimal'
+  marginNoiseSpace: 'none' | 'marker' | 'full' | 'minimal' | 'extreme'
   marginNoiseOpacity: number | [number, number]
   invert: boolean
   rotate: 0 | 90 | 180 | 270

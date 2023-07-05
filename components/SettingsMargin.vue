@@ -3,7 +3,7 @@ import type { MarginObject } from '~/logic/types'
 import { resolveMargin } from '~/logic/utils'
 
 const margin = defineModel<number | MarginObject>('modelValue', {
-  type: Object,
+  type: [Object, Number],
   required: true,
 })
 
