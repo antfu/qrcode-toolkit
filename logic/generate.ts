@@ -100,6 +100,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   const markerRng = seedrandom(String(seed))
 
   ctx.fillStyle = invert ? state.darkColor : state.lightColor
+  ctx.fillRect(0, 0, width, height)
 
   if (state.backgroundImage) {
     const img = new Image()
@@ -112,9 +113,6 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       ctx.drawImage(img, 0, (canvas.height - canvas.width / imgRatio) / 2, canvas.width, canvas.width / imgRatio)
     else
       ctx.drawImage(img, (canvas.width - canvas.height * imgRatio) / 2, 0, canvas.height * imgRatio, canvas.height)
-  }
-  else {
-    ctx.fillRect(0, 0, width, height)
   }
 
   function getBorderOpacity() {
@@ -446,12 +444,11 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       ctx.fillRect(x * cell, y * cell, cell, cell)
     }
 
-    function dot() {
-      ctx.fillStyle = isDark ? darkColor : lightColor
+    function dot(color = isDark ? darkColor : lightColor) {
+      ctx.fillStyle = color
       ctx.beginPath()
       ctx.arc(x * cell + halfcell, y * cell + halfcell, halfcell, 0, Math.PI * 2)
       ctx.fill()
-      ctx.fillStyle = darkColor
     }
 
     function corner(index: number, color?: string) {
@@ -502,7 +499,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
       if (isDark) {
         square(lightColor)
-        ctx.fillStyle = _darkColor
+        ctx.fillStyle = darkColor
         if (top && _pixelStyle !== 'row') {
           corner(0)
           corner(2)
@@ -521,16 +518,12 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         }
       }
       else {
-        corner(0, top && left && topLeft ? _darkColor : lightColor)
-        corner(2, top && right && topRight ? _darkColor : lightColor)
-        corner(1, bottom && left && bottomLeft ? _darkColor : lightColor)
-        corner(3, bottom && right && bottomRight ? _darkColor : lightColor)
-        // if (top && right && topRight)
-        //   corner(2)
-        // if (bottom && left && bottomLeft)
-        //   corner(1)
-        // if (bottom && right && bottomRight)
-        //   corner(3)
+        if (_pixelStyle === 'rounded') {
+          corner(0, top && left && topLeft ? darkColor : lightColor)
+          corner(2, top && right && topRight ? darkColor : lightColor)
+          corner(1, bottom && left && bottomLeft ? darkColor : lightColor)
+          corner(3, bottom && right && bottomRight ? darkColor : lightColor)
+        }
       }
       dot()
     }
