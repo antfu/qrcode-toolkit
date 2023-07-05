@@ -192,7 +192,7 @@ watch(
             bg-secondary py0.5 pl2 text-sm
           >
           <button
-            text-sm icon-button
+            icon-button-sm p1
             title="Randomize"
             @click="state.seed = Math.round(Math.random() * 100000)"
           >
@@ -231,15 +231,15 @@ watch(
           <button relative text-xs text-button>
             <img
               v-if="state.backgroundImage" :src="state.backgroundImage"
-              absolute inset-0 z-0 h-full w-full object-cover op50
+              absolute inset-0 z-0 h-full w-full rounded object-cover op50
             >
             <div i-ri-upload-line z-1 />
             <div z-1>
-              Upload Image
+              Upload
             </div>
             <ImageUpload v-model="state.backgroundImage" />
           </button>
-          <div v-if="state.backgroundImage" icon-button>
+          <div v-if="state.backgroundImage" icon-button-sm>
             <div i-carbon-close @click="state.backgroundImage = undefined" />
           </div>
         </OptionItem>

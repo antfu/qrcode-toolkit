@@ -47,8 +47,7 @@ const y = computed({
     <OptionItem title="Margin">
       <OptionSlider v-model="margin" :min="0" :max="20" :step="1" />
       <button
-        text-sm icon-button
-        title="Randomize"
+        icon-button-sm
         @click="margin = resolveMargin(margin)"
       >
         <div i-ri-arrow-down-s-line />
@@ -59,8 +58,7 @@ const y = computed({
     <OptionItem title="Margin">
       <div flex-auto />
       <button
-        text-sm icon-button
-        title="Randomize"
+        icon-button-sm
         @click="margin = margin.top"
       >
         <div i-ri-arrow-up-s-line />

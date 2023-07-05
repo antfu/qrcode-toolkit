@@ -22,6 +22,7 @@ export default defineConfig({
       'border-box': 'border border-base rounded',
       'text-button': 'border-box bg-secondary hover:bg-active px3 py1 flex gap-1 items-center justify-center',
       'icon-button': 'border-box bg-secondary hover:bg-active p1',
+      'icon-button-sm': 'icon-button p0.5 text-sm',
     },
   ],
   presets: [
