@@ -41,9 +41,11 @@ function reset() {
 const debouncedRun = debounce(run, 250, { trailing: true })
 
 const mayNotScannable = computed(() => {
-  if (state.value.marginNoise && state.value.marginNoiseSpace === 'none')
+  if ((state.value.marginNoise || state.value.backgroundImage) && state.value.marginNoiseSpace === 'none')
     return true
   if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius / state.value.scale > 0.4)
+    return true
+  if (state.value.markerShape === 'tiny-plus')
     return true
 })
 
@@ -192,7 +194,7 @@ watch(
             bg-secondary py0.5 pl2 text-sm
           >
           <button
-            icon-button-sm p1
+            p1 icon-button-sm
             title="Randomize"
             @click="state.seed = Math.round(Math.random() * 100000)"
           >
