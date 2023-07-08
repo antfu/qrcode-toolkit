@@ -127,9 +127,10 @@ watch(
             v-model="state.ecc"
             :options="['L', 'M', 'Q', 'H']"
           />
-        </OptionItem>
-        <OptionItem title="Boost ECC" nested>
-          <OptionCheckbox v-model="state.boostECC" />
+          <label flex="~ gap-2 items-center" ml2>
+            <OptionCheckbox v-model="state.boostECC" />
+            <span text-sm op75>Boost ECC</span>
+          </label>
         </OptionItem>
 
         <OptionItem title="Mask Pattern">
