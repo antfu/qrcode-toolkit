@@ -93,8 +93,11 @@ export interface QRCodeGeneratorState {
   marginNoiseOpacity: number | [number, number]
   invert: boolean
   rotate: 0 | 90 | 180 | 270
-  effect: 'none' | 'crystalize'
+  effect: 'none' | 'crystalize' | 'liquidify'
   effectCrystalizeRadius: number
+  effectLiquidifyDistortRadius: number
+  effectLiquidifyRadius: number
+  effectLiquidifyThreshold: number
   backgroundImage?: string
 }
 

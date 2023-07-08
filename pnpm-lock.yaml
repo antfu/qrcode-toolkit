@@ -79,6 +79,9 @@ devDependencies:
   qr-scanner:
     specifier: ^1.4.2
     version: 1.4.2
+  stackblur-canvas:
+    specifier: ^2.6.0
+    version: 2.6.0
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
@@ -8120,6 +8123,11 @@ packages:
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
     dependencies:
       minipass: 3.3.6
+    dev: true
+
+  /stackblur-canvas@2.6.0:
+    resolution: {integrity: sha512-8S1aIA+UoF6erJYnglGPug6MaHYGo1Ot7h5fuXx4fUPvcvQfcdw2o/ppCse63+eZf8PPidSu4v1JnmEVtEDnpg==}
+    engines: {node: '>=0.1.14'}
     dev: true
 
   /standard-as-callback@2.1.0:

@@ -53,6 +53,14 @@
         </div>
       </li>
       <li ml4 list-disc>
+        <div flex="~ gap-2">
+          <a href="https://github.com/1r00t" target="_blank">
+            @1r00t
+          </a>
+          - For the algorithm idea of the liquidify effect.
+        </div>
+      </li>
+      <li ml4 list-disc>
         All the researchers and model creators in this field.
       </li>
     </ul>

@@ -39,6 +39,7 @@
     "nuxt": "^3.6.1",
     "pinia": "^2.1.4",
     "qr-scanner": "^1.4.2",
+    "stackblur-canvas": "^2.6.0",
     "typescript": "^5.1.6",
     "vite-svg-loader": "^4.0.0",
     "vue-tsc": "^1.8.3"

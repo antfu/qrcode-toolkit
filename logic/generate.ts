@@ -550,6 +550,14 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     const newData = effects.crystalize(data, state.effectCrystalizeRadius, state.seed)
     ctx.putImageData(newData, 0, 0)
   }
+  else if (state.effect === 'liquidify') {
+    const data = ctx.getImageData(0, 0, width, height)
+    const newData1 = state.effectLiquidifyDistortRadius
+      ? effects.crystalize(data, state.effectLiquidifyDistortRadius, state.seed)
+      : data
+    const newData2 = effects.liquidify(newData1, state.effectLiquidifyRadius, state.effectLiquidifyThreshold)
+    ctx.putImageData(newData2, 0, 0)
+  }
 }
 
 function pointToLineProjection(px: number, py: number, x1: number, y1: number, x2: number, y2: number) {

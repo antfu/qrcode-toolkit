@@ -45,6 +45,14 @@ const mayNotScannable = computed(() => {
     return true
   if (state.value.effect === 'crystalize' && state.value.effectCrystalizeRadius / state.value.scale > 0.4)
     return true
+  if (
+    state.value.effect === 'liquidify'
+    && (
+      (state.value.effectLiquidifyRadius / state.value.scale > 0.4)
+      || (Math.abs(state.value.effectLiquidifyThreshold - 128) > 32)
+    )
+  )
+    return true
   if (state.value.markerShape === 'tiny-plus')
     return true
 })
@@ -265,13 +273,24 @@ watch(
         <OptionItem title="Effect">
           <OptionSelectGroup
             v-model="state.effect"
-            :options="['none', 'crystalize']"
+            :options="['none', 'crystalize', 'liquidify']"
           />
         </OptionItem>
 
         <template v-if="state.effect === 'crystalize'">
           <OptionItem title="Radius" nested>
             <OptionSlider v-model="state.effectCrystalizeRadius" :min="1" :max="20" :step="0.5" />
+          </OptionItem>
+        </template>
+        <template v-if="state.effect === 'liquidify'">
+          <OptionItem title="Distort Radius" nested>
+            <OptionSlider v-model="state.effectLiquidifyDistortRadius" :min="1" :max="40" :step="1" />
+          </OptionItem>
+          <OptionItem title="Blur Radius" nested>
+            <OptionSlider v-model="state.effectLiquidifyRadius" :min="1" :max="40" :step="1" />
+          </OptionItem>
+          <OptionItem title="Threshold" nested>
+            <OptionSlider v-model="state.effectLiquidifyThreshold" :min="1" :max="254" :step="1" />
           </OptionItem>
         </template>
       </div>
