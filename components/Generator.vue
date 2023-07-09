@@ -59,6 +59,13 @@ const mayNotScannable = computed(() => {
     return true
 })
 
+const hasNonCenteredMargin = computed(() => {
+  if (typeof state.value.margin === 'number')
+    return state.value.margin > 0
+  return state.value.margin.top !== state.value.margin.bottom
+    || state.value.margin.left !== state.value.margin.right
+})
+
 function sendCompare() {
   sendQRCodeToCompare(props.state)
   view.value = 'compare'
@@ -222,7 +229,10 @@ watch(
         </OptionItem>
 
         <div border="t base" my1 />
-        <SettingsMargin v-model="state.margin" />
+        <SettingsMargin
+          v-model="state.margin"
+          :full-customizable="true"
+        />
 
         <OptionItem title="Margin Noise">
           <OptionCheckbox v-model="state.marginNoise" />
@@ -375,8 +385,11 @@ watch(
         <div i-ri-file-upload-line />
         Send to ControlNet
       </button>
-      <div v-if="mayNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px4 py3 text-sm text-amber-6>
+      <div v-if="mayNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px3 py2 text-sm text-amber-6>
         This QR Code may or may not be scannable. Please verify before using.
+      </div>
+      <div v-if="hasNonCenteredMargin" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
+        Compare mode does not support non-centered QR Code yet. If you generated with this QR Code, you might need to verify the result manually.
       </div>
     </div>
   </div>
