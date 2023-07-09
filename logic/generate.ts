@@ -16,7 +16,7 @@ const eccMap = {
 interface MarkerInfo {
   x: number
   y: number
-  position: 'top-left' | 'top-right' | 'bottom-left'
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'sub'
   isCenter: boolean
   isBorder: boolean
   isInner: boolean
@@ -59,6 +59,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     pixelStyle,
     markerStyle,
     markerShape,
+    markerSub,
     invert,
   } = state
 
@@ -153,10 +154,14 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
     let marker: MarkerInfo | undefined
 
-    function createMarker(x: number, y: number, position: MarkerInfo['position']) {
-      const isInner = x >= 2 && x <= 4 && y >= 2 && y <= 4
+    function createMarker(x: number, y: number, position: MarkerInfo['position'], isSubMarker = false) {
+      const isInner = position === 'sub'
+        ? x === 2 && y === 2
+        : x >= 2 && x <= 4 && y >= 2 && y <= 4
       const isBorder = !isInner
-      const isCenter = x === 3 && y === 3
+      const isCenter = position === 'sub'
+        ? x === 2 && y === 2
+        : x === 3 && y === 3
 
       return {
         x,
@@ -165,40 +170,84 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         isInner,
         isBorder,
         isCenter,
+        isSubMarker,
       }
     }
 
-    if (x >= 0 && x < 7 && y >= 0 && y < 7)
+    if (x >= 0 && x < 7 && y >= 0 && y < 7) {
       marker = createMarker(x, y, 'top-left')
-    else if (x >= 0 && x < 7 && y >= qr.size - 7 && y < qr.size)
+    }
+    else if (x >= 0 && x < 7 && y >= qr.size - 7 && y < qr.size) {
       marker = createMarker(x, y - qr.size + 7, 'bottom-left')
-    else if (x >= qr.size - 7 && x < qr.size && y >= 0 && y < 7)
+    }
+    else if (x >= qr.size - 7 && x < qr.size && y >= 0 && y < 7) {
       marker = createMarker(x - qr.size + 7, y, 'top-right')
+    }
+    else if (qr.isSubMarker(x, y)) {
+      let dx = x
+      let dy = y
+      while (qr.isSubMarker(dx, dy))
+        dx -= 1
+      dx += 1
+      while (qr.isSubMarker(dx, dy))
+        dy -= 1
+      dy += 1
+      marker = createMarker(x - dx, y - dy, 'sub')
+    }
 
-    if (marker?.isBorder) {
-      if (markerShape === 'plus') {
-        if (!((marker.x >= 2 && marker.x <= 4) || (marker.y >= 2 && marker.y <= 4)))
-          isDark = false
-      }
-      else if (markerShape === 'box') {
-        if (!((marker.x >= 1 && marker.x <= 5) || (marker.y >= 1 && marker.y <= 5)))
-          isDark = false
-      }
-      else if (markerShape === 'random') {
-        if (marker.x !== 3 && marker.y !== 3) {
-          if (isDark)
-            isDark = markerRng() < 0.5
+    if (marker) {
+      if (marker.position !== 'sub') {
+        if (marker.isBorder) {
+          if (markerShape === 'circle' || markerShape === 'octagon')
+            isDark = false
+
+          if (markerShape === 'plus') {
+            if (!((marker.x >= 2 && marker.x <= 4) || (marker.y >= 2 && marker.y <= 4)))
+              isDark = false
+          }
+          else if (markerShape === 'box') {
+            if (!((marker.x >= 1 && marker.x <= 5) || (marker.y >= 1 && marker.y <= 5)))
+              isDark = false
+          }
+          else if (markerShape === 'random') {
+            if (marker.x !== 3 && marker.y !== 3) {
+              if (isDark)
+                isDark = markerRng() < 0.5
+            }
+          }
+          else if (markerShape === 'tiny-plus') {
+            if (marker.x !== 3 && marker.y !== 3)
+              isDark = false
+          }
+        }
+
+        if (marker?.isInner && innerMarkerShape === 'plus') {
+          if (marker.x !== 3 && marker.y !== 3)
+            isDark = false
         }
       }
-      else if (markerShape === 'tiny-plus') {
-        if (marker.x !== 3 && marker.y !== 3)
-          isDark = false
-      }
-    }
 
-    if (marker?.isInner && innerMarkerShape === 'plus') {
-      if (marker.x !== 3 && marker.y !== 3)
-        isDark = false
+      else if (marker?.position === 'sub') {
+        if (marker.isBorder) {
+          if (markerSub === 'circle' || markerSub === 'octagon')
+            isDark = false
+        }
+
+        if (markerSub === 'plus' || markerSub === 'tiny-plus') {
+          if (marker.x !== 2 && marker.y !== 2)
+            isDark = false
+        }
+        else if (markerSub === 'box') {
+          if (!((marker.x >= 1 && marker.x <= 3) || (marker.y >= 1 && marker.y <= 3)))
+            isDark = false
+        }
+        else if (markerSub === 'random') {
+          if (marker.x !== 2 && marker.y !== 2) {
+            if (isDark)
+              isDark = markerRng() < 0.5
+          }
+        }
+      }
     }
 
     function cutOut(ix: number, iy: number, w: number, h: number) {
@@ -279,10 +328,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
   for (const { isDark, marker, x, y, isBorder } of pixels) {
     let _pixelStyle = pixelStyle
-    let _markerStyle = markerStyle
-
-    if (_markerStyle === 'auto')
-      _markerStyle = pixelStyle
+    const _markerStyle = markerStyle === 'auto'
+      ? pixelStyle
+      : markerStyle
 
     const opacity = isBorder ? getBorderOpacity() : 1
     const darkColorHex = (Math.round((1 - opacity) * 255)).toString(16).padStart(2, '0')
@@ -292,10 +340,11 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     const darkColor = invert ? state.lightColor : _darkColor
     ctx.fillStyle = darkColor
 
-    if (marker) {
+    const cX = x * cell + halfcell
+    const cY = y * cell + halfcell
+
+    if (marker && marker.position !== 'sub') {
       _pixelStyle = _markerStyle
-      const cX = x * cell + halfcell
-      const cY = y * cell + halfcell
 
       if (markerShape === 'circle') {
         if (marker.isBorder)
@@ -393,17 +442,6 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           ctx.fillStyle = lightColor
           drawOctagon(2.5)
 
-          // if (_pixelStyle === 'rounded') {
-          //   ctx.beginPath()
-          //   ctx.fillStyle = darkColor
-          //   ctx.arc(cX, cY, cell * 1.5, 0, Math.PI * 2)
-          //   ctx.fill()
-          // }
-          // else {
-          //   ctx.fillStyle = darkColor
-          //   drawOctagon(1.5)
-          // }
-
           ctx.fillStyle = darkColor
         }
       }
@@ -452,6 +490,30 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       }
     }
 
+    if (marker?.position === 'sub') {
+      if (markerSub === 'circle') {
+        if (marker.isBorder)
+          continue
+
+        if (marker.isCenter) {
+          ctx.fillStyle = lightColor
+          ctx.fillRect(cX - cell * 2.5, cY - cell * 2.5, cell * 5, cell * 5)
+
+          ctx.beginPath()
+          ctx.fillStyle = darkColor
+          ctx.arc(cX, cY, cell * 2.5, 0, Math.PI * 2)
+          ctx.fill()
+
+          ctx.beginPath()
+          ctx.fillStyle = lightColor
+          ctx.arc(cX, cY, cell * 1.5, 0, Math.PI * 2)
+          ctx.fill()
+
+          ctx.fillStyle = darkColor
+        }
+      }
+    }
+
     function square(color = isDark ? darkColor : lightColor) {
       ctx.fillStyle = color
       ctx.fillRect(x * cell, y * cell, cell, cell)
@@ -477,7 +539,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
 
     // Skip white pixels when its not rounded
-    if (isBorder && !isDark)
+    if (!isDark && state.backgroundImage && isBorder)
       continue
 
     if (_pixelStyle === 'dot') {
@@ -494,7 +556,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       function shouldConnect(dx: number, dy: number) {
         const pixel = pixels.find(p => p.x === x + dx && p.y === y + dy)
         if (!pixel)
-          return false
+          return true
         if (disconnectBorder)
           return pixel.isDark && pixel.isBorder === isBorder
         else
@@ -532,10 +594,10 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       }
       else {
         if (_pixelStyle === 'rounded') {
-          corner(0, top && left && topLeft ? darkColor : lightColor)
-          corner(2, top && right && topRight ? darkColor : lightColor)
-          corner(1, bottom && left && bottomLeft ? darkColor : lightColor)
-          corner(3, bottom && right && bottomRight ? darkColor : lightColor)
+          corner(0, (top && left && topLeft) ? darkColor : lightColor)
+          corner(2, (top && right && topRight) ? darkColor : lightColor)
+          corner(1, (bottom && left && bottomLeft) ? darkColor : lightColor)
+          corner(3, (bottom && right && bottomRight) ? darkColor : lightColor)
         }
       }
       dot()

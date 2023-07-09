@@ -4,7 +4,7 @@ import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
 import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode, view } from '~/logic/state'
 import type { State } from '~/logic/types'
-import { MarkerInnerShapeIcons, MarkerInnerShapes, MarkerShapeIcons, MarkerShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
+import { MarkerInnerShapeIcons, MarkerInnerShapes, MarkerShapeIcons, MarkerShapes, MarkerSubShapeIcons, MarkerSubShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
 import { getAspectRatio, sendQRCodeToCompare } from '~/logic/utils'
 
 const props = defineProps<{
@@ -54,6 +54,8 @@ const mayNotScannable = computed(() => {
   )
     return true
   if (state.value.markerShape === 'tiny-plus')
+    return true
+  if (!['square', 'circle', 'box'].includes(state.value.markerSub))
     return true
 })
 
@@ -180,7 +182,7 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Inner Marker" nested>
+        <OptionItem title="Marker Inner" nested>
           <OptionSelectGroup
             v-model="state.markerInnerShape"
             :options="MarkerInnerShapes"
@@ -189,6 +191,14 @@ watch(
           <OptionSelectGroup
             v-model="state.markerInnerShape"
             :options="['auto']"
+          />
+        </OptionItem>
+
+        <OptionItem title="Sub Markers" nested>
+          <OptionSelectGroup
+            v-model="state.markerSub"
+            :options="MarkerSubShapes"
+            :classes="MarkerSubShapeIcons"
           />
         </OptionItem>
 

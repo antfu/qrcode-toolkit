@@ -162,7 +162,9 @@ export class QrCode {
 	
 	// Indicates function modules that are not subjected to masking. Discarded when constructor finishes.
 	private readonly isFunction: Array<Array<boolean>> = [];
-	
+
+	private readonly subMarker: Array<Array<boolean>> = [];
+
 	
 	/*-- Constructor (low level) and fields --*/
 	
@@ -196,6 +198,7 @@ export class QrCode {
 		for (let i = 0; i < this.size; i++) {
 			this.modules   .push(row.slice());  // Initially all light
 			this.isFunction.push(row.slice());
+			this.subMarker.push(row.slice());
 		}
 		
 		// Compute ECC, draw modules
@@ -233,6 +236,10 @@ export class QrCode {
 	// If the given coordinates are out of bounds, then false (light) is returned.
 	public getModule(x: int, y: int): boolean {
 		return 0 <= x && x < this.size && 0 <= y && y < this.size && this.modules[y][x];
+	}
+
+	public isSubMarker(x: int, y: int): boolean {
+		return 0 <= x && x < this.size && 0 <= y && y < this.size && this.subMarker[y][x];
 	}
 	
 	
@@ -340,8 +347,10 @@ export class QrCode {
 	// at (x, y). All modules must be in bounds.
 	private drawAlignmentPattern(x: int, y: int): void {
 		for (let dy = -2; dy <= 2; dy++) {
-			for (let dx = -2; dx <= 2; dx++)
+			for (let dx = -2; dx <= 2; dx++) {
 				this.setFunctionModule(x + dx, y + dy, Math.max(Math.abs(dx), Math.abs(dy)) != 1);
+				this.subMarker[x + dx][y + dy] = true;
+			}
 		}
 	}
 	
