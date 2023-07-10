@@ -65,7 +65,7 @@ const mayNotScannable = computed(() => {
 
 const hasNonCenteredMargin = computed(() => {
   if (typeof state.value.margin === 'number')
-    return state.value.margin > 0
+    return false
   return state.value.margin.top !== state.value.margin.bottom
     || state.value.margin.left !== state.value.margin.right
 })
