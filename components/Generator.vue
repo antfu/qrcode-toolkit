@@ -59,6 +59,8 @@ const mayNotScannable = computed(() => {
     return true
   if (Math.abs(state.value.transformPerspectiveX) > 0.1 || Math.abs(state.value.transformPerspectiveY) > 0.1)
     return true
+  if (state.value.transformScale > 1.05)
+    return true
 })
 
 const hasNonCenteredMargin = computed(() => {
@@ -333,6 +335,9 @@ watch(
         <OptionItem title="Perspective Y" nested @reset="state.transformPerspectiveY = 0">
           <OptionSlider v-model="state.transformPerspectiveY" :min="-0.5" :max="0.5" :step="0.01" />
         </OptionItem>
+        <OptionItem title="Scale" nested @reset="state.transformScale = 1">
+          <OptionSlider v-model="state.transformScale" :min="0.5" :max="2" :step="0.01" />
+        </OptionItem>
       </div>
       <div>
         <button
@@ -410,7 +415,7 @@ watch(
       <div v-if="hasNonCenteredMargin" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
         The <b>compare tab</b> does not support non-centered QR Code yet. If you generated with this QR Code, you'll need to verify the result manually.
       </div>
-      <div v-if="state.transformPerspectiveX !== 0 || state.transformPerspectiveY !== 0 " border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
+      <div v-if="state.transformPerspectiveX !== 0 || state.transformPerspectiveY !== 0 || state.transformScale !== 1" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
         The <b>compare tab</b> does not support transformations. If you generated with this QR Code, you'll need to verify the result manually.
       </div>
     </div>

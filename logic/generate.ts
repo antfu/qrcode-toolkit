@@ -615,9 +615,23 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   if (state.effectTiming === 'before')
     await applyBackground()
 
+  // final, copy offscreen canvas to the real one
   canvas.width = width
   canvas.height = height
-  canvas.getContext('2d')!.drawImage(can, 0, 0)
+  const realCtx = canvas.getContext('2d')!
+  realCtx.save()
+  realCtx.fillStyle = invert ? state.darkColor : state.lightColor
+  realCtx.fillRect(0, 0, width, height)
+  realCtx.setTransform(
+    state.transformScale,
+    0,
+    0,
+    state.transformScale,
+    -(state.transformScale - 1) * width / 2,
+    -(state.transformScale - 1) * height / 2,
+  )
+  realCtx.drawImage(can, 0, 0, width, height)
+  realCtx.restore()
 
   async function applyPerspective() {
     if (state.transformPerspectiveX === 0 && state.transformPerspectiveY === 0)

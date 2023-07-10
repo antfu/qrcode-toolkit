@@ -46,6 +46,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
 
     transformPerspectiveX: 0,
     transformPerspectiveY: 0,
+    transformScale: 1,
   }
 }
 

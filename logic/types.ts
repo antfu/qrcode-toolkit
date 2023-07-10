@@ -120,6 +120,7 @@ export interface QRCodeGeneratorState {
 
   transformPerspectiveX: number
   transformPerspectiveY: number
+  transformScale: number
 }
 
 export interface ComparionState {
