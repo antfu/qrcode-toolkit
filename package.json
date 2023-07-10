@@ -17,6 +17,7 @@
     "@zxing/library": "^0.20.0",
     "delaunator": "^5.0.0",
     "perfect-debounce": "^1.0.0",
+    "perspectivets": "^2.0.0",
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {

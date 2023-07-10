@@ -17,6 +17,9 @@ dependencies:
   perfect-debounce:
     specifier: ^1.0.0
     version: 1.0.0
+  perspectivets:
+    specifier: ^2.0.0
+    version: 2.0.0
   seedrandom:
     specifier: ^3.0.5
     version: 3.0.5
@@ -7115,6 +7118,10 @@ packages:
 
   /perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
+
+  /perspectivets@2.0.0:
+    resolution: {integrity: sha512-ry7bOT6xeRazuFX0pckqfMMFbx0nvR1EpHre2FOEFvnwMP8V1R0jNSLtRPlVvq5wVQTTSW9M4kQLa9zIHrRz8g==}
+    dev: false
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}

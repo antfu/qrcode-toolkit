@@ -111,6 +111,7 @@ export interface QRCodeGeneratorState {
   invert: boolean
   rotate: 0 | 90 | 180 | 270
   effect: 'none' | 'crystalize' | 'liquidify'
+  effectTiming: 'before' | 'after'
   effectCrystalizeRadius: number
   effectLiquidifyDistortRadius: number
   effectLiquidifyRadius: number

@@ -88,6 +88,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  ctx.clearRect(0, 0, width, height)
 
   generateQRCodeInfo.value = {
     width,
@@ -98,22 +99,6 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   const borderOpacityRng = seedrandom(String(seed))
   const styleRng = seedrandom(String(seed))
   const markerRng = seedrandom(String(seed))
-
-  ctx.fillStyle = invert ? state.darkColor : state.lightColor
-  ctx.fillRect(0, 0, width, height)
-
-  if (state.backgroundImage) {
-    const img = new Image()
-    img.src = state.backgroundImage
-    await new Promise(resolve => img.onload = resolve)
-    // draw the image full cover the canvas with aspect ratio
-    const imgRatio = img.width / img.height
-    const canvasRatio = canvas.width / canvas.height
-    if (imgRatio < canvasRatio)
-      ctx.drawImage(img, 0, (canvas.height - canvas.width / imgRatio) / 2, canvas.width, canvas.width / imgRatio)
-    else
-      ctx.drawImage(img, (canvas.width - canvas.height * imgRatio) / 2, 0, canvas.height * imgRatio, canvas.height)
-  }
 
   function getBorderOpacity() {
     if (typeof state.marginNoiseOpacity === 'number')
@@ -607,6 +592,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
   }
 
+  if (state.effectTiming === 'after')
+    await applyBackground()
+
   if (state.effect === 'crystalize') {
     const data = ctx.getImageData(0, 0, width, height)
     const newData = effects.crystalize(data, state.effectCrystalizeRadius, state.seed)
@@ -619,6 +607,31 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       : data
     const newData2 = effects.liquidify(newData1, state.effectLiquidifyRadius, state.effectLiquidifyThreshold)
     ctx.putImageData(newData2, 0, 0)
+  }
+
+  if (state.effectTiming === 'before')
+    await applyBackground()
+
+  async function applyBackground() {
+    const clone = new OffscreenCanvas(width, height)
+    clone.getContext('2d')!.putImageData(ctx.getImageData(0, 0, width, height), 0, 0)
+
+    ctx.fillStyle = invert ? state.darkColor : state.lightColor
+    ctx.fillRect(0, 0, width, height)
+    if (state.backgroundImage) {
+      const img = new Image()
+      img.src = state.backgroundImage
+      await new Promise(resolve => img.onload = resolve)
+      // draw the image full cover the canvas with aspect ratio
+      const imgRatio = img.width / img.height
+      const canvasRatio = canvas.width / canvas.height
+      if (imgRatio < canvasRatio)
+        ctx.drawImage(img, 0, (canvas.height - canvas.width / imgRatio) / 2, canvas.width, canvas.width / imgRatio)
+      else
+        ctx.drawImage(img, (canvas.width - canvas.height * imgRatio) / 2, 0, canvas.height * imgRatio, canvas.height)
+    }
+
+    ctx.drawImage(clone, 0, 0)
   }
 }
 

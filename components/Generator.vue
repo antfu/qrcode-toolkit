@@ -314,6 +314,15 @@ watch(
             <OptionSlider v-model="state.effectLiquidifyThreshold" :min="1" :max="254" :step="1" />
           </OptionItem>
         </template>
+
+        <template v-if="state.effect !== 'none'">
+          <OptionItem title="Effect Timing">
+            <OptionSelectGroup
+              v-model="state.effectTiming"
+              :options="['before', 'after']"
+            />
+          </OptionItem>
+        </template>
       </div>
       <div>
         <button

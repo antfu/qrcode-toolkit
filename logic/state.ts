@@ -38,6 +38,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     marginNoiseSpace: 'marker',
 
     effect: 'none',
+    effectTiming: 'after',
     effectCrystalizeRadius: 8,
     effectLiquidifyDistortRadius: 8,
     effectLiquidifyRadius: 8,
