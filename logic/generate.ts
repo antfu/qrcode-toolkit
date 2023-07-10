@@ -1,5 +1,6 @@
 import seedrandom from 'seedrandom'
 
+import Perspective from '../vendor/perspective'
 import { QrCode, QrCodeEcc, QrSegment } from '../vendor/qrcodegen'
 import type { QRCodeGeneratorState } from './types'
 import { generateQRCodeInfo, qrcode } from './state'
@@ -85,9 +86,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   const halfcell = cell / 2
   const width: number = (qr.size + marginLeft + marginRight) * cell
   const height: number = (qr.size + marginTop + marginBottom) * cell
-  canvas.width = width
-  canvas.height = height
-  const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+
+  const can = new OffscreenCanvas(width, height)
+  const ctx = can.getContext('2d', { willReadFrequently: true })!
   ctx.clearRect(0, 0, width, height)
 
   generateQRCodeInfo.value = {
@@ -592,6 +593,8 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
   }
 
+  await applyPerspective()
+
   if (state.effectTiming === 'after')
     await applyBackground()
 
@@ -612,7 +615,75 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   if (state.effectTiming === 'before')
     await applyBackground()
 
+  canvas.width = width
+  canvas.height = height
+  canvas.getContext('2d')!.drawImage(can, 0, 0)
+
+  async function applyPerspective() {
+    if (state.transformPerspectiveX === 0 && state.transformPerspectiveY === 0)
+      return
+
+    const data = ctx.getImageData(0, 0, width, height)
+    ctx.clearRect(0, 0, width, height)
+    const perspective = new Perspective(ctx as any, data)
+
+    const perspectiveX = state.transformPerspectiveX
+    const perspectiveY = state.transformPerspectiveY
+
+    const pos = {
+      topLeftX: 0,
+      topLeftY: 0,
+      bottomLeftX: 0,
+      bottomLeftY: height,
+      topRightX: width,
+      topRightY: 0,
+      bottomRightX: width,
+      bottomRightY: height,
+    }
+
+    if (perspectiveX !== 0) {
+      const offsetX = Math.abs(width * perspectiveX / 2)
+      const offsetY = Math.abs(height * perspectiveX / 3)
+
+      // perspectiveX
+      pos.topLeftX += offsetX
+      pos.topRightX -= offsetX
+      pos.bottomLeftX += offsetX
+      pos.bottomRightX -= offsetX
+      if (perspectiveX > 0) {
+        pos.topRightY += offsetY
+        pos.bottomRightY -= offsetY
+      }
+      else {
+        pos.topLeftY += offsetY
+        pos.bottomLeftY -= offsetY
+      }
+    }
+
+    // perspectiveY
+    if (perspectiveY !== 0) {
+      const offsetX = Math.abs(width * perspectiveY / 3)
+      const offsetY = Math.abs(height * perspectiveY / 2)
+
+      pos.topLeftY += offsetY
+      pos.topRightY += offsetY
+      pos.bottomLeftY -= offsetY
+      pos.bottomRightY -= offsetY
+      if (perspectiveY > 0) {
+        pos.bottomLeftX += offsetX
+        pos.bottomRightX -= offsetX
+      }
+      else {
+        pos.topLeftX += offsetX
+        pos.topRightX -= offsetX
+      }
+    }
+
+    perspective.draw(pos)
+  }
+
   async function applyBackground() {
+    ctx.restore()
     const clone = new OffscreenCanvas(width, height)
     clone.getContext('2d')!.putImageData(ctx.getImageData(0, 0, width, height), 0, 0)
 
@@ -621,7 +692,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     if (state.backgroundImage) {
       const img = new Image()
       img.src = state.backgroundImage
-      await new Promise(resolve => img.onload = resolve)
+      await new Promise(resolve => img.onload = resolve).then()
       // draw the image full cover the canvas with aspect ratio
       const imgRatio = img.width / img.height
       const canvasRatio = canvas.width / canvas.height

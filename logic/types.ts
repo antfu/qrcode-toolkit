@@ -117,6 +117,9 @@ export interface QRCodeGeneratorState {
   effectLiquidifyRadius: number
   effectLiquidifyThreshold: number
   backgroundImage?: string
+
+  transformPerspectiveX: number
+  transformPerspectiveY: number
 }
 
 export interface ComparionState {

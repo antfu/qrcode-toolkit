@@ -3,7 +3,7 @@ import type { MarginObject } from '~/logic/types'
 import { resolveMargin } from '~/logic/utils'
 
 withDefaults(defineProps<{
-  fullCustomizable: boolean
+  fullCustomizable?: boolean
 }>(), {
   fullCustomizable: false,
 })

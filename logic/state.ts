@@ -43,6 +43,9 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     effectLiquidifyDistortRadius: 8,
     effectLiquidifyRadius: 8,
     effectLiquidifyThreshold: 128,
+
+    transformPerspectiveX: 0,
+    transformPerspectiveY: 0,
   }
 }
 

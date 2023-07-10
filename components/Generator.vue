@@ -57,6 +57,8 @@ const mayNotScannable = computed(() => {
     return true
   if (!['square', 'circle', 'box'].includes(state.value.markerSub))
     return true
+  if (Math.abs(state.value.transformPerspectiveX) > 0.1 || Math.abs(state.value.transformPerspectiveY) > 0.1)
+    return true
 })
 
 const hasNonCenteredMargin = computed(() => {
@@ -315,14 +317,22 @@ watch(
           </OptionItem>
         </template>
 
-        <template v-if="state.effect !== 'none'">
-          <OptionItem title="Effect Timing">
-            <OptionSelectGroup
-              v-model="state.effectTiming"
-              :options="['before', 'after']"
-            />
-          </OptionItem>
-        </template>
+        <OptionItem title="Effect Timing">
+          <OptionSelectGroup
+            v-model="state.effectTiming"
+            :options="['before', 'after']"
+          />
+        </OptionItem>
+
+        <div border="t base" my1 />
+
+        <OptionItem title="Transform" />
+        <OptionItem title="Perspective X" nested @reset="state.transformPerspectiveX = 0">
+          <OptionSlider v-model="state.transformPerspectiveX" :min="-0.5" :max="0.5" :step="0.01" />
+        </OptionItem>
+        <OptionItem title="Perspective Y" nested @reset="state.transformPerspectiveY = 0">
+          <OptionSlider v-model="state.transformPerspectiveY" :min="-0.5" :max="0.5" :step="0.01" />
+        </OptionItem>
       </div>
       <div>
         <button
@@ -398,7 +408,10 @@ watch(
         This QR Code may or may not be scannable. Please verify before using.
       </div>
       <div v-if="hasNonCenteredMargin" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
-        Compare mode does not support non-centered QR Code yet. If you generated with this QR Code, you might need to verify the result manually.
+        The <b>compare tab</b> does not support non-centered QR Code yet. If you generated with this QR Code, you'll need to verify the result manually.
+      </div>
+      <div v-if="state.transformPerspectiveX !== 0 || state.transformPerspectiveY !== 0 " border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
+        The <b>compare tab</b> does not support transformations. If you generated with this QR Code, you'll need to verify the result manually.
       </div>
     </div>
   </div>
