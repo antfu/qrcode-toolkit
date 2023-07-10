@@ -319,12 +319,14 @@ watch(
           </OptionItem>
         </template>
 
-        <OptionItem title="Effect Timing">
-          <OptionSelectGroup
-            v-model="state.effectTiming"
-            :options="['before', 'after']"
-          />
-        </OptionItem>
+        <template v-if="state.effect !== 'none'">
+          <OptionItem title="Effect Timing">
+            <OptionSelectGroup
+              v-model="state.effectTiming"
+              :options="['before', 'after']"
+            />
+          </OptionItem>
+        </template>
 
         <div border="t base" my1 />
 
