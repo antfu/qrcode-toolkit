@@ -87,7 +87,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   const width: number = (qr.size + marginLeft + marginRight) * cell
   const height: number = (qr.size + marginTop + marginBottom) * cell
 
-  const can = new OffscreenCanvas(width, height)
+  const can = document.createElement('canvas')
+  can.width = width
+  can.height = height
   const ctx = can.getContext('2d', { willReadFrequently: true })!
   ctx.clearRect(0, 0, width, height)
 
@@ -698,7 +700,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
   async function applyBackground() {
     ctx.restore()
-    const clone = new OffscreenCanvas(width, height)
+    const clone = document.createElement('canvas')
+    clone.width = width
+    clone.height = height
     clone.getContext('2d')!.putImageData(ctx.getImageData(0, 0, width, height), 0, 0)
 
     ctx.fillStyle = invert ? state.darkColor : state.lightColor
