@@ -205,7 +205,7 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Sub Markers" nested>
+        <OptionItem v-if="qrcode?.version !== 1" title="Sub Markers" nested>
           <OptionSelectGroup
             v-model="state.markerSub"
             :options="MarkerSubShapes"
