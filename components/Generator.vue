@@ -213,10 +213,6 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Invert">
-          <OptionCheckbox v-model="state.invert" />
-        </OptionItem>
-
         <OptionItem title="Seed">
           <input
             v-model.number="state.seed" type="number"
@@ -282,6 +278,19 @@ watch(
           </button>
           <div v-if="state.backgroundImage" icon-button-sm>
             <div i-carbon-close @click="state.backgroundImage = undefined" />
+          </div>
+        </OptionItem>
+
+        <div border="t base" my1 />
+
+        <OptionItem title="Colors" div @reset="() => { state.lightColor = '#ffffff'; state.darkColor = '#000000' }">
+          <div flex="~ gap-2">
+            <OptionColor v-model="state.lightColor" />
+            <OptionColor v-model="state.darkColor" />
+            <label flex="~ gap-2 items-center" ml2>
+              <OptionCheckbox v-model="state.invert" />
+              <span text-sm op75>Invert</span>
+            </label>
           </div>
         </OptionItem>
 
