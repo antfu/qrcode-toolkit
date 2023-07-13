@@ -47,6 +47,14 @@ import { hasParentWindow, storeIndex } from '~/logic/state'
             flex="~ inline gap-1 items-center" op75 hover:op100
           >Web UI Extension</a>
         </div>
+        <div flex="~ gap-1 items-center">
+          <span i-ri-arrow-right-line ml1 inline-block h-1em op50 />
+          <a
+            href="https://github.com/antfu/qrcode-toolkit/issues"
+            target="_blank"
+            flex="~ inline gap-1 items-center" op75 hover:op100
+          >Bug report / Feature request</a>
+        </div>
       </div>
       <div>
         <span op50>If you find this app useful, </span>

@@ -25,6 +25,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     markerShape: 'square',
     markerInnerShape: 'auto',
     markerSub: 'square',
+    markers: [],
     maskPattern: -1,
     minVersion: 1,
     maxVersion: 40,

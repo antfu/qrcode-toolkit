@@ -2,7 +2,7 @@ import seedrandom from 'seedrandom'
 
 import Perspective from '../vendor/perspective'
 import { QrCode, QrCodeEcc, QrSegment } from '../vendor/qrcodegen'
-import type { QRCodeGeneratorState } from './types'
+import type { QRCodeGeneratorState, QrCodeGeneratorMarkerState } from './types'
 import { generateQRCodeInfo, qrcode } from './state'
 import { effects } from './effects'
 import { resolveMargin } from './utils'
@@ -21,6 +21,7 @@ interface MarkerInfo {
   isCenter: boolean
   isBorder: boolean
   isInner: boolean
+  style: QrCodeGeneratorMarkerState
 }
 
 interface PixelInfo {
@@ -58,24 +59,11 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     marginNoiseRate,
     marginNoiseSpace,
     pixelStyle,
-    markerStyle,
-    markerShape,
+
     markerSub,
     invert,
     renderPointsType,
   } = state
-
-  let innerMarkerShape = state.markerInnerShape
-  if (innerMarkerShape === 'auto') {
-    if (markerShape === 'circle')
-      innerMarkerShape = 'circle'
-    else if (markerShape === 'tiny-plus')
-      innerMarkerShape = 'plus'
-    else if (markerShape === 'octagon')
-      innerMarkerShape = 'diamond'
-    else
-      innerMarkerShape = 'square'
-  }
 
   const {
     top: marginTop,
@@ -109,6 +97,33 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       return state.marginNoiseOpacity
     const [min, max] = state.marginNoiseOpacity
     return borderOpacityRng() * (max - min) + min
+  }
+
+  function resolveMarkerStyle(index: number): QrCodeGeneratorMarkerState {
+    const s = (index === 0 ? state : state.markers[index - 1]) || state
+
+    const {
+      markerStyle,
+      markerShape,
+    } = s
+
+    let markerInnerShape = s.markerInnerShape
+    if (markerInnerShape === 'auto') {
+      if (markerShape === 'circle')
+        markerInnerShape = 'circle'
+      else if (markerShape === 'tiny-plus')
+        markerInnerShape = 'plus'
+      else if (markerShape === 'octagon')
+        markerInnerShape = 'diamond'
+      else
+        markerInnerShape = 'square'
+    }
+
+    return {
+      markerStyle,
+      markerShape,
+      markerInnerShape,
+    }
   }
 
   function getInfo(x: number, y: number): PixelInfo {
@@ -166,6 +181,15 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         isBorder,
         isCenter,
         isSubMarker,
+        style: resolveMarkerStyle(
+          position === 'top-left'
+            ? 0
+            : position === 'top-right'
+              ? 1
+              : position === 'bottom-left'
+                ? 2
+                : 3,
+        ),
       }
     }
 
@@ -193,6 +217,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     if (marker) {
       if (marker.position !== 'sub') {
         if (marker.isBorder) {
+          const { markerShape } = marker.style
           if (markerShape === 'circle' || markerShape === 'octagon')
             isDark = false
 
@@ -216,7 +241,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           }
         }
 
-        if (marker?.isInner && innerMarkerShape === 'plus') {
+        if (marker?.isInner && marker.style.markerInnerShape === 'plus') {
           if (marker.x !== 3 && marker.y !== 3)
             isDark = false
         }
@@ -323,9 +348,6 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
   for (const { isDark, marker, x, y, isBorder } of pixels) {
     let _pixelStyle = pixelStyle
-    const _markerStyle = markerStyle === 'auto'
-      ? pixelStyle
-      : markerStyle
 
     const opacity = isBorder ? getBorderOpacity() : 1
     const darkColorHex = (Math.round((1 - opacity) * 255)).toString(16).padStart(2, '0')
@@ -339,6 +361,12 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     const cY = y * cell + halfcell
 
     if (marker && marker.position !== 'sub') {
+      const _markerStyle = marker.style.markerStyle === 'auto'
+        ? pixelStyle
+        : marker.style.markerStyle
+
+      const { markerShape } = marker.style
+
       _pixelStyle = _markerStyle
 
       if (renderPointsType === 'data')
@@ -445,8 +473,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       }
 
       if (marker.isInner) {
+        const { markerInnerShape } = marker.style
         // inner markers
-        if (innerMarkerShape === 'circle') {
+        if (markerInnerShape === 'circle') {
           if (marker.isCenter) {
             ctx.fillStyle = lightColor
             ctx.fillRect(cX - cell * 1.5, cY - cell * 1.5, cell * 3, cell * 3)
@@ -457,7 +486,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           }
           continue
         }
-        else if (innerMarkerShape === 'eye') {
+        else if (markerInnerShape === 'eye') {
           if (marker.isCenter) {
             ctx.fillStyle = lightColor
             ctx.fillRect(cX - cell * 1.5, cY - cell * 1.5, cell * 3, cell * 3)
@@ -471,7 +500,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           }
           continue
         }
-        else if (innerMarkerShape === 'diamond') {
+        else if (markerInnerShape === 'diamond') {
           if (marker.isCenter) {
             ctx.fillStyle = lightColor
             ctx.fillRect(cX - cell * 1.5, cY - cell * 1.5, cell * 3, cell * 3)

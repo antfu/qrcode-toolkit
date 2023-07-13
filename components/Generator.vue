@@ -4,7 +4,7 @@ import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
 import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode, view } from '~/logic/state'
 import type { State } from '~/logic/types'
-import { MarkerInnerShapeIcons, MarkerInnerShapes, MarkerShapeIcons, MarkerShapes, MarkerSubShapeIcons, MarkerSubShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
+import { MarkerSubShapeIcons, MarkerSubShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
 import { getAspectRatio, sendQRCodeToCompare } from '~/logic/utils'
 
 const props = defineProps<{
@@ -77,6 +77,26 @@ function sendCompare() {
 
 function sendToWebUI() {
   sendParentEvent('setControlNet', dataUrlGeneratedQRCode.value!)
+}
+
+function toggleMarkerStyleExpand() {
+  if (!props.state.qrcode.markers?.length) {
+    props.state.qrcode.markers = [
+      {
+        markerShape: props.state.qrcode.markerShape,
+        markerStyle: props.state.qrcode.markerStyle,
+        markerInnerShape: props.state.qrcode.markerInnerShape,
+      },
+      {
+        markerShape: props.state.qrcode.markerShape,
+        markerStyle: props.state.qrcode.markerStyle,
+        markerInnerShape: props.state.qrcode.markerInnerShape,
+      },
+    ]
+  }
+  else {
+    props.state.qrcode.markers = []
+  }
 }
 
 const uploadQR = ref<string>()
@@ -162,9 +182,9 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Style" />
+        <div border="t base" my1 />
 
-        <OptionItem title="Pixel" nested>
+        <OptionItem title="Pixel Style">
           <OptionSelectGroup
             v-model="state.pixelStyle"
             :options="PixelStyles"
@@ -172,40 +192,30 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Marker" nested>
-          <OptionSelectGroup
-            v-if="state.markerShape !== 'circle'"
-            v-model="state.markerStyle"
-            :options="state.markerShape === 'octagon' ? PixelStyles.slice(0, 2) : PixelStyles"
-            :classes="state.markerShape === 'octagon' ? PixelStyleIcons.slice(0, 2) : PixelStyleIcons"
-          />
-          <OptionSelectGroup
-            v-model="state.markerStyle"
-            :options="['auto']"
-          />
+        <OptionItem :title="state.markers.length ? 'Marker 1' : 'Markers'">
+          <div flex-auto />
+          <button
+            icon-button-sm
+            title="Toggle Expand"
+            @click="toggleMarkerStyleExpand"
+          >
+            <div :class="state.markers.length ? 'i-ri-arrow-up-s-line' : 'i-ri-arrow-down-s-line'" />
+          </button>
         </OptionItem>
 
-        <OptionItem title="Marker Shape" nested>
-          <OptionSelectGroup
-            v-model="state.markerShape"
-            :options="MarkerShapes"
-            :classes="MarkerShapeIcons"
-          />
-        </OptionItem>
+        <template v-if="!state.markers.length">
+          <SettingsMarkerStyle :state="state" nested number="Marker" />
+        </template>
+        <template v-else>
+          <SettingsMarkerStyle :state="state" nested />
+          <OptionItem title="Marker 2" />
+          <SettingsMarkerStyle :state="state.markers[0]" nested />
+          <OptionItem title="Marker 3" />
+          <SettingsMarkerStyle :state="state.markers[1]" nested />
+          <div border="t base" my1 />
+        </template>
 
-        <OptionItem title="Marker Inner" nested>
-          <OptionSelectGroup
-            v-model="state.markerInnerShape"
-            :options="MarkerInnerShapes"
-            :classes="MarkerInnerShapeIcons"
-          />
-          <OptionSelectGroup
-            v-model="state.markerInnerShape"
-            :options="['auto']"
-          />
-        </OptionItem>
-
-        <OptionItem v-if="qrcode?.version !== 1" title="Sub Markers" nested>
+        <OptionItem v-if="qrcode?.version !== 1" title="Sub Markers">
           <OptionSelectGroup
             v-model="state.markerSub"
             :options="MarkerSubShapes"
@@ -213,22 +223,8 @@ watch(
           />
         </OptionItem>
 
-        <OptionItem title="Seed">
-          <input
-            v-model.number="state.seed" type="number"
-            border="~ base rounded"
-            bg-secondary py0.5 pl2 text-sm
-          >
-          <button
-            p1 icon-button-sm
-            title="Randomize"
-            @click="state.seed = Math.round(Math.random() * 100000)"
-          >
-            <div i-ri-refresh-line />
-          </button>
-        </OptionItem>
-
         <div border="t base" my1 />
+
         <SettingsMargin
           v-model="state.margin"
           :full-customizable="true"
@@ -263,6 +259,20 @@ watch(
             v-model="state.renderPointsType"
             :options="['all', 'function', 'data']"
           />
+        </OptionItem>
+        <OptionItem title="Seed">
+          <input
+            v-model.number="state.seed" type="number"
+            border="~ base rounded"
+            bg-secondary py0.5 pl2 text-sm
+          >
+          <button
+            p1 icon-button-sm
+            title="Randomize"
+            @click="state.seed = Math.round(Math.random() * 100000)"
+          >
+            <div i-ri-refresh-line />
+          </button>
         </OptionItem>
         <OptionItem title="Background">
           <button relative text-xs text-button>

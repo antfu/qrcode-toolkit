@@ -87,7 +87,13 @@ export interface MarginObject {
   left: number
 }
 
-export interface QRCodeGeneratorState {
+export interface QrCodeGeneratorMarkerState {
+  markerStyle: PixelStyle | 'auto'
+  markerShape: MarkerShape
+  markerInnerShape: MarkerInnerShape | 'auto'
+}
+
+export interface QRCodeGeneratorState extends QrCodeGeneratorMarkerState {
   text: string
   ecc: 'L' | 'M' | 'Q' | 'H'
   margin: number | MarginObject
@@ -100,9 +106,7 @@ export interface QRCodeGeneratorState {
   minVersion: number
   maxVersion: number
   pixelStyle: PixelStyle
-  markerStyle: PixelStyle | 'auto'
-  markerShape: MarkerShape
-  markerInnerShape: MarkerInnerShape | 'auto'
+  markers: QrCodeGeneratorMarkerState[]
   markerSub: MarkerShape
   marginNoise: boolean
   marginNoiseRate: number
