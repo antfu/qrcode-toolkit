@@ -351,7 +351,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
     const opacity = isBorder ? getBorderOpacity() : 1
     const darkColorHex = (Math.round((1 - opacity) * 255)).toString(16).padStart(2, '0')
-    const _darkColor = `#${darkColorHex}${darkColorHex}${darkColorHex}`
+    const _darkColor = opacity === 1 ? state.darkColor : `#${darkColorHex}${darkColorHex}${darkColorHex}`
 
     const lightColor = invert ? _darkColor : state.lightColor
     const darkColor = invert ? state.lightColor : _darkColor
