@@ -143,13 +143,13 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         isDark = false
         isIgnored = true
       }
-      else if (renderPointsType === 'function' && !qr.isFunctional(x, y)) {
+      else if ((renderPointsType === 'function' || renderPointsType === 'guide' || renderPointsType === 'marker') && !qr.isFunctional(x, y)) {
         isDark = false
         isIgnored = true
       }
     }
 
-    if (renderPointsType !== 'data') {
+    if (renderPointsType !== 'data' && renderPointsType !== 'guide') {
       if (marginNoiseSpace === 'marker') {
         if (
           (x >= -1 && x <= 7 && y >= -1 && y <= 7)
@@ -326,6 +326,16 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
     targetX += marginLeft
     targetY += marginTop
+
+    if (renderPointsType === 'guide' && marker) {
+      isDark = false
+      isIgnored = true
+    }
+
+    if (renderPointsType === 'marker' && !marker) {
+      isDark = false
+      isIgnored = true
+    }
 
     return {
       isDark,

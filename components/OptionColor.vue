@@ -5,7 +5,7 @@ const value = defineModel<string>('modelValue', {
 </script>
 
 <template>
-  <div border="~ base rounded" flex="~ gap-2 items-center" bg-secondary relative p0.5 px1.5>
+  <div border="~ base rounded" flex="~ gap-2 items-center" relative bg-secondary p0.5 px1.5>
     <div h-4 w-4 border="~ base rounded-full" :style="{ background: value }" />
     <div text-sm font-mono>
       {{ value }}

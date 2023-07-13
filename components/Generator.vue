@@ -302,7 +302,7 @@ watch(
         <OptionItem title="Render Type">
           <OptionSelectGroup
             v-model="state.renderPointsType"
-            :options="['all', 'function', 'data']"
+            :options="['all', 'function', 'data', 'guide', 'marker']"
           />
         </OptionItem>
         <OptionItem title="Seed">
