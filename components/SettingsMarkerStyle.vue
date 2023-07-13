@@ -2,20 +2,38 @@
 import type { QrCodeGeneratorMarkerState } from 'logic/types'
 import { MarkerInnerShapeIcons, MarkerInnerShapes, MarkerShapeIcons, MarkerShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
 
-defineProps<{
+const props = defineProps<{
   state: QrCodeGeneratorMarkerState
   number?: string
   nested?: boolean
 }>()
+
+const supportPixelStyle = computed(() => {
+  return [
+    'square',
+    // 'circle',
+    'plus',
+    'box',
+    // 'octagon',
+    'random',
+    'tiny-plus',
+  ].includes(props.state.markerShape) || [
+    'square',
+    // 'circle',
+    'plus',
+    // 'diamond',
+    // 'eye',
+  ].includes(props.state.markerInnerShape)
+})
 </script>
 
 <template>
   <OptionItem :title="[number, 'Pixel'].filter(Boolean).join(' ')" :nested="nested">
     <OptionSelectGroup
-      v-if="state.markerShape !== 'circle'"
+      v-if="supportPixelStyle"
       v-model="state.markerStyle"
-      :options="state.markerShape === 'octagon' ? PixelStyles.slice(0, 2) : PixelStyles"
-      :classes="state.markerShape === 'octagon' ? PixelStyleIcons.slice(0, 2) : PixelStyleIcons"
+      :options="PixelStyles"
+      :classes="PixelStyleIcons"
     />
     <OptionSelectGroup
       v-model="state.markerStyle"
