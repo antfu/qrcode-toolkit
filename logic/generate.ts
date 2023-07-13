@@ -62,6 +62,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     markerShape,
     markerSub,
     invert,
+    renderPointsType,
   } = state
 
   let innerMarkerShape = state.markerInnerShape
@@ -135,10 +136,16 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
 
     let isDark = false
-    if (isBorder && marginNoise)
+    if (isBorder && marginNoise) {
       isDark = borderRng() < marginNoiseRate
-    else
+    }
+    else {
       isDark = qr.getModule(x, y)
+      if (renderPointsType === 'data' && qr.isFunctional(x, y))
+        isDark = false
+      else if (renderPointsType === 'function' && !qr.isFunctional(x, y))
+        isDark = false
+    }
 
     let marker: MarkerInfo | undefined
 
@@ -334,6 +341,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     if (marker && marker.position !== 'sub') {
       _pixelStyle = _markerStyle
 
+      if (renderPointsType === 'data')
+        continue
+
       if (markerShape === 'circle') {
         if (marker.isBorder)
           continue
@@ -479,6 +489,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
 
     if (marker?.position === 'sub') {
+      if (renderPointsType === 'data')
+        continue
+
       if (markerSub === 'circle') {
         if (marker.isBorder)
           continue

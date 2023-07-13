@@ -262,6 +262,12 @@ watch(
             :options="['full', 'marker', 'minimal', 'none']"
           />
         </OptionItem>
+        <OptionItem title="Render Type">
+          <OptionSelectGroup
+            v-model="state.renderPointsType"
+            :options="['all', 'function', 'data']"
+          />
+        </OptionItem>
         <OptionItem title="Background">
           <button relative text-xs text-button>
             <img

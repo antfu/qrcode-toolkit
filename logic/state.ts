@@ -36,6 +36,7 @@ export function defaultGeneratorState(): QRCodeGeneratorState {
     marginNoiseOpacity: 1,
     seed: Math.round(Math.random() * 1000000),
     marginNoiseSpace: 'marker',
+    renderPointsType: 'all',
 
     effect: 'none',
     effectTiming: 'after',

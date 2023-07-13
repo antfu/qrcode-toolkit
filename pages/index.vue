@@ -37,7 +37,7 @@ import { hasParentWindow, storeIndex } from '~/logic/state'
           <span op50>Anthony Fu's </span> <span font-600 op75>QR</span><span font-400 op65> Toolkit</span>
         </div>
         <div flex="~ gap-1 items-center">
-          <span i-ri-arrow-right-line ml1 inline-block h-1em op50 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-101" target="_blank">Generate AI QR Code</a><br>
+          <span i-ri-arrow-right-line ml1 inline-block h-1em op50 /><a op75 hover:op100 href="https://antfu.me/posts/ai-qrcode-101" target="_blank">How to Generate AI QR Code</a><br>
         </div>
         <div v-if="!hasParentWindow" flex="~ gap-1 items-center">
           <span i-ri-arrow-right-line ml1 inline-block h-1em op50 />

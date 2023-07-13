@@ -225,7 +225,7 @@ export class QrCode {
 		this.applyMask(msk);  // Apply the final choice of mask
 		this.drawFormatBits(msk);  // Overwrite old format bits
 		
-		this.isFunction = [];
+		// this.isFunction = [];
 	}
 	
 	
@@ -241,7 +241,10 @@ export class QrCode {
 	public isSubMarker(x: int, y: int): boolean {
 		return 0 <= x && x < this.size && 0 <= y && y < this.size && this.subMarker[y][x];
 	}
-	
+
+	public isFunctional(x: int, y: int): boolean {
+		return 0 <= x && x < this.size && 0 <= y && y < this.size && this.isFunction[y][x];
+	}
 	
 	/*-- Private helper methods for constructor: Drawing function modules --*/
 	
