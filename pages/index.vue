@@ -53,7 +53,7 @@ import { hasParentWindow, storeIndex } from '~/logic/state'
             href="https://github.com/antfu/qrcode-toolkit/issues"
             target="_blank"
             flex="~ inline gap-1 items-center" op75 hover:op100
-          >Bug report / Feature request</a>
+          >Bug report / feature request</a>
         </div>
       </div>
       <div>

@@ -38,6 +38,51 @@ function reset() {
     Object.assign(state.value, defaultGeneratorState())
 }
 
+function downloadState() {
+  const data = {
+    '//': 'Generator state of Anthony\'s QR Toolkit https://qrcode.antfu.me/',
+    ...state.value,
+  }
+
+  const text = JSON.stringify(data, null, 2)
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }))
+  a.download = `qr-options-${state.value.text.replace(/\W/g, '_')}.json`
+  a.click()
+}
+
+async function readState(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file)
+    return
+
+  const reader = new FileReader()
+  const promise = new Promise<string>((resolve, reject) => {
+    reader.onload = () => {
+      resolve(reader.result as any)
+    }
+    reader.onerror = reject
+  })
+  reader.readAsText(file)
+  const text = await promise
+  try {
+    const data = JSON.parse(text)
+    // eslint-disable-next-line no-alert
+    if (confirm('Are you sure to override the state with file uploaded?')) {
+      const keys = Object.keys(state.value)
+      for (const key of keys) {
+        if (key in data)
+          // @ts-expect-error anyway
+          state.value[key] = data[key]
+      }
+    }
+  }
+  catch (e) {
+    // eslint-disable-next-line no-alert
+    alert('Invalid JSON file')
+  }
+}
+
 const debouncedRun = debounce(run, 250, { trailing: true })
 
 const mayNotScannable = computed(() => {
@@ -366,11 +411,33 @@ watch(
           <OptionSlider v-model="state.transformScale" :min="0.5" :max="2" :step="0.01" />
         </OptionItem>
       </div>
-      <div>
+      <div flex="~ gap-2">
+        <button
+          text-sm op75 text-button hover:op100
+          @click="downloadState()"
+        >
+          <div i-ri-download-2-line />
+          Save state
+        </button>
+        <button
+
+          relative text-sm op75 text-button hover:op100
+        >
+          <div i-ri-upload-2-line />
+          Load state
+          <input
+            type="file" accept="application/json"
+            absolute bottom-0 left-0 right-0 top-0 z-10
+            max-h-full max-w-full cursor-pointer opacity-0.1
+            @input="readState"
+          >
+        </button>
+        <div flex-auto />
         <button
           text-sm op75 text-button hover:text-red hover:op100
           @click="reset()"
         >
+          <div i-ri-delete-bin-6-line />
           Reset State
         </button>
       </div>
