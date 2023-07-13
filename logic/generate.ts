@@ -29,6 +29,7 @@ interface PixelInfo {
   y: number
   isDark: boolean
   isBorder: boolean
+  isIgnored: boolean
   marker?: MarkerInfo
 }
 
@@ -130,25 +131,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     let isBorder = marginNoiseSpace === 'full'
       ? x < -1 || y < -1 || x > qr.size || y > qr.size
       : x < 0 || y < 0 || x >= qr.size || y >= qr.size
-
-    if (marginNoiseSpace === 'marker') {
-      if (x >= -1 && x <= 7 && y >= -1 && y <= 7)
-        isBorder = false
-      if (x >= -1 && x <= 7 && y >= qr.size - 8 && y <= qr.size)
-        isBorder = false
-      if (x >= qr.size - 8 && x <= qr.size && y >= -1 && y <= 7)
-        isBorder = false
-    }
-    else if (marginNoiseSpace === 'minimal' || marginNoiseSpace === 'extreme') {
-      if (y >= 2 && y <= 4 && x >= -1 && x <= qr.size)
-        isBorder = false
-      if (x >= 2 && x <= 4 && y >= -1 && y <= qr.size)
-        isBorder = false
-      if (y >= qr.size - 5 && y <= qr.size - 3 && x >= -1 && x <= 7)
-        isBorder = false
-      if (x >= qr.size - 5 && x <= qr.size - 3 && y >= -1 && y <= 7)
-        isBorder = false
-    }
+    let isIgnored = false
 
     let isDark = false
     if (isBorder && marginNoise) {
@@ -156,10 +139,36 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
     else {
       isDark = qr.getModule(x, y)
-      if (renderPointsType === 'data' && qr.isFunctional(x, y))
+      if (renderPointsType === 'data' && qr.isFunctional(x, y)) {
         isDark = false
-      else if (renderPointsType === 'function' && !qr.isFunctional(x, y))
+        isIgnored = true
+      }
+      else if (renderPointsType === 'function' && !qr.isFunctional(x, y)) {
         isDark = false
+        isIgnored = true
+      }
+    }
+
+    if (renderPointsType !== 'data') {
+      if (marginNoiseSpace === 'marker') {
+        if (
+          (x >= -1 && x <= 7 && y >= -1 && y <= 7)
+       || (x >= -1 && x <= 7 && y >= qr.size - 8 && y <= qr.size)
+       || (x >= qr.size - 8 && x <= qr.size && y >= -1 && y <= 7)
+        )
+          isBorder = false
+      }
+      else if (marginNoiseSpace === 'minimal' || marginNoiseSpace === 'extreme') {
+        if (
+          (y >= 2 && y <= 4 && (x === -1 || x === qr.size))
+       || (x >= 2 && x <= 4 && (y === -1 || y === qr.size))
+       || (y >= qr.size - 5 && y <= qr.size - 3 && (x === -1 || x === 7))
+       || (x >= qr.size - 5 && x <= qr.size - 3 && (y === -1 || y === 7))
+        ) {
+          isBorder = false
+          isIgnored = false
+        }
+      }
     }
 
     let marker: MarkerInfo | undefined
@@ -180,6 +189,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         isInner,
         isBorder,
         isCenter,
+        isIgnored,
         isSubMarker,
         style: resolveMarkerStyle(
           position === 'top-left'
@@ -274,6 +284,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       if (x >= ix && x < ix + w && y >= iy && y < iy + h) {
         isDark = false
         isBorder = true
+        isIgnored = true
       }
     }
 
@@ -320,6 +331,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       isDark,
       isBorder,
       marker,
+      isIgnored,
       x: targetX,
       y: targetY,
     }
@@ -346,7 +358,10 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     return getOrder(a) - getOrder(b)
   })
 
-  for (const { isDark, marker, x, y, isBorder } of pixels) {
+  for (const { isDark, marker, x, y, isBorder, isIgnored } of pixels) {
+    if (isIgnored)
+      continue
+
     let _pixelStyle = pixelStyle
 
     const opacity = isBorder ? getBorderOpacity() : 1
@@ -587,6 +602,8 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         const pixel = pixels.find(p => p.x === x + dx && p.y === y + dy)
         if (!pixel)
           return true
+        if (pixel.isIgnored)
+          return false
         if (disconnectBorder)
           return pixel.isDark && pixel.isBorder === isBorder
         else
@@ -750,16 +767,22 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     ctx.fillStyle = invert ? state.darkColor : state.lightColor
     ctx.fillRect(0, 0, width, height)
     if (state.backgroundImage) {
-      const img = new Image()
-      img.src = state.backgroundImage
-      await new Promise(resolve => img.onload = resolve).then()
-      // draw the image full cover the canvas with aspect ratio
-      const imgRatio = img.width / img.height
-      const canvasRatio = canvas.width / canvas.height
-      if (imgRatio < canvasRatio)
-        ctx.drawImage(img, 0, (canvas.height - canvas.width / imgRatio) / 2, canvas.width, canvas.width / imgRatio)
-      else
-        ctx.drawImage(img, (canvas.width - canvas.height * imgRatio) / 2, 0, canvas.height * imgRatio, canvas.height)
+      if (state.backgroundImage.startsWith('#')) {
+        ctx.fillStyle = state.backgroundImage
+        ctx.fillRect(0, 0, width, height)
+      }
+      else {
+        const img = new Image()
+        img.src = state.backgroundImage
+        await new Promise(resolve => img.onload = resolve).then()
+        // draw the image full cover the canvas with aspect ratio
+        const imgRatio = img.width / img.height
+        const canvasRatio = canvas.width / canvas.height
+        if (imgRatio < canvasRatio)
+          ctx.drawImage(img, 0, (canvas.height - canvas.width / imgRatio) / 2, canvas.width, canvas.width / imgRatio)
+        else
+          ctx.drawImage(img, (canvas.width - canvas.height * imgRatio) / 2, 0, canvas.height * imgRatio, canvas.height)
+      }
     }
 
     ctx.drawImage(clone, 0, 0)

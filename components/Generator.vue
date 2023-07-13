@@ -319,8 +319,9 @@ watch(
             <div i-ri-refresh-line />
           </button>
         </OptionItem>
-        <OptionItem title="Background">
-          <button relative text-xs text-button>
+        <OptionItem title="Background" div>
+          <OptionColor v-if="state.backgroundImage?.startsWith('#')" v-model="state.backgroundImage" />
+          <button v-else relative text-xs text-button>
             <img
               v-if="state.backgroundImage" :src="state.backgroundImage"
               absolute inset-0 z-0 h-full w-full rounded object-cover op50
@@ -331,9 +332,13 @@ watch(
             </div>
             <ImageUpload v-model="state.backgroundImage" />
           </button>
-          <div v-if="state.backgroundImage" icon-button-sm>
+          <button v-if="state.backgroundImage" icon-button-sm title="Clear">
             <div i-carbon-close @click="state.backgroundImage = undefined" />
-          </div>
+          </button>
+          <div flex-auto />
+          <button v-if="!state.backgroundImage" icon-button-sm title="Switch to Color">
+            <div i-ri-paint-fill @click="state.backgroundImage = '#888888'" />
+          </button>
         </OptionItem>
 
         <div border="t base" my1 />
