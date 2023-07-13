@@ -164,6 +164,7 @@ const filter = computed(() => {
   const items = [
     state.value.grayscale && 'saturate(0)',
     `contrast(${state.value.contrast}%)`,
+    `brightness(${state.value.brightness}%)`,
     state.value.blur && `blur(${state.value.blur}px)`,
   ]
   return items.filter(Boolean).join(' ')
@@ -176,7 +177,7 @@ function toggleHighContrast() {
   }
   else {
     state.value.grayscale = true
-    state.value.contrast = 300
+    state.value.contrast = 500
   }
 }
 </script>
@@ -305,7 +306,10 @@ function toggleHighContrast() {
           <OptionCheckbox v-model="state.grayscale" />
         </OptionItem>
         <OptionItem title="Contrast" @reset="state.contrast = 100">
-          <OptionSlider v-model="state.contrast" :min="0" :max="300" :step="10" />
+          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" />
+        </OptionItem>
+        <OptionItem title="Brightness" @reset="state.brightness = 100">
+          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" />
         </OptionItem>
         <OptionItem title="Blur">
           <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" />

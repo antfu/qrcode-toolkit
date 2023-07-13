@@ -131,6 +131,7 @@ export interface QRCodeGeneratorState extends QrCodeGeneratorMarkerState {
 export interface ComparionState {
   grayscale: boolean
   contrast: number
+  brightness: number
   blur: number
   grid: boolean
   gridSize: number
