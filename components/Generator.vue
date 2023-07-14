@@ -11,8 +11,11 @@ const props = defineProps<{
   state: State
 }>()
 
+const rightPanelEl = ref<HTMLElement>()
 const uploadTarget = ref<'image' | 'qrcode'>()
 const state = computed(() => props.state.qrcode)
+const rightPanelRect = reactive(useElementBounding(rightPanelEl))
+const floating = computed(() => rightPanelRect.top < 10)
 
 const canvas = ref<HTMLCanvasElement>()
 
@@ -191,7 +194,7 @@ watch(
 </script>
 
 <template>
-  <div grid="~ cols-[40rem_1fr] gap-2">
+  <div grid="~ cols-[38rem_1fr] gap-2">
     <div flex="~ col gap-2">
       <textarea
         v-model="state.text"
@@ -447,75 +450,85 @@ watch(
         </button>
       </div>
     </div>
-    <div flex="~ col gap-2">
-      <canvas ref="canvas" w-full width="1000" height="1000" border="~ base rounded" />
+    <div ref="rightPanelEl">
+      <div
+        flex="~ col gap-2"
+        :style="floating ? {
+          position: 'fixed',
+          top: '10px',
+          left: `${rightPanelRect.left}px`,
+          width: `${rightPanelRect.width}px`,
+        } : {}"
+      >
+        <canvas ref="canvas" w-full width="1000" height="1000" border="~ base rounded" />
 
-      <div v-if="qrcode" border="~ base rounded" p3 pl6 pr0 flex="~ col gap-2">
-        <div grid="~ gap-1 cols-6 items-center">
-          <div text-sm op50>
-            Size
+        <div v-if="qrcode" border="~ base rounded" p3 pl6 pr0 flex="~ col gap-2">
+          <div grid="~ gap-1 cols-6 items-center">
+            <div text-sm op50>
+              Size
+            </div>
+            <div>
+              {{ qrcode.size }}
+            </div>
+            <div text-sm op50>
+              Mask
+            </div>
+            <div>
+              {{ qrcode.mask }}
+            </div>
+            <div text-sm op50>
+              Version
+            </div>
+            <div>
+              {{ qrcode.version }}
+            </div>
           </div>
-          <div>
-            {{ qrcode.size }}
-          </div>
-          <div text-sm op50>
-            Mask
-          </div>
-          <div>
-            {{ qrcode.mask }}
-          </div>
-          <div text-sm op50>
-            Version
-          </div>
-          <div>
-            {{ qrcode.version }}
+          <div v-if="generateQRCodeInfo" grid="~ gap-1 cols-[1.5fr_2fr_1fr_1.5fr] items-center">
+            <div text-sm op50>
+              Dimension
+            </div>
+            <div text-sm>
+              {{ generateQRCodeInfo.width }} x {{ generateQRCodeInfo.height }}
+            </div>
+            <div text-sm op50>
+              Aspect
+            </div>
+            <div text-sm>
+              {{ getAspectRatio(generateQRCodeInfo.width, generateQRCodeInfo.height) }}
+            </div>
           </div>
         </div>
-        <div v-if="generateQRCodeInfo" grid="~ gap-1 cols-[1.5fr_2fr_1fr_1.5fr] items-center">
-          <div text-sm op50>
-            Dimension
-          </div>
-          <div text-sm>
-            {{ generateQRCodeInfo.width }} x {{ generateQRCodeInfo.height }}
-          </div>
-          <div text-sm op50>
-            Aspect
-          </div>
-          <div text-sm>
-            {{ getAspectRatio(generateQRCodeInfo.width, generateQRCodeInfo.height) }}
-          </div>
+        <button
+          py2 text-sm text-button
+          @click="download()"
+        >
+          <div i-ri-download-line />
+          Download
+        </button>
+        <button
+          py2 text-sm text-button
+          @click="sendCompare()"
+        >
+          <div i-ri-send-backward />
+          Send to Compare
+        </button>
+        <button
+          v-if="hasParentWindow"
+          py2 text-sm text-button
+          @click="sendToWebUI()"
+        >
+          <div i-ri-file-upload-line />
+          Send to ControlNet
+        </button>
+        <div v-if="mayNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px3 py2 text-sm text-amber-6>
+          This QR Code may or may not be scannable. Please verify before using.
         </div>
-      </div>
-      <button
-        py2 text-sm text-button
-        @click="download()"
-      >
-        <div i-ri-download-line />
-        Download
-      </button>
-      <button
-        py2 text-sm text-button
-        @click="sendCompare()"
-      >
-        <div i-ri-send-backward />
-        Send to Compare
-      </button>
-      <button
-        v-if="hasParentWindow"
-        py2 text-sm text-button
-        @click="sendToWebUI()"
-      >
-        <div i-ri-file-upload-line />
-        Send to ControlNet
-      </button>
-      <div v-if="mayNotScannable" border="~ amber-6/60 rounded" bg-amber-5:10 px3 py2 text-sm text-amber-6>
-        This QR Code may or may not be scannable. Please verify before using.
-      </div>
-      <div v-if="hasNonCenteredMargin" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
-        The <b>compare tab</b> does not support non-centered QR Code yet. If you generated with this QR Code, you'll need to verify the result manually.
-      </div>
-      <div v-if="state.transformPerspectiveX !== 0 || state.transformPerspectiveY !== 0 || state.transformScale !== 1" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
-        The <b>compare tab</b> does not support transformations. If you generated with this QR Code, you'll need to verify the result manually.
+        <div v-if="hasNonCenteredMargin" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
+          The <b>compare tab</b> does not support non-centered QR Code yet. If you generated with this QR Code, you'll need to verify the result manually.
+        </div>
+        <div v-if="state.transformPerspectiveX !== 0 || state.transformPerspectiveY !== 0 || state.transformScale !== 1" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
+          The <b>compare tab</b> does not support transformations. If you generated with this QR Code, you'll need to verify the result manually.
+        </div>
       </div>
     </div>
   </div>
