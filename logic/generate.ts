@@ -88,16 +88,15 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     height,
   }
 
-  const borderRng = seedrandom(String(seed))
-  const borderOpacityRng = seedrandom(String(seed))
-  const styleRng = seedrandom(String(seed))
-  const markerRng = seedrandom(String(seed))
+  function rand(x: number, y: number, type: string) {
+    return seedrandom([seed, type, x, y].join('|'))()
+  }
 
-  function getBorderOpacity() {
+  function getBorderOpacity(x: number, y: number) {
     if (typeof state.marginNoiseOpacity === 'number')
       return state.marginNoiseOpacity
     const [min, max] = state.marginNoiseOpacity
-    return borderOpacityRng() * (max - min) + min
+    return rand(x, y, 'border-op') * (max - min) + min
   }
 
   function resolveMarkerStyle(index: number): QrCodeGeneratorMarkerState {
@@ -135,7 +134,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
     let isDark = false
     if (isBorder && marginNoise) {
-      isDark = borderRng() < marginNoiseRate
+      isDark = rand(x, y, 'border-noise') < marginNoiseRate
     }
     else {
       isDark = qr.getModule(x, y)
@@ -242,7 +241,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           else if (markerShape === 'random') {
             if (marker.x !== 3 && marker.y !== 3) {
               if (isDark)
-                isDark = markerRng() < 0.5
+                isDark = rand(x, y, 'marker') < 0.5
             }
           }
           else if (markerShape === 'tiny-plus') {
@@ -274,7 +273,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         else if (markerSub === 'random') {
           if (marker.x !== 2 && marker.y !== 2) {
             if (isDark)
-              isDark = markerRng() < 0.5
+              isDark = rand(x, y, 'marker') < 0.5
           }
         }
       }
@@ -374,7 +373,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
     let _pixelStyle = pixelStyle
 
-    const opacity = isBorder ? getBorderOpacity() : 1
+    const opacity = isBorder ? getBorderOpacity(x, y) : 1
     const darkColorHex = (Math.round((1 - opacity) * 255)).toString(16).padStart(2, '0')
     const _darkColor = opacity === 1 ? state.darkColor : `#${darkColorHex}${darkColorHex}${darkColorHex}`
 
@@ -603,7 +602,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     else if (_pixelStyle === 'squircle') {
       dot()
       for (let i = 0; i < 4; i++) {
-        if (styleRng() < 0.5)
+        if (rand(x, y, `squircle-${i}`) < 0.5)
           corner(i)
       }
     }
