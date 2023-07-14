@@ -392,7 +392,7 @@ watch(
           <OptionItem title="Blur Radius" nested>
             <OptionSlider v-model="state.effectLiquidifyRadius" :min="1" :max="40" :step="1" />
           </OptionItem>
-          <OptionItem title="Threshold" nested>
+          <OptionItem title="Threshold" nested @reset="state.effectLiquidifyThreshold = 128">
             <OptionSlider v-model="state.effectLiquidifyThreshold" :min="1" :max="254" :step="1" />
           </OptionItem>
         </template>

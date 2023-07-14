@@ -32,3 +32,18 @@ export function sendQRCodeToCompare(state: State) {
   state.compare.gridSize = qrcode.value.size + margin.left + margin.right
   state.compare.gridMarginSize = Math.min(margin.left, margin.right, margin.top, margin.bottom)
 }
+
+export function colorHexToRgb(hex: string) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.trim())
+  if (!result)
+    return null
+  return [
+    Number.parseInt(result[1], 16),
+    Number.parseInt(result[2], 16),
+    Number.parseInt(result[3], 16),
+  ]
+}
+
+export function colorRgbToHex(rgb: number[]) {
+  return `#${rgb.map(c => Math.round(c).toString(16).padStart(2, '0')).join('')}`
+}

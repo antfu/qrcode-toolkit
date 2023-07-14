@@ -367,6 +367,8 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     return getOrder(a) - getOrder(b)
   })
 
+  const darkHex = invert ? state.lightColor : state.darkColor
+
   for (const { isDark, marker, x, y, isBorder, isIgnored } of pixels) {
     if (isIgnored)
       continue
@@ -374,8 +376,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     let _pixelStyle = pixelStyle
 
     const opacity = isBorder ? getBorderOpacity(x, y) : 1
-    const darkColorHex = (Math.round((1 - opacity) * 255)).toString(16).padStart(2, '0')
-    const _darkColor = opacity === 1 ? state.darkColor : `#${darkColorHex}${darkColorHex}${darkColorHex}`
+    const _darkColor = opacity === 1
+      ? state.darkColor
+      : darkHex + Math.round(opacity * 255).toString(16).padStart(2, '0')
 
     const lightColor = invert ? _darkColor : state.lightColor
     const darkColor = invert ? state.lightColor : _darkColor
@@ -678,7 +681,13 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     const newData1 = state.effectLiquidifyDistortRadius
       ? effects.crystalize(data, state.effectLiquidifyDistortRadius, state.seed)
       : data
-    const newData2 = effects.liquidify(newData1, state.effectLiquidifyRadius, state.effectLiquidifyThreshold)
+    const newData2 = effects.liquidify(
+      newData1,
+      state.effectLiquidifyRadius,
+      state.effectLiquidifyThreshold,
+      invert ? state.darkColor : state.lightColor,
+      invert ? state.lightColor : state.darkColor,
+    )
     ctx.putImageData(newData2, 0, 0)
   }
 
