@@ -296,7 +296,7 @@ watch(
         <OptionItem title="Safe Space">
           <OptionSelectGroup
             v-model="state.marginNoiseSpace"
-            :options="['full', 'marker', 'minimal', 'none']"
+            :options="['full', 'marker', 'minimal', 'extreme', 'none']"
           />
         </OptionItem>
         <OptionItem title="Render Type">
