@@ -56,6 +56,7 @@ export function defaultCompareState(): ComparionState {
   return {
     grayscale: false,
     contrast: 100,
+    brightness: 100,
     blur: 0,
     grid: true,
     gridSize: 23,
