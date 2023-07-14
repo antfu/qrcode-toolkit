@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { hasParentWindow, storeIndex } from '~/logic/state'
+
+const config = useRuntimeConfig()
+const buildTime = useTimeAgo(config.public.buildTime as any)
 </script>
 
 <template>
@@ -61,9 +64,20 @@ import { hasParentWindow, storeIndex } from '~/logic/state'
         <a href="https://github.com/sponsors/antfu" target="_blank" op75 hover:text-rose hover:underline hover:op100>Sponsor to support my work</a>
       </div>
 
+      <div my2 h-1px border="t base" w-10 />
+
+      <div flex="~ gap-2 items-center">
+        <span op65>
+          v{{ config.public.version }}
+          <a text-xs font-mono op50 :href="`https://github.com/antfu/qrcode-toolkit/commit/${config.public.git.sha}`" target="_blank">({{ config.public.git.sha.slice(0, 5) }})</a>
+        </span>
+        <span op35>·</span>
+        <span text-sm op50 :title="new Date(config.public.buildTime).toString()">Built {{ buildTime }}</span>
+      </div>
+
       <div my4 h-1px border="t base" w-10 />
 
-      <div flex="~ gap-3">
+      <div flex="~ gap-3 items-center">
         <a href="https://github.com/antfu/qrcode-toolkit" target="_blank" text-lg op50 hover:op100>
           <div i-ri-github-fill />
         </a>

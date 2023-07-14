@@ -42,7 +42,7 @@ devDependencies:
     version: 1.1.11
   '@nuxt/devtools':
     specifier: npm:@nuxt/devtools-edge@latest
-    version: /@nuxt/devtools-edge@0.6.7-28152921.c48176c(nuxt@3.6.2)(vite@4.3.9)
+    version: /@nuxt/devtools-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9)
   '@nuxtjs/color-mode':
     specifier: ^3.3.0
     version: 3.3.0
@@ -61,6 +61,9 @@ devDependencies:
   '@vueuse/nuxt':
     specifier: ^10.2.1
     version: 10.2.1(nuxt@3.6.2)(vue@3.3.4)
+  bumpp:
+    specifier: ^9.1.1
+    version: 9.1.1
   consola:
     specifier: ^3.2.3
     version: 3.2.3
@@ -79,6 +82,9 @@ devDependencies:
   qr-scanner:
     specifier: ^1.4.2
     version: 1.4.2
+  simple-git:
+    specifier: ^3.19.1
+    version: 3.19.1
   stackblur-canvas:
     specifier: ^2.6.0
     version: 2.6.0
@@ -1128,6 +1134,28 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
+  /@jsdevtools/ez-spawn@3.0.4:
+    resolution: {integrity: sha512-f5DRIOZf7wxogefH03RjMPMdBF7ADTWUMoOs9kaJo06EfwF+aFhMZMDZxHg/Xe12hptN9xoZjGso2fdjapBRIA==}
+    engines: {node: '>=10'}
+    dependencies:
+      call-me-maybe: 1.0.2
+      cross-spawn: 7.0.3
+      string-argv: 0.3.2
+      type-detect: 4.0.8
+    dev: true
+
+  /@kwsites/file-exists@1.1.1:
+    resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@kwsites/promise-deferred@1.1.1:
+    resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
+    dev: true
+
   /@mapbox/node-pre-gyp@1.0.10:
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
     hasBin: true
@@ -1240,15 +1268,15 @@ packages:
     resolution: {integrity: sha512-GBzP8zOc7CGWyFQS6dv1lQz8VVpz5C2yRszbXufwG/9zhStTIH50EtD87NmWbTMwXDvZLNg8GIpb1UFdH93JCA==}
     dev: true
 
-  /@nuxt/devtools-edge@0.6.7-28152921.c48176c(nuxt@3.6.2)(vite@4.3.9):
-    resolution: {integrity: sha512-ZuHUA6k1isrH+Wuv76utz+eklMYxh1khZKhfffMyoaUCL7OlhfMshf3tmjyEDWMIq2/PZZwRcoTOQ6GxKCuf9A==}
+  /@nuxt/devtools-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9):
+    resolution: {integrity: sha512-HKr5YXTcz4lVuTak89skWG08PW3jDL5Mv55KgIeHFUzX3qaNrWve0d28frKen6LEKXP3ZS9Axs5zlnRZIAH5LQ==}
     hasBin: true
     peerDependencies:
       nuxt: ^3.6.1
       vite: '*'
     dependencies:
-      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge@0.6.7-28152921.c48176c(nuxt@3.6.2)(vite@4.3.9)
-      '@nuxt/devtools-wizard': /@nuxt/devtools-wizard-edge@0.6.7-28152921.c48176c
+      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9)
+      '@nuxt/devtools-wizard': /@nuxt/devtools-wizard-edge@0.6.7-28154360.9601cb4
       '@nuxt/kit': 3.6.2
       birpc: 0.2.12
       boxen: 7.1.1
@@ -1292,8 +1320,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@nuxt/devtools-kit-edge@0.6.7-28152921.c48176c(nuxt@3.6.2)(vite@4.3.9):
-    resolution: {integrity: sha512-2+TNFUv5hnxeZUWlF7Y7zopsKgayH84Hb8ye4ExNdhAaWT56dFsoB5njgCgMPfL+fr9noPQy3mXyGJTWoasgdQ==}
+  /@nuxt/devtools-kit-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9):
+    resolution: {integrity: sha512-G0oErkG6So1IScRl1A0/C+WaKrLioVf4h4SUi3hSh27IY08QzJdsDvg6AWb8WIXPiJxVTUgBFqbJdphR2ncRuw==}
     peerDependencies:
       nuxt: ^3.6.1
       vite: '*'
@@ -1308,8 +1336,8 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/devtools-wizard-edge@0.6.7-28152921.c48176c:
-    resolution: {integrity: sha512-zX/3db4Ox+eLoRdxCU2F4apZxjJ9SGLktCEFtt1t8qp6+lcFHWdWhdAIRdUM697E1FYzZNp8vwUqXjVJyPuhMQ==}
+  /@nuxt/devtools-wizard-edge@0.6.7-28154360.9601cb4:
+    resolution: {integrity: sha512-fHGXVlB9sEQDZc4G17vJT3w/64KnKhNtuyJVZZ6RioMxdKKLuJRdOEpXqPGxLf5iO3+OHlX0bfA5EizOfQKwZg==}
     hasBin: true
     dependencies:
       consola: 3.2.3
@@ -3035,6 +3063,21 @@ packages:
       semver: 7.5.4
     dev: true
 
+  /bumpp@9.1.1:
+    resolution: {integrity: sha512-T7/2QmRNhHRkH2+HgDs/xk4keom3nlCjwQn6kHdz0I0dQMVrs+YMOH5HyuhV0R3tha/tTYP030RG9uQKpQ9CRg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      '@jsdevtools/ez-spawn': 3.0.4
+      c12: 1.4.2
+      cac: 6.7.14
+      fast-glob: 3.3.0
+      prompts: 2.4.2
+      semver: 7.5.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}
     engines: {node: '>=12'}
@@ -3095,6 +3138,10 @@ packages:
     dependencies:
       function-bind: 1.1.1
       get-intrinsic: 1.2.1
+    dev: true
+
+  /call-me-maybe@1.0.2:
+    resolution: {integrity: sha512-HpX65o1Hnr9HH25ojC1YGs7HCQLq0GCOibSaWER0eNpgJ/Z1MZv2mTc7+xh6WOPxbRVcmgbv4hGU+uSQ/2xFZQ==}
     dev: true
 
   /callsites@3.1.0:
@@ -3984,7 +4031,7 @@ packages:
     dependencies:
       debug: 3.2.7
       is-core-module: 2.12.1
-      resolve: 1.22.3
+      resolve: 1.22.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7666,6 +7713,16 @@ packages:
       - supports-color
     dev: true
 
+  /simple-git@3.19.1:
+    resolution: {integrity: sha512-Ck+rcjVaE1HotraRAS8u/+xgTvToTuoMkT9/l9lvuP5jftwnYUp6DwuJzsKErHgfyRk8IB8pqGHWEbM3tLgV1w==}
+    dependencies:
+      '@kwsites/file-exists': 1.1.1
+      '@kwsites/promise-deferred': 1.1.1
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /sirv@2.0.3:
     resolution: {integrity: sha512-O9jm9BsID1P+0HOi81VpXPoDxYP374pkOLzACAoyUQ/3OUVndNpsz6wMnY2z+yOxzbllCKZrM+9QrWsv4THnyA==}
     engines: {node: '>= 10'}
@@ -7789,6 +7846,11 @@ packages:
   /streamsearch@1.1.0:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
     engines: {node: '>=10.0.0'}
+    dev: true
+
+  /string-argv@0.3.2:
+    resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
+    engines: {node: '>=0.6.19'}
     dev: true
 
   /string-width@4.2.3:
@@ -8139,6 +8201,11 @@ packages:
     engines: {node: '>= 0.8.0'}
     dependencies:
       prelude-ls: 1.2.1
+    dev: true
+
+  /type-detect@4.0.8:
+    resolution: {integrity: sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==}
+    engines: {node: '>=4'}
     dev: true
 
   /type-fest@0.20.2:
