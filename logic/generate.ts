@@ -653,10 +653,10 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       }
       else {
         if (_pixelStyle === 'rounded') {
-          corner(0, (top && left && topLeft) ? darkColor : lightColor)
-          corner(2, (top && right && topRight) ? darkColor : lightColor)
-          corner(1, (bottom && left && bottomLeft) ? darkColor : lightColor)
-          corner(3, (bottom && right && bottomRight) ? darkColor : lightColor)
+          corner(0, (top && left && topLeft && !isBorder) ? darkColor : lightColor)
+          corner(2, (top && right && topRight && !isBorder) ? darkColor : lightColor)
+          corner(1, (bottom && left && bottomLeft && !isBorder) ? darkColor : lightColor)
+          corner(3, (bottom && right && bottomRight && !isBorder) ? darkColor : lightColor)
         }
       }
       dot()
