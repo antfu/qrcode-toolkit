@@ -33,23 +33,11 @@ interface PixelInfo {
   marker?: MarkerInfo
 }
 
-const disconnectBorder = false
-
-export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGeneratorState) {
-  if (!canvas)
+export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCodeGeneratorState) {
+  if (!outCanvas)
     return
 
-  const seg = QrSegment.makeSegments(state.text || 'qrcode.antfu.me')
-  const qr = QrCode.encodeSegments(
-    seg,
-    eccMap[state.ecc],
-    state.minVersion,
-    state.maxVersion,
-    state.maskPattern,
-    state.boostECC,
-  )
-
-  qrcode.value = qr
+  const qr = createQrInstance(state)
 
   const {
     scale: cell,
@@ -60,7 +48,6 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     marginNoiseRate,
     marginNoiseSpace,
     pixelStyle,
-
     markerSub,
     invert,
     renderPointsType,
@@ -77,11 +64,14 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
   const width: number = (qr.size + marginLeft + marginRight) * cell
   const height: number = (qr.size + marginTop + marginBottom) * cell
 
-  const can = document.createElement('canvas')
-  can.width = width
-  can.height = height
-  const ctx = can.getContext('2d', { willReadFrequently: true })!
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  canvas.style.imageRendering = 'pixelated'
+  canvas.style.imageRendering = 'crisp-edges'
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!
   ctx.clearRect(0, 0, width, height)
+  ctx.imageSmoothingEnabled = false
 
   generateQRCodeInfo.value = {
     width,
@@ -154,8 +144,10 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
           (x >= -1 && x <= 7 && y >= -1 && y <= 7)
        || (x >= -1 && x <= 7 && y >= qr.size - 8 && y <= qr.size)
        || (x >= qr.size - 8 && x <= qr.size && y >= -1 && y <= 7)
-        )
+        ) {
           isBorder = false
+          isIgnored = false
+        }
       }
       else if (marginNoiseSpace === 'minimal' || marginNoiseSpace === 'extreme') {
         if (
@@ -577,6 +569,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     }
 
     function dot(color = isDark ? darkColor : lightColor) {
+      ctx.strokeStyle = 'none'
       ctx.fillStyle = color
       ctx.beginPath()
       ctx.arc(x * cell + halfcell, y * cell + halfcell, halfcell, 0, Math.PI * 2)
@@ -585,14 +578,40 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
 
     function corner(index: number, color?: string) {
       const pos = [
-        [0, 0], // top left
-        [0, halfcell], // bottom left
-        [halfcell, 0], // top right
-        [halfcell, halfcell], // bottom right
+        [0, 0, 0, 1, 1, 0], // top left
+        [0, 2, 0, 1, 1, 2], // bottom left
+        [2, 0, 2, 1, 1, 0], // top right
+        [2, 2, 2, 1, 1, 2], // bottom right
       ][index]
+
+      const points: [number, number][] = [
+        [
+          x * cell + halfcell * pos[0],
+          y * cell + halfcell * pos[1],
+        ],
+        [
+          x * cell + halfcell * pos[2],
+          y * cell + halfcell * pos[3],
+        ],
+        [
+          x * cell + halfcell * pos[4],
+          y * cell + halfcell * pos[5],
+        ],
+      ]
+
+      ctx.strokeStyle = 'none'
       if (color)
         ctx.fillStyle = color
-      ctx.fillRect(x * cell + pos[0], y * cell + pos[1], halfcell, halfcell)
+      ctx.beginPath()
+      ctx.moveTo(...points[0])
+      ctx.lineTo(...points[1])
+      ctx.arcTo(
+        ...points[0],
+        ...points[2],
+        halfcell + 2,
+      )
+      ctx.lineTo(...points[0])
+      ctx.fill()
     }
 
     // Skip white pixels when its not rounded
@@ -614,12 +633,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         const pixel = pixels.find(p => p.x === x + dx && p.y === y + dy)
         if (!pixel)
           return true
-        if (pixel.isIgnored)
-          return false
-        if (disconnectBorder)
-          return pixel.isDark && pixel.isBorder === isBorder
-        else
-          return pixel.isDark
+        if (pixel.isIgnored || (pixel.isBorder && !pixel.isDark))
+          return null
+        return pixel.isDark
       }
 
       const top = shouldConnect(0, -1)
@@ -632,31 +648,75 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
       const bottomRight = shouldConnect(1, 1)
 
       if (isDark) {
-        square(lightColor)
-        ctx.fillStyle = darkColor
-        if (top && _pixelStyle !== 'row') {
-          corner(0)
-          corner(2)
+        const colors: (null | boolean)[] = [
+          null,
+          null,
+          null,
+          null,
+        ]
+        if (_pixelStyle !== 'row') {
+          colors[0] ||= top
+          colors[2] ||= top
         }
-        if (bottom && _pixelStyle !== 'row') {
-          corner(1)
-          corner(3)
+        if (_pixelStyle !== 'row') {
+          colors[1] ||= bottom
+          colors[3] ||= bottom
         }
-        if (left && _pixelStyle !== 'column') {
-          corner(0)
-          corner(1)
+        if (_pixelStyle !== 'column') {
+          colors[0] ||= left
+          colors[1] ||= left
         }
-        if (right && _pixelStyle !== 'column') {
-          corner(2)
-          corner(3)
+        if (_pixelStyle !== 'column') {
+          colors[2] ||= right
+          colors[3] ||= right
         }
+
+        if (_pixelStyle === 'rounded') {
+          if ((top == null && left != null) || (left == null && top != null))
+            colors[0] ||= true
+          if ((top == null && right != null) || (right == null && top != null))
+            colors[2] ||= true
+          if ((bottom == null && left != null) || (left == null && bottom != null))
+            colors[1] ||= true
+          if ((bottom == null && right != null) || (right == null && bottom != null))
+            colors[3] ||= true
+        }
+
+        colors.forEach((i, idx) => {
+          if (i != null)
+            corner(idx, i ? darkColor : lightColor)
+        })
       }
       else {
         if (_pixelStyle === 'rounded') {
-          corner(0, (top && left && topLeft && !isBorder) ? darkColor : lightColor)
-          corner(2, (top && right && topRight && !isBorder) ? darkColor : lightColor)
-          corner(1, (bottom && left && bottomLeft && !isBorder) ? darkColor : lightColor)
-          corner(3, (bottom && right && bottomRight && !isBorder) ? darkColor : lightColor)
+          if (top != null || left != null)
+            corner(0, (top && left && topLeft && !isBorder) ? darkColor : lightColor)
+          if (top != null || right != null)
+            corner(2, (top && right && topRight && !isBorder) ? darkColor : lightColor)
+          if (bottom != null || left != null)
+            corner(1, (bottom && left && bottomLeft && !isBorder) ? darkColor : lightColor)
+          if (bottom != null || right != null)
+            corner(3, (bottom && right && bottomRight && !isBorder) ? darkColor : lightColor)
+        }
+        else if (_pixelStyle === 'row') {
+          if (left != null) {
+            corner(0, lightColor)
+            corner(1, lightColor)
+          }
+          if (right != null) {
+            corner(2, lightColor)
+            corner(3, lightColor)
+          }
+        }
+        else if (_pixelStyle === 'column') {
+          if (top != null) {
+            corner(0, lightColor)
+            corner(2, lightColor)
+          }
+          if (bottom != null) {
+            corner(1, lightColor)
+            corner(3, lightColor)
+          }
         }
       }
       dot()
@@ -695,9 +755,9 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     await applyBackground()
 
   // final, copy offscreen canvas to the real one
-  canvas.width = width
-  canvas.height = height
-  const realCtx = canvas.getContext('2d')!
+  outCanvas.width = width
+  outCanvas.height = height
+  const realCtx = outCanvas.getContext('2d')!
   realCtx.save()
   realCtx.fillStyle = invert ? state.darkColor : state.lightColor
   realCtx.fillRect(0, 0, width, height)
@@ -709,7 +769,7 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
     -(state.transformScale - 1) * width / 2,
     -(state.transformScale - 1) * height / 2,
   )
-  realCtx.drawImage(can, 0, 0, width, height)
+  realCtx.drawImage(canvas, 0, 0, width, height)
   realCtx.restore()
 
   async function applyPerspective() {
@@ -795,16 +855,30 @@ export async function generateQRCode(canvas: HTMLCanvasElement, state: QRCodeGen
         await new Promise(resolve => img.onload = resolve).then()
         // draw the image full cover the canvas with aspect ratio
         const imgRatio = img.width / img.height
-        const canvasRatio = canvas.width / canvas.height
+        const canvasRatio = outCanvas.width / outCanvas.height
         if (imgRatio < canvasRatio)
-          ctx.drawImage(img, 0, (canvas.height - canvas.width / imgRatio) / 2, canvas.width, canvas.width / imgRatio)
+          ctx.drawImage(img, 0, (outCanvas.height - outCanvas.width / imgRatio) / 2, outCanvas.width, outCanvas.width / imgRatio)
         else
-          ctx.drawImage(img, (canvas.width - canvas.height * imgRatio) / 2, 0, canvas.height * imgRatio, canvas.height)
+          ctx.drawImage(img, (outCanvas.width - outCanvas.height * imgRatio) / 2, 0, outCanvas.height * imgRatio, outCanvas.height)
       }
     }
 
     ctx.drawImage(clone, 0, 0)
   }
+}
+
+function createQrInstance(state: QRCodeGeneratorState) {
+  const seg = QrSegment.makeSegments(state.text || 'qrcode.antfu.me')
+  const qr = QrCode.encodeSegments(
+    seg,
+    eccMap[state.ecc],
+    state.minVersion,
+    state.maxVersion,
+    state.maskPattern,
+    state.boostECC,
+  )
+  qrcode.value = qr
+  return qr
 }
 
 function pointToLineProjection(px: number, py: number, x1: number, y1: number, x2: number, y2: number) {
