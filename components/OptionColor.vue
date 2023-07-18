@@ -10,6 +10,6 @@ const value = defineModel<string>('modelValue', {
     <div text-sm font-mono>
       {{ value }}
     </div>
-    <input v-model="value" type="color" absolute inset-0 z-10 opacity-0.1>
+    <input v-model="value" type="color" absolute inset-0 z-10 wa cursor-pointer opacity-0.1>
   </div>
 </template>

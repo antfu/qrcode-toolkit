@@ -31,7 +31,7 @@ const value = defineModel<string | number>('modelValue', {
       <input
         v-model="value" type="radio" :value="i"
         :title="titles?.[idx]"
-        absolute inset-0 op-0.1
+        absolute inset-0 cursor-pointer op-0.1
       >
     </label>
   </fieldset>
