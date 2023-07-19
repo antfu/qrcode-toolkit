@@ -73,6 +73,14 @@ onMounted(() => {
       <div i-ri-compasses-2-line />
       Compare
     </button>
+    <button
+      flex="~ gap-1.5 items-center" text-button
+      :class="view === 'scan' ? 'bg-secondary' : 'op50'"
+      @click="view = 'scan'"
+    >
+      <div i-ri-qr-scan-2-line />
+      Scanner
+    </button>
     <div flex-auto />
     <div>
       <a href="https://antfu.me" target="_blank" op75 hover:underline hover:op100>Anthony Fu</a><span op50>'s QR Toolkit</span>
@@ -92,6 +100,9 @@ onMounted(() => {
   </div>
   <div v-show="view === 'compare'" w-full>
     <Compare :state="state" />
+  </div>
+  <div v-if="view === 'scan'" w-full>
+    <Scanner :state="state" />
   </div>
   <div v-if="view === 'credit'" w-full>
     <Credits />

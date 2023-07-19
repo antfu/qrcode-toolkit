@@ -42,6 +42,7 @@
     "nuxt": "^3.6.2",
     "pinia": "^2.1.4",
     "qr-scanner": "^1.4.2",
+    "qrcode-opencv-wechat": "^0.0.1",
     "simple-git": "^3.19.1",
     "stackblur-canvas": "^2.6.0",
     "typescript": "^5.1.6",

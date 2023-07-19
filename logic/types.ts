@@ -161,9 +161,18 @@ export interface UploadState {
   qrcodeHeight?: number
 }
 
+export interface ScannerState {
+  resize: number
+  contrast: number
+  blur: number
+  brightness: number
+  grayscale: boolean
+}
+
 export interface State {
   qrcode: QRCodeGeneratorState
   compare: ComparionState
+  scanner: ScannerState
   uploaded: UploadState
 }
 

@@ -1,11 +1,11 @@
 import type { QrCode } from '../vendor/qrcodegen'
-import type { ComparionState, GeneratedQRInfo, QRCodeGeneratorState, State } from './types'
+import type { ComparionState, GeneratedQRInfo, QRCodeGeneratorState, ScannerState, State } from './types'
 
 export const storeIndex = useLocalStorage('qrd-state-index', 1, { listenToStorageChanges: false })
 export const showGridHelper = ref<boolean>(false)
 export const showDownloadDialog = ref<boolean>(false)
 export const hasParentWindow = ref<boolean>(false)
-export const view = useLocalStorage<'generator' | 'compare' | 'credit'>('qrd-tab', 'generator', { listenToStorageChanges: false })
+export const view = useLocalStorage<'generator' | 'compare' | 'credit' | 'scan'>('qrd-tab', 'generator', { listenToStorageChanges: false })
 
 export const qrcode = shallowRef<QrCode>()
 export const dataUrlGeneratedQRCode = ref<string>()
@@ -80,10 +80,21 @@ export function defaultCompareState(): ComparionState {
   }
 }
 
+export function defaultScannerState(): ScannerState {
+  return {
+    grayscale: true,
+    contrast: 500,
+    brightness: 200,
+    blur: 0.2,
+    resize: 300,
+  }
+}
+
 export function defaultState(): State {
   return {
     qrcode: defaultGeneratorState(),
     compare: defaultCompareState(),
+    scanner: defaultScannerState(),
     uploaded: {
       image: undefined,
       qrcode: undefined,

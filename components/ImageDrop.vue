@@ -16,7 +16,7 @@ function clear() {
   <div
     border="1 base rounded" flex="~ col items-center justify-center"
     :class="value ? '' : 'border-dashed'"
-    relative h-50 w-50 cursor-pointer of-hidden
+    relative aspect-ratio-1 h-50 w-50 cursor-pointer of-hidden
   >
     <img
       v-if="value"

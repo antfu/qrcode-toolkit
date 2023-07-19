@@ -42,7 +42,7 @@ devDependencies:
     version: 1.1.11
   '@nuxt/devtools':
     specifier: npm:@nuxt/devtools-edge@latest
-    version: /@nuxt/devtools-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9)
+    version: /@nuxt/devtools-edge@0.6.7-28162910.57b9ca5(nuxt@3.6.2)(vite@4.3.9)
   '@nuxtjs/color-mode':
     specifier: ^3.3.0
     version: 3.3.0
@@ -82,6 +82,9 @@ devDependencies:
   qr-scanner:
     specifier: ^1.4.2
     version: 1.4.2
+  qrcode-opencv-wechat:
+    specifier: ^0.0.1
+    version: 0.0.1
   simple-git:
     specifier: ^3.19.1
     version: 3.19.1
@@ -1268,15 +1271,15 @@ packages:
     resolution: {integrity: sha512-GBzP8zOc7CGWyFQS6dv1lQz8VVpz5C2yRszbXufwG/9zhStTIH50EtD87NmWbTMwXDvZLNg8GIpb1UFdH93JCA==}
     dev: true
 
-  /@nuxt/devtools-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9):
-    resolution: {integrity: sha512-HKr5YXTcz4lVuTak89skWG08PW3jDL5Mv55KgIeHFUzX3qaNrWve0d28frKen6LEKXP3ZS9Axs5zlnRZIAH5LQ==}
+  /@nuxt/devtools-edge@0.6.7-28162910.57b9ca5(nuxt@3.6.2)(vite@4.3.9):
+    resolution: {integrity: sha512-JYbRTE/93kWFB09SMrksLvWns96AJTlW1yC1Pk01bt/qE9BLRElBw2MXilqy9eD23A2bjVAS3G2bqiggShkAjw==}
     hasBin: true
     peerDependencies:
       nuxt: ^3.6.1
       vite: '*'
     dependencies:
-      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9)
-      '@nuxt/devtools-wizard': /@nuxt/devtools-wizard-edge@0.6.7-28154360.9601cb4
+      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge@0.6.7-28162910.57b9ca5(nuxt@3.6.2)(vite@4.3.9)
+      '@nuxt/devtools-wizard': /@nuxt/devtools-wizard-edge@0.6.7-28162910.57b9ca5
       '@nuxt/kit': 3.6.2
       birpc: 0.2.12
       boxen: 7.1.1
@@ -1320,8 +1323,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@nuxt/devtools-kit-edge@0.6.7-28154360.9601cb4(nuxt@3.6.2)(vite@4.3.9):
-    resolution: {integrity: sha512-G0oErkG6So1IScRl1A0/C+WaKrLioVf4h4SUi3hSh27IY08QzJdsDvg6AWb8WIXPiJxVTUgBFqbJdphR2ncRuw==}
+  /@nuxt/devtools-kit-edge@0.6.7-28162910.57b9ca5(nuxt@3.6.2)(vite@4.3.9):
+    resolution: {integrity: sha512-hTe5XCFw75DBszBYPHLwLDVEOjxrdpVUEzPTOFGHjHqpmuN4OREO7d8eFGFxuEQwJJpw5gKMOivv3Uh8Rxw0FQ==}
     peerDependencies:
       nuxt: ^3.6.1
       vite: '*'
@@ -1336,8 +1339,8 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/devtools-wizard-edge@0.6.7-28154360.9601cb4:
-    resolution: {integrity: sha512-fHGXVlB9sEQDZc4G17vJT3w/64KnKhNtuyJVZZ6RioMxdKKLuJRdOEpXqPGxLf5iO3+OHlX0bfA5EizOfQKwZg==}
+  /@nuxt/devtools-wizard-edge@0.6.7-28162910.57b9ca5:
+    resolution: {integrity: sha512-ZeaVnjbGClp2/hu3PAoa7fnKHTYAnogBJVv/bIsmpVYfl77V3Ps+0hcMiGE1t27OI8fhvc8bxXUrpYck6Oc0oQ==}
     hasBin: true
     dependencies:
       consola: 3.2.3
@@ -7290,6 +7293,10 @@ packages:
     resolution: {integrity: sha512-kV1yQUe2FENvn59tMZW6mOVfpq9mGxGf8l6+EGaXUOd4RBOLg7tRC83OrirM5AtDvZRpdjdlXURsHreAOSPOUw==}
     dependencies:
       '@types/offscreencanvas': 2019.7.0
+    dev: true
+
+  /qrcode-opencv-wechat@0.0.1:
+    resolution: {integrity: sha512-7VBBb0sgUw75BE1/DuKb38TV6jTNj+QBzafwRNXUscxCA2Md6romPMC03daWYOg+MtKDE2MU55+mvHxa1Aj1Sw==}
     dev: true
 
   /queue-microtask@1.2.3:
