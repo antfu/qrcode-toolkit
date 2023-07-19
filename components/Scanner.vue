@@ -332,13 +332,13 @@ const { isOverDropZone } = useDropZone(document.body, {
       <span i-ri-lightbulb-line mt-2 flex-none text-lg text-yellow />
       <div>
         <p mb4>
-          This scanner uses the scanner algorithm open sourced by WeChat, based on OpenCV.
-          It provides much better recognizability than average scanners.
+          This scanner uses the algorithm open sourced by WeChat, based on OpenCV.
+          It uses two CNN-based models and provides much better recognizability than average scanners.
           Try adjusting the preprocessing options a couple times to get the best result.
         </p>
         <p>
-          The detection and decoding is done locally in your browser.
-          This is made possible by compiling OpenCV with WeChat's scanner into WebAssembly.
+          The detection and decoding is done completely local in your browser.
+          This is made possible by compiling OpenCV with the WeChat's scanner into WebAssembly.
           If you are interested in learning more, check out <a href="https://github.com/antfu/qrcode-opencv-wechat" target="_blank" font-mono op75 hover:underline hover:op100>qrcode-opencv-wechat</a>.
         </p>
       </div>
