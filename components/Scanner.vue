@@ -3,7 +3,8 @@
 import { debounce } from 'perfect-debounce'
 import type { ScanResult } from 'qrcode-opencv-wechat'
 import { ready, scan } from 'qrcode-opencv-wechat'
-import { defaultScannerState, view } from '~/logic/state'
+import { defaultScannerState } from '~/logic/state'
+import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
 const props = defineProps<{

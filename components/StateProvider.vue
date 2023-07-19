@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
 import { sendParentEvent } from '~/logic/messaging'
-import { defaultState, hasParentWindow, showGridHelper, storeIndex, view } from '~/logic/state'
+import { defaultState, hasParentWindow, showGridHelper, storeIndex } from '~/logic/state'
+import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
 defineProps<{

@@ -3,7 +3,8 @@ import { debounce } from 'perfect-debounce'
 import { sendQRCodeToCompare } from '~/logic/utils'
 import type { Segment, State } from '~/logic/types'
 import { HightlightFactor, compareSegments, segmentImage } from '~/logic/diff'
-import { defaultCompareState, showDownloadDialog, showGridHelper, view } from '~/logic/state'
+import { defaultCompareState, showDownloadDialog, showGridHelper } from '~/logic/state'
+import { view } from '~/logic/view'
 
 const props = defineProps<{
   state: State

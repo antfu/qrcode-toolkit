@@ -5,7 +5,6 @@ export const storeIndex = useLocalStorage('qrd-state-index', 1, { listenToStorag
 export const showGridHelper = ref<boolean>(false)
 export const showDownloadDialog = ref<boolean>(false)
 export const hasParentWindow = ref<boolean>(false)
-export const view = useLocalStorage<'generator' | 'compare' | 'credit' | 'scan'>('qrd-tab', 'generator', { listenToStorageChanges: false })
 
 export const qrcode = shallowRef<QrCode>()
 export const dataUrlGeneratedQRCode = ref<string>()
