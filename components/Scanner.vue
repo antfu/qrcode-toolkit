@@ -20,6 +20,7 @@ const reading = ref(false)
 const loading = ref(true)
 const error = ref<any>()
 const randomTrying = ref(false)
+const randomTryingCount = ref(0)
 
 onMounted(() => {
   ready()
@@ -33,15 +34,34 @@ onMounted(() => {
     })
 })
 
-async function runEager() {
+const image = ref<HTMLImageElement>()
+
+async function loadImage() {
+  image.value = undefined
+  if (dataUrlInput.value) {
+    const img = new Image()
+    const promise = new Promise(resolve => img.onload = resolve)
+    img.src = dataUrlInput.value
+    await promise
+    image.value = img
+  }
+}
+
+watch(
+  () => dataUrlInput.value,
+  async () => {
+    await loadImage()
+  },
+  { immediate: true },
+)
+
+async function runEager(display = true) {
+  if (!image.value)
+    return
+
   clear()
   reading.value = true
-  const img = new Image()
-  const promise = new Promise(resolve => img.onload = resolve)
-  img.src = dataUrlInput.value
-  await promise
-
-  const { width, height } = img
+  const { width, height } = image.value
   let w = width
   let h = height
   if (width > height) {
@@ -67,15 +87,17 @@ async function runEager() {
     `brightness(${state.value.brightness / 100})`,
     `blur(${state.value.blur}px)`,
   ].filter(Boolean).join(' ')
-  ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, w, h)
+  ctx.drawImage(image.value, 0, 0, image.value.width, image.value.height, 0, 0, w, h)
 
-  canvasPreview.value!.width = w
-  canvasPreview.value!.height = h
-  const ctxPreview = canvasPreview.value!.getContext('2d')!
-  ctxPreview.drawImage(canvas, 0, 0)
+  if (display) {
+    canvasPreview.value!.width = w
+    canvasPreview.value!.height = h
+    const ctxPreview = canvasPreview.value!.getContext('2d')!
+    ctxPreview.drawImage(canvas, 0, 0)
+  }
 
   try {
-    result.value = await scan(canvas, { includeRectCanvas: true })
+    result.value = await scan(canvas, { includeRectCanvas: display })
     console.log('Scan result', result.value)
 
     if (result.value.rectCanvas) {
@@ -102,11 +124,12 @@ const run = debounce(runEager, 500)
 const { copy, copied } = useClipboard()
 
 watch(
-  () => [dataUrlInput.value, state.value],
+  () => [state.value, image.value],
   () => {
     if (randomTrying.value)
       return
-    if (!canvasPreview.value || !canvasRect.value || !dataUrlInput.value)
+    randomTryingCount.value = 0
+    if (!canvasPreview.value || !canvasRect.value || !dataUrlInput.value || !image.value)
       return
     run()
   },
@@ -117,28 +140,31 @@ function clear() {
   error.value = null
   reading.value = false
   result.value = undefined
-  canvasPreview.value!.getContext('2d')!.clearRect(0, 0, canvasPreview.value!.width, canvasPreview.value!.height)
-  canvasRect.value!.getContext('2d')!.clearRect(0, 0, canvasRect.value!.width, canvasRect.value!.height)
+  canvasPreview.value?.getContext('2d')!.clearRect(0, 0, canvasPreview.value!.width, canvasPreview.value!.height)
+  canvasRect.value?.getContext('2d')!.clearRect(0, 0, canvasRect.value!.width, canvasRect.value!.height)
 }
 
 function random() {
   state.value.blur = Math.round(Math.random() * 1.5 * 10) / 10
   state.value.brightness = Math.round(Math.random() * 300 + 100)
   state.value.contrast = Math.round(Math.random() * 500 + 150)
-  state.value.resize = Math.round(Math.random() * 40) * 10 + 100
+  state.value.resize = Math.round(Math.random() * 20) * 10 + 150
 }
 
 async function randomTries() {
   randomTrying.value = true
+  randomTryingCount.value = 0
   const tries = 50
   try {
-    for (let i = 0; i < tries; i++) {
+    for (let i = 0; i <= tries; i++) {
+      await new Promise(resolve => setTimeout(resolve, 0))
+      randomTryingCount.value = i
       random()
-      await nextTick()
-      const result = await runEager()
+      const result = await runEager(false)
       if (result?.text)
         break
     }
+    await runEager(true)
   }
   finally {
     randomTrying.value = false
@@ -208,7 +234,7 @@ const { isOverDropZone } = useDropZone(document.body, {
               ? 'text-true-gray:80'
               : result?.text
                 ? 'bg-green-500:10 text-green border-current'
-                : reading
+                : (reading || randomTrying)
                   ? 'bg-gray-500:10 text-gray'
                   : 'bg-orange-500:10 text-orange border-current'
       "
@@ -223,7 +249,7 @@ const { isOverDropZone } = useDropZone(document.body, {
                 ? 'i-ri-qr-scan-2-line'
                 : result?.text
                   ? 'i-ri-checkbox-circle-fill'
-                  : reading
+                  : (reading || randomTrying)
                     ? 'i-ri-loader-4-fill animate-spin'
                     : 'i-ri-error-warning-fill'
         "
@@ -237,8 +263,8 @@ const { isOverDropZone } = useDropZone(document.body, {
       <div v-else-if="!dataUrlInput">
         Upload a image to scan
       </div>
-      <div v-else-if="reading" animate-pulse>
-        Scanning...
+      <div v-else-if="reading || randomTrying" animate-pulse>
+        Scanning... <span v-if="randomTryingCount" text-xs op50>(x{{ randomTryingCount }})</span>
       </div>
       <template v-else-if="result?.text">
         <div font-mono>
@@ -260,7 +286,7 @@ const { isOverDropZone } = useDropZone(document.body, {
           <OptionCheckbox v-model="state.grayscale" />
         </OptionItem>
         <OptionItem title="Resize" @reset="state.resize = 300">
-          <OptionSlider v-model="state.resize" :min="50" :max="1000" :step="10" />
+          <OptionSlider v-model="state.resize" :min="150" :max="1000" :step="10" />
         </OptionItem>
         <OptionItem title="Contrast" @reset="state.contrast = 100">
           <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" />
@@ -273,7 +299,7 @@ const { isOverDropZone } = useDropZone(document.body, {
         </OptionItem>
       </div>
 
-      <div flex="~ gap-2">
+      <div flex="~ gap-2 items-center">
         <button
           text-sm op75 text-button hover:op100
           @click="random()"
@@ -286,8 +312,11 @@ const { isOverDropZone } = useDropZone(document.body, {
           @click="randomTries()"
         >
           <div i-ri-refresh-fill />
-          Random Tries (50 times)
+          Random Tries (x50 times)
         </button>
+        <div v-if="randomTryingCount" text-xs op50>
+          {{ randomTryingCount }} tries
+        </div>
         <div flex-auto />
         <button
           text-sm op75 text-button hover:text-red hover:op100
