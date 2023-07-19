@@ -22,7 +22,7 @@ watch(() => props.qrcode, () => {
     .then((text) => {
       // eslint-disable-next-line no-console
       console.log('scanned', text)
-      result.value = text.result?.data
+      result.value = text.result?.text
       error.value = text.error
       if (!result.value && !error.value)
         error.value = new Error('Failed to scan QR code')
@@ -88,7 +88,7 @@ function apply() {
         <button op75 text-button @click="cancel()">
           Cancel
         </button>
-        <button text-button @click="apply()">
+        <button text-button :disabled="!result" :class="result ? '' : 'op50'" @click="apply()">
           Apply to text
         </button>
       </div>

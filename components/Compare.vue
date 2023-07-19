@@ -33,9 +33,6 @@ const selectedSegment = ref<Segment | null>(null)
 const imageSegments = shallowRef<Segment[]>()
 const qrcodeSegments = shallowRef<Segment[]>()
 
-// const scanResultImage = shallowRef<ScanResult>()
-// const scanResultQRCode = shallowRef<ScanResult>()
-
 const debouncedImageSeg = debounce(async () => {
   imageSegments.value = dataurl.value
     ? await segmentImage(
@@ -73,28 +70,6 @@ watch(
   },
   { immediate: true },
 )
-
-// watch(
-//   dataUrlQRCode,
-//   async (v) => {
-//     if (!v)
-//       scanResultQRCode.value = undefined
-//     else
-//       scanResultQRCode.value = await scanQRCodeFromDataUrl(v)
-//   },
-//   { immediate: true },
-// )
-
-// watch(
-//   dataurl,
-//   async (v) => {
-//     if (!v)
-//       scanResultImage.value = undefined
-//     else
-//       scanResultImage.value = await scanQRCodeFromDataUrl(v)
-//   },
-//   { immediate: true },
-// )
 
 const { isOverDropZone } = useDropZone(document.body, {
   onDrop(files) {

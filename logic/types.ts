@@ -1,5 +1,3 @@
-import type QrScanner from 'qr-scanner'
-
 export const PixelStyles = [
   'square',
   'rounded',
@@ -198,9 +196,4 @@ export interface Diff {
   avarageLuminance: number
   lightLuminance: number
   darkLuminance: number
-}
-
-export interface ScanResult {
-  result: QrScanner.ScanResult | null
-  error: Error | null
 }
