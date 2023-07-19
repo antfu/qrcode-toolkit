@@ -140,9 +140,37 @@ const { isOverDropZone } = useDropZone(document.body, {
 
 <template>
   <div flex="~ col gap-4">
+    <div grid="~ cols-3 gap-2">
+      <div text-center text-xs op50>
+        Upload
+      </div>
+      <div text-center text-xs op50>
+        Preprocessed
+      </div>
+      <div text-center text-xs op50>
+        Matched
+      </div>
+      <ImageDrop
+        v-model="dataUrlInput"
+        title="QRCode"
+        h-auto w-full
+        @update:model-value="result = undefined"
+      />
+      <div w-full border="~ base rounded" :class="dataUrlInput ? '' : 'op50'">
+        <canvas v-show="dataUrlInput" ref="canvasPreview" w-full />
+        <div v-if="!dataUrlInput" h-full w-full flex="~">
+          <div i-ri-prohibited-line ma text-4xl op20 />
+        </div>
+      </div>
+      <div border="~ base rounded" :class="result?.rectCanvas ? '' : 'op50'" aspect-ratio-1 w-full>
+        <canvas v-show="result?.rectCanvas" ref="canvasRect" w-full />
+        <div v-if="!result?.rectCanvas" h-full w-full flex="~">
+          <div i-ri-prohibited-line ma text-4xl op20 />
+        </div>
+      </div>
+    </div>
     <div
-      p4
-      border="~ base rounded"
+      rounded p4 border="~ base op50"
       flex="~ gap-2 items-center"
       :class="
         error
@@ -152,10 +180,10 @@ const { isOverDropZone } = useDropZone(document.body, {
             : !dataUrlInput
               ? 'text-true-gray:80'
               : result?.text
-                ? 'bg-green-500:10 text-green'
+                ? 'bg-green-500:10 text-green border-current'
                 : reading
                   ? 'bg-gray-500:10 text-gray'
-                  : 'bg-orange-500:10 text-orange'
+                  : 'bg-orange-500:10 text-orange border-current'
       "
     >
       <div
@@ -190,32 +218,13 @@ const { isOverDropZone } = useDropZone(document.body, {
           {{ result?.text }}
         </div>
         <div flex-auto />
-        <button icon-button @click="copy(result?.text)">
-          <div :class="copied ? 'i-ri-check-line' : 'i-ri-clipboard-line'" text-sm />
+        <button my--2 text-sm icon-button @click="copy(result?.text)">
+          <div :class="copied ? 'i-ri-check-line' : 'i-ri-clipboard-line'" />
         </button>
       </template>
       <div v-else>
         No QR code found
       </div>
-    </div>
-    <div grid="~ cols-3 gap-2">
-      <div text-center text-xs op50>
-        Upload
-      </div>
-      <div text-center text-xs op50>
-        Preprocessed
-      </div>
-      <div text-center text-xs op50>
-        Matched
-      </div>
-      <ImageDrop
-        v-model="dataUrlInput"
-        title="QRCode"
-        h-auto w-full
-        @update:model-value="result = undefined"
-      />
-      <canvas v-show="dataUrlInput" ref="canvasPreview" w-full border="~ base rounded" />
-      <canvas v-show="result?.text" ref="canvasRect" w-full border="~ base rounded" />
     </div>
     <div border="~ base rounded" flex="~ col gap-2" p4>
       <OptionItem title="Grayscale">
