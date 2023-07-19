@@ -139,8 +139,8 @@ const { isOverDropZone } = useDropZone(document.body, {
 </script>
 
 <template>
-  <div flex="~ col gap-4">
-    <div grid="~ cols-3 gap-2">
+  <div flex="~ col gap-3">
+    <div grid="~ cols-3 gap-2" mt8>
       <div text-center text-xs op50>
         Upload
       </div>
@@ -176,7 +176,7 @@ const { isOverDropZone } = useDropZone(document.body, {
         error
           ? 'bg-red-500:10 text-red'
           : loading
-            ? 'bg-cyan-500:10 text-cyan'
+            ? 'text-cyan'
             : !dataUrlInput
               ? 'text-true-gray:80'
               : result?.text
