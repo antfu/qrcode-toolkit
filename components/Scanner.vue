@@ -231,7 +231,7 @@ const { isOverDropZone } = useDropZone(document.body, {
         <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" />
       </OptionItem>
       <OptionItem title="Blur">
-        <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" />
+        <OptionSlider v-model="state.blur" :min="0" :max="10" :step="0.05" />
       </OptionItem>
     </div>
 
