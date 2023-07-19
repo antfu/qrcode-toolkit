@@ -156,17 +156,13 @@ const { isOverDropZone } = useDropZone(document.body, {
         h-auto w-full
         @update:model-value="result = undefined"
       />
-      <div w-full border="~ base rounded" :class="dataUrlInput ? '' : 'op50'">
-        <canvas v-show="dataUrlInput" ref="canvasPreview" w-full />
-        <div v-if="!dataUrlInput" h-full w-full flex="~">
-          <div i-ri-prohibited-line ma text-4xl op20 />
-        </div>
+      <div border="~ base rounded" :class="dataUrlInput ? '' : 'op50'" aspect-ratio-1 h-full w-full flex>
+        <canvas v-show="dataUrlInput" ref="canvasPreview" ma h-full w-full object-contain />
+        <div v-if="!dataUrlInput" i-ri-prohibited-line ma text-4xl op20 />
       </div>
-      <div border="~ base rounded" :class="result?.rectCanvas ? '' : 'op50'" aspect-ratio-1 w-full>
-        <canvas v-show="result?.rectCanvas" ref="canvasRect" w-full />
-        <div v-if="!result?.rectCanvas" h-full w-full flex="~">
-          <div i-ri-prohibited-line ma text-4xl op20 />
-        </div>
+      <div border="~ base rounded" :class="result?.rectCanvas ? '' : 'op50'" aspect-ratio-1 w-full flex>
+        <canvas v-show="result?.rectCanvas" ref="canvasRect" ma h-full w-full object-contain />
+        <div v-if="!result?.rectCanvas" i-ri-prohibited-line ma text-4xl op20 />
       </div>
     </div>
     <div
