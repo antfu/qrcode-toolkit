@@ -19,6 +19,7 @@ const result = ref<ScanResult>()
 const reading = ref(false)
 const loading = ref(true)
 const error = ref<any>()
+const randomTrying = ref(false)
 
 onMounted(() => {
   ready()
@@ -32,10 +33,9 @@ onMounted(() => {
     })
 })
 
-const run = debounce(async () => {
-  error.value = null
+async function runEager() {
+  clear()
   reading.value = true
-  result.value = undefined
   const img = new Image()
   const promise = new Promise(resolve => img.onload = resolve)
   img.src = dataUrlInput.value
@@ -85,6 +85,8 @@ const run = debounce(async () => {
       ctx.clearRect(0, 0, canvasRect.value!.width, canvasRect.value!.height)
       ctx.drawImage(result.value.rectCanvas, 0, 0)
     }
+
+    return result.value
   }
   catch (e) {
     error.value = e
@@ -93,13 +95,17 @@ const run = debounce(async () => {
   finally {
     reading.value = false
   }
-}, 500)
+}
+
+const run = debounce(runEager, 500)
 
 const { copy, copied } = useClipboard()
 
 watch(
   () => [dataUrlInput.value, state.value],
   () => {
+    if (randomTrying.value)
+      return
     if (!canvasPreview.value || !canvasRect.value || !dataUrlInput.value)
       return
     run()
@@ -107,11 +113,36 @@ watch(
   { deep: true, immediate: true },
 )
 
+function clear() {
+  error.value = null
+  reading.value = false
+  result.value = undefined
+  canvasPreview.value!.getContext('2d')!.clearRect(0, 0, canvasPreview.value!.width, canvasPreview.value!.height)
+  canvasRect.value!.getContext('2d')!.clearRect(0, 0, canvasRect.value!.width, canvasRect.value!.height)
+}
+
 function random() {
   state.value.blur = Math.round(Math.random() * 1.5 * 10) / 10
   state.value.brightness = Math.round(Math.random() * 300 + 100)
   state.value.contrast = Math.round(Math.random() * 500 + 150)
   state.value.resize = Math.round(Math.random() * 40) * 10 + 100
+}
+
+async function randomTries() {
+  randomTrying.value = true
+  const tries = 50
+  try {
+    for (let i = 0; i < tries; i++) {
+      random()
+      await nextTick()
+      const result = await runEager()
+      if (result?.text)
+        break
+    }
+  }
+  finally {
+    randomTrying.value = false
+  }
 }
 
 function reset() {
@@ -154,7 +185,7 @@ const { isOverDropZone } = useDropZone(document.body, {
         v-model="dataUrlInput"
         title="QRCode"
         h-auto w-full
-        @update:model-value="result = undefined"
+        @update:model-value="clear()"
       />
       <div border="~ base rounded" :class="dataUrlInput ? '' : 'op50'" aspect-ratio-1 h-full w-full flex>
         <canvas v-show="dataUrlInput" ref="canvasPreview" ma h-full w-full object-contain />
@@ -222,41 +253,51 @@ const { isOverDropZone } = useDropZone(document.body, {
         No QR code found
       </div>
     </div>
-    <div border="~ base rounded" flex="~ col gap-2" p4>
-      <OptionItem title="Grayscale">
-        <OptionCheckbox v-model="state.grayscale" />
-      </OptionItem>
-      <OptionItem title="Resize" @reset="state.resize = 300">
-        <OptionSlider v-model="state.resize" :min="50" :max="1000" :step="10" />
-      </OptionItem>
-      <OptionItem title="Contrast" @reset="state.contrast = 100">
-        <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" />
-      </OptionItem>
-      <OptionItem title="Brightness" @reset="state.brightness = 100">
-        <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" />
-      </OptionItem>
-      <OptionItem title="Blur">
-        <OptionSlider v-model="state.blur" :min="0" :max="10" :step="0.05" />
-      </OptionItem>
-    </div>
 
-    <div flex="~ gap-2">
-      <button
-        text-sm op75 text-button hover:text-red hover:op100
-        @click="random()"
-      >
-        <div i-ri-refresh-line />
-        Randomize State
-      </button>
-      <div flex-auto />
-      <button
-        text-sm op75 text-button hover:text-red hover:op100
-        @click="reset()"
-      >
-        <div i-ri-delete-bin-6-line />
-        Reset State
-      </button>
-    </div>
+    <template v-if="dataUrlInput">
+      <div border="~ base rounded" flex="~ col gap-2" p4>
+        <OptionItem title="Grayscale">
+          <OptionCheckbox v-model="state.grayscale" />
+        </OptionItem>
+        <OptionItem title="Resize" @reset="state.resize = 300">
+          <OptionSlider v-model="state.resize" :min="50" :max="1000" :step="10" />
+        </OptionItem>
+        <OptionItem title="Contrast" @reset="state.contrast = 100">
+          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" />
+        </OptionItem>
+        <OptionItem title="Brightness" @reset="state.brightness = 100">
+          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" />
+        </OptionItem>
+        <OptionItem title="Blur">
+          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="0.05" />
+        </OptionItem>
+      </div>
+
+      <div flex="~ gap-2">
+        <button
+          text-sm op75 text-button hover:op100
+          @click="random()"
+        >
+          <div i-ri-refresh-line />
+          Randomize State
+        </button>
+        <button
+          text-sm op75 text-button hover:text-yellow hover:op100
+          @click="randomTries()"
+        >
+          <div i-ri-refresh-fill />
+          Random Tries (50 times)
+        </button>
+        <div flex-auto />
+        <button
+          text-sm op75 text-button hover:text-red hover:op100
+          @click="reset()"
+        >
+          <div i-ri-delete-bin-6-line />
+          Reset State
+        </button>
+      </div>
+    </template>
 
     <div flex="~ gap-3" border="~ base rounded" p4 op45 transition hover:op75>
       <span i-ri-lightbulb-line mt-2 flex-none text-lg text-yellow />
