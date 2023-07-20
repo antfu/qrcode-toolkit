@@ -252,7 +252,7 @@ async function narrowDown() {
       const move = Math.min(Math.abs(delta), incremental) * sign
       console.log('Narrow down', key, `Move:${move}`, `Distance:${delta}`)
       if (move !== 0) {
-        state.value[key] -= move
+        state.value[key] = roundup(state.value[key] - move)
         changed = true
       }
 
@@ -345,13 +345,13 @@ const { isOverDropZone } = useDropZone(document.body, {
         <div v-if="!result?.rectCanvas" i-ri-prohibited-line ma text-4xl op20 />
       </div>
       <div text-center text-xs font-mono op50>
-        {{ dimension.upload ? `${dimension.upload.width}x${dimension.upload.height}` : '' }}
+        {{ dimension.upload ? `${Math.round(dimension.upload.width)}x${Math.round(dimension.upload.height)}` : '' }}
       </div>
       <div text-center text-xs font-mono op50>
-        {{ dimension.preprocessed ? `${dimension.preprocessed.width}x${dimension.preprocessed.height}` : '' }}
+        {{ dimension.preprocessed ? `${Math.round(dimension.preprocessed.width)}x${Math.round(dimension.preprocessed.height)}` : '' }}
       </div>
       <div text-center text-xs font-mono op50>
-        {{ dimension.matched ? `${dimension.matched.width}x${dimension.matched.height}` : '' }}
+        {{ dimension.matched ? `${Math.round(dimension.matched.width)}x${Math.round(dimension.matched.height)}` : '' }}
       </div>
     </div>
     <div
