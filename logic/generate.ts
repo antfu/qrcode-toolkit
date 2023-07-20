@@ -745,8 +745,8 @@ export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCode
       newData1,
       state.effectLiquidifyRadius,
       state.effectLiquidifyThreshold,
-      invert ? state.darkColor : state.lightColor,
-      invert ? state.lightColor : state.darkColor,
+      state.lightColor,
+      state.darkColor,
     )
     ctx.putImageData(newData2, 0, 0)
   }
