@@ -3,7 +3,7 @@
 import { debounce } from 'perfect-debounce'
 import type { ScanResult } from 'qrcode-opencv-wechat'
 import { ready, scan } from 'qrcode-opencv-wechat'
-import { defaultScannerState } from '~/logic/state'
+import { dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
@@ -12,7 +12,6 @@ const props = defineProps<{
 }>()
 
 const state = computed(() => props.state.scanner)
-const dataUrlInput = ref<string>('')
 const canvasPreview = ref<HTMLCanvasElement>()
 const canvasRect = ref<HTMLCanvasElement>()
 const result = ref<ScanResult>()
@@ -38,17 +37,17 @@ const image = ref<HTMLImageElement>()
 
 async function loadImage() {
   image.value = undefined
-  if (dataUrlInput.value) {
+  if (dataUrlScannerUpload.value) {
     const img = new Image()
     const promise = new Promise(resolve => img.onload = resolve)
-    img.src = dataUrlInput.value
+    img.src = dataUrlScannerUpload.value
     await promise
     image.value = img
   }
 }
 
 watch(
-  () => dataUrlInput.value,
+  () => dataUrlScannerUpload.value,
   async () => {
     await loadImage()
   },
@@ -129,7 +128,7 @@ watch(
     if (randomTrying.value)
       return
     randomTryingCount.value = 0
-    if (!canvasPreview.value || !canvasRect.value || !dataUrlInput.value || !image.value)
+    if (!canvasPreview.value || !canvasRect.value || !dataUrlScannerUpload.value || !image.value)
       return
     run()
   },
@@ -187,7 +186,7 @@ const { isOverDropZone } = useDropZone(document.body, {
       const reader = new FileReader()
       reader.onload = () => {
         const data = reader.result as string
-        dataUrlInput.value = data
+        dataUrlScannerUpload.value = data
       }
       reader.readAsDataURL(file)
     }
@@ -208,14 +207,14 @@ const { isOverDropZone } = useDropZone(document.body, {
         Matched
       </div>
       <ImageDrop
-        v-model="dataUrlInput"
+        v-model="dataUrlScannerUpload"
         title="QRCode"
         h-auto w-full
         @update:model-value="clear()"
       />
-      <div border="~ base rounded" :class="dataUrlInput ? '' : 'op50'" aspect-ratio-1 h-full w-full flex>
-        <canvas v-show="dataUrlInput" ref="canvasPreview" ma h-full w-full object-contain />
-        <div v-if="!dataUrlInput" i-ri-prohibited-line ma text-4xl op20 />
+      <div border="~ base rounded" :class="dataUrlScannerUpload ? '' : 'op50'" aspect-ratio-1 h-full w-full flex>
+        <canvas v-show="dataUrlScannerUpload" ref="canvasPreview" ma h-full w-full object-contain />
+        <div v-if="!dataUrlScannerUpload" i-ri-prohibited-line ma text-4xl op20 />
       </div>
       <div border="~ base rounded" :class="result?.rectCanvas ? '' : 'op50'" aspect-ratio-1 w-full flex>
         <canvas v-show="result?.rectCanvas" ref="canvasRect" ma h-full w-full object-contain />
@@ -230,7 +229,7 @@ const { isOverDropZone } = useDropZone(document.body, {
           ? 'bg-red-500:10 text-red'
           : loading
             ? 'text-cyan'
-            : !dataUrlInput
+            : !dataUrlScannerUpload
               ? 'text-true-gray:80'
               : result?.text
                 ? 'bg-green-500:10 text-green border-current'
@@ -245,7 +244,7 @@ const { isOverDropZone } = useDropZone(document.body, {
             ? 'i-ri-bug-fill'
             : loading
               ? 'i-ri-loader-4-fill animate-spin'
-              : !dataUrlInput
+              : !dataUrlScannerUpload
                 ? 'i-ri-qr-scan-2-line'
                 : result?.text
                   ? 'i-ri-checkbox-circle-fill'
@@ -260,7 +259,7 @@ const { isOverDropZone } = useDropZone(document.body, {
       <div v-else-if="loading" animate-pulse>
         Loading models...
       </div>
-      <div v-else-if="!dataUrlInput">
+      <div v-else-if="!dataUrlScannerUpload">
         Upload a image to scan
       </div>
       <div v-else-if="reading || randomTrying" animate-pulse>
@@ -280,7 +279,7 @@ const { isOverDropZone } = useDropZone(document.body, {
       </div>
     </div>
 
-    <template v-if="dataUrlInput">
+    <template v-if="dataUrlScannerUpload">
       <div border="~ base rounded" flex="~ col gap-2" p4>
         <OptionItem title="Grayscale">
           <OptionCheckbox v-model="state.grayscale" />

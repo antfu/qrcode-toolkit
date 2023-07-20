@@ -8,6 +8,7 @@ export const hasParentWindow = ref<boolean>(false)
 
 export const qrcode = shallowRef<QrCode>()
 export const dataUrlGeneratedQRCode = ref<string>()
+export const dataUrlScannerUpload = ref<string>()
 export const dataUrlGeneratedSize = ref<number>(25)
 export const generateQRCodeInfo = ref<GeneratedQRInfo>()
 

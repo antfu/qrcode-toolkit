@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
 import { sendParentEvent } from '~/logic/messaging'
-import { defaultState, hasParentWindow, showGridHelper, storeIndex } from '~/logic/state'
+import { dataUrlScannerUpload, defaultState, hasParentWindow, showGridHelper, storeIndex } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
@@ -36,6 +36,11 @@ useEventListener(window, 'message', (event) => {
         hasParentWindow.value = true
         state.value.uploaded.image = json.data
         view.value = 'compare'
+        break
+      case 'setScannerImage':
+        hasParentWindow.value = true
+        dataUrlScannerUpload.value = json.data
+        view.value = 'scan'
         break
       case 'init':
         hasParentWindow.value = true
