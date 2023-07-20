@@ -297,7 +297,7 @@ const { isOverDropZone } = useDropZone(document.body, {
           {{ result?.text }}
         </div>
         <div flex-auto />
-        <button my--2 text-sm icon-button @click="copy(result?.text)">
+        <button my--2 border-0 text-sm icon-button @click="copy(result?.text)">
           <div :class="copied ? 'i-ri-check-line' : 'i-ri-clipboard-line'" />
         </button>
       </template>
@@ -319,7 +319,7 @@ const { isOverDropZone } = useDropZone(document.body, {
 
     <template v-if="dataUrlScannerUpload">
       <div border="~ base rounded" flex="~ col gap-2" p4>
-        <OptionItem title="Resize" @reset="state.resize = 300">
+        <OptionItem title="Resize" description="Resize the image's short edge" @reset="state.resize = 300">
           <OptionSlider v-model="state.resize" :min="150" :max="1000" :step="10" unit="px" />
           <ReuseLock name="resize" />
         </OptionItem>
@@ -332,11 +332,11 @@ const { isOverDropZone } = useDropZone(document.body, {
           <ReuseLock name="grayscale" />
         </OptionItem>
         <OptionItem title="Contrast" @reset="state.contrast = 100">
-          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" unit="%" />
+          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :default="100" :step="10" unit="%" />
           <ReuseLock name="contrast" />
         </OptionItem>
         <OptionItem title="Brightness" @reset="state.brightness = 100">
-          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" unit="%" />
+          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :default="100" :step="10" unit="%" />
           <ReuseLock name="brightness" />
         </OptionItem>
         <OptionItem title="Blur">
@@ -384,12 +384,14 @@ const { isOverDropZone } = useDropZone(document.body, {
     </template>
 
     <div flex="~ gap-3" border="~ base rounded" p4 op45 transition hover:op75>
-      <span i-ri-lightbulb-line mt-2 flex-none text-lg text-yellow />
-      <div>
-        <p mb4>
+      <span i-ri-lightbulb-line flex-none text-lg text-yellow />
+      <div flex="~ col gap-4">
+        <p>
+          Try adjusting the preprocessing options to get the best result.
+        </p>
+        <p>
           This scanner uses the algorithm open sourced by WeChat, based on OpenCV.
           It uses two CNN-based models and provides much better recognizability than average scanners.
-          Try adjusting the preprocessing options a couple times to get the best result.
         </p>
         <p>
           The detection and decoding is done completely local in your browser.

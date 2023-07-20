@@ -4,6 +4,7 @@ const props = defineProps<{
   min: number
   step: number
   unit?: string
+  default?: number
 }>()
 
 const value = defineModel<number>('modelValue', {
@@ -12,10 +13,18 @@ const value = defineModel<number>('modelValue', {
 </script>
 
 <template>
-  <input v-model.number="value" type="range" class="slider" v-bind="props" w-60 flex-auto>
-  <div relative>
-    <input v-model.number="value" type="number" v-bind="props" border="~ base rounded" h-22px w-20 bg-secondary pl2 text-sm>
-    <span pointer-events-none absolute right-1 top-1 text-xs op25>{{ props.unit }}</span>
+  <div relative h-22px w-60 flex-auto>
+    <input v-model.number="value" type="range" class="slider" v-bind="props" w-full align-top>
+    <span
+      v-if="props.default != null" border="r base " absolute bottom-0 top-0 h-full w-1px op50
+      :style="{
+        left: `${(props.default - min) / (max - min) * 100}%`,
+      }"
+    />
+  </div>
+  <div relative h-22px>
+    <input v-model.number="value" type="number" v-bind="props" border="~ base rounded" m0 w-20 bg-secondary pl2 align-top text-sm>
+    <span v-if="props.unit" pointer-events-none absolute right-1 top-0.5 text-xs op25>{{ props.unit }}</span>
   </div>
 </template>
 
@@ -41,6 +50,7 @@ const value = defineModel<number>('modelValue', {
   height: 22px;
   background: #fff;
   cursor: pointer;
+  z-index: 10;
 }
 
 .slider::-moz-range-thumb {
@@ -48,5 +58,6 @@ const value = defineModel<number>('modelValue', {
   height: 22px;
   background: #fff;
   cursor: pointer;
+  z-index: 10;
 }
 </style>
