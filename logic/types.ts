@@ -165,6 +165,7 @@ export interface ScannerState {
   blur: number
   brightness: number
   grayscale: boolean
+  locks: string[]
 }
 
 export interface State {

@@ -87,16 +87,7 @@ export function defaultScannerState(): ScannerState {
     brightness: 200,
     blur: 0.2,
     resize: 300,
-  }
-}
-
-export function clearScannerState(): ScannerState {
-  return {
-    grayscale: false,
-    contrast: 100,
-    brightness: 100,
-    blur: 0,
-    resize: 300,
+    locks: ['grayscale'],
   }
 }
 

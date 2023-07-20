@@ -369,7 +369,7 @@ watch(
         </OptionItem>
 
         <OptionItem title="Pixel Size">
-          <OptionSlider v-model="state.scale" :min="1" :max="50" :step="1" />
+          <OptionSlider v-model="state.scale" :min="1" :max="50" :step="1" unit="px" />
         </OptionItem>
 
         <div border="t base" my1 />

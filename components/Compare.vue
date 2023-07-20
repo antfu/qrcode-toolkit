@@ -282,13 +282,13 @@ function toggleHighContrast() {
           <OptionCheckbox v-model="state.grayscale" />
         </OptionItem>
         <OptionItem title="Contrast" @reset="state.contrast = 100">
-          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" />
+          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" unit="%" />
         </OptionItem>
         <OptionItem title="Brightness" @reset="state.brightness = 100">
-          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" />
+          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" unit="%" />
         </OptionItem>
         <OptionItem title="Blur">
-          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" />
+          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="1" unit="px" />
         </OptionItem>
         <OptionItem title="Pixelate">
           <OptionCheckbox v-model="state.pixelView" />

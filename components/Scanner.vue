@@ -3,7 +3,7 @@
 import { debounce } from 'perfect-debounce'
 import type { ScanResult } from 'qrcode-opencv-wechat'
 import { ready, scan } from 'qrcode-opencv-wechat'
-import { clearScannerState, dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
+import { dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
@@ -20,6 +20,10 @@ const loading = ref(true)
 const error = ref<any>()
 const randomTrying = ref(false)
 const randomTryingCount = ref(0)
+
+const [DefineLock, ReuseLock] = createReusableTemplate<{
+  name: keyof State['scanner']
+}>()
 
 onMounted(() => {
   ready()
@@ -144,10 +148,16 @@ function clear() {
 }
 
 function random() {
-  state.value.blur = Math.round(Math.random() * 1.5 * 10) / 10
-  state.value.brightness = Math.round(Math.random() * 300 + 100)
-  state.value.contrast = Math.round(Math.random() * 500 + 150)
-  state.value.resize = Math.round(Math.random() * 20) * 10 + 150
+  if (!state.value.locks.includes('grayscale'))
+    state.value.grayscale = Math.random() > 0.5
+  if (!state.value.locks.includes('blur'))
+    state.value.blur = Math.round(Math.random() * 1.5 * 10) / 10
+  if (!state.value.locks.includes('brightness'))
+    state.value.brightness = Math.round(Math.random() * 300 + 100)
+  if (!state.value.locks.includes('contrast'))
+    state.value.contrast = Math.round(Math.random() * 500 + 150)
+  if (!state.value.locks.includes('resize'))
+    state.value.resize = Math.round(Math.random() * 20) * 10 + 150
 }
 
 async function randomTries() {
@@ -175,7 +185,20 @@ function reset() {
 }
 
 function emptyState() {
-  Object.assign(state.value, clearScannerState())
+  Object.assign(state.value, {
+    grayscale: false,
+    contrast: 100,
+    brightness: 100,
+    blur: 0,
+    resize: 300,
+  })
+}
+
+function toggleLock(name: keyof State['scanner']) {
+  if (state.value.locks.includes(name))
+    state.value.locks = state.value.locks.filter(i => i !== name)
+  else
+    state.value.locks.push(name)
 }
 
 const { isOverDropZone } = useDropZone(document.body, {
@@ -283,22 +306,42 @@ const { isOverDropZone } = useDropZone(document.body, {
       </div>
     </div>
 
+    <DefineLock v-slot="{ name }">
+      <button
+        flex-none text-xs icon-button
+        title="Lock from randomize"
+        :class="state.locks.includes(name) ? 'op75 text-yellow' : 'op40'"
+        @click="toggleLock(name)"
+      >
+        <div :class="state.locks.includes(name) ? 'i-ri-lock-line' : 'i-ri-lock-unlock-line'" />
+      </button>
+    </DefineLock>
+
     <template v-if="dataUrlScannerUpload">
       <div border="~ base rounded" flex="~ col gap-2" p4>
+        <OptionItem title="Resize" @reset="state.resize = 300">
+          <OptionSlider v-model="state.resize" :min="150" :max="1000" :step="10" unit="px" />
+          <ReuseLock name="resize" />
+        </OptionItem>
+
+        <div border="t base" my1 />
+
         <OptionItem title="Grayscale">
           <OptionCheckbox v-model="state.grayscale" />
-        </OptionItem>
-        <OptionItem title="Resize" @reset="state.resize = 300">
-          <OptionSlider v-model="state.resize" :min="150" :max="1000" :step="10" />
+          <div flex-auto />
+          <ReuseLock name="grayscale" />
         </OptionItem>
         <OptionItem title="Contrast" @reset="state.contrast = 100">
-          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" />
+          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :step="10" unit="%" />
+          <ReuseLock name="contrast" />
         </OptionItem>
         <OptionItem title="Brightness" @reset="state.brightness = 100">
-          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" />
+          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :step="10" unit="%" />
+          <ReuseLock name="brightness" />
         </OptionItem>
         <OptionItem title="Blur">
-          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="0.05" />
+          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="0.05" unit="px" />
+          <ReuseLock name="blur" />
         </OptionItem>
       </div>
 
