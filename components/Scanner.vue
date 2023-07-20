@@ -3,6 +3,7 @@
 import { debounce } from 'perfect-debounce'
 import type { ScanResult } from 'qrcode-opencv-wechat'
 import { ready, scan } from 'qrcode-opencv-wechat'
+import { shuffle } from '@antfu/utils'
 import { dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
@@ -221,11 +222,15 @@ async function narrowDown() {
   controlling.value = true
   triesCount.value = 0
 
-  const steps = [
+  let steps = [
     ['contrast', 100, 20, Math.round] as const,
     ['brightness', 100, 20, Math.round] as const,
     ['blur', 0, 0.1, (x: number) => Math.round(x * 10) / 10] as const,
   ]
+
+  steps.push(...steps)
+  steps.push(...steps)
+  steps = shuffle(steps)
 
   let maxIterations = 100
   try {
@@ -241,8 +246,6 @@ async function narrowDown() {
 
       console.log('Narrow down', key)
 
-      await new Promise(resolve => setTimeout(resolve, 0))
-      triesCount.value += 1
       const clone = { ...state.value }
 
       let changed = false
@@ -261,13 +264,17 @@ async function narrowDown() {
         continue
       }
 
-      const result = await runEager(false)
+      triesCount.value += 1
+      const oldResult: ScanResult | undefined = result.value
+      const res = await runEager(false)
       // no result, revert
-      if (!result?.text) {
+      if (!res?.text) {
         Object.assign(state.value, clone)
+        result.value = oldResult
         steps.shift()
         continue
       }
+      await new Promise(resolve => setTimeout(resolve, 0))
     }
   }
   finally {
