@@ -309,6 +309,8 @@ const { isOverDropZone } = useDropZone(document.body, {
         </button>
         <button
           text-sm op75 text-button hover:text-yellow hover:op100
+          :disabled="randomTrying"
+          :class="randomTrying ? 'op50 pointer-events-none' : ''"
           @click="randomTries()"
         >
           <div i-ri-refresh-fill />
