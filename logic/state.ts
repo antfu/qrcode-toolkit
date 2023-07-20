@@ -90,6 +90,16 @@ export function defaultScannerState(): ScannerState {
   }
 }
 
+export function clearScannerState(): ScannerState {
+  return {
+    grayscale: false,
+    contrast: 100,
+    brightness: 100,
+    blur: 0,
+    resize: 300,
+  }
+}
+
 export function defaultState(): State {
   return {
     qrcode: defaultGeneratorState(),

@@ -3,7 +3,7 @@
 import { debounce } from 'perfect-debounce'
 import type { ScanResult } from 'qrcode-opencv-wechat'
 import { ready, scan } from 'qrcode-opencv-wechat'
-import { dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
+import { clearScannerState, dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
@@ -174,6 +174,10 @@ function reset() {
   Object.assign(state.value, defaultScannerState())
 }
 
+function emptyState() {
+  Object.assign(state.value, clearScannerState())
+}
+
 const { isOverDropZone } = useDropZone(document.body, {
   onDrop(files) {
     if (view.value !== 'scan')
@@ -323,8 +327,15 @@ const { isOverDropZone } = useDropZone(document.body, {
           text-sm op75 text-button hover:text-red hover:op100
           @click="reset()"
         >
-          <div i-ri-delete-bin-6-line />
-          Reset State
+          <div i-ri-pencil-ruler-2-line />
+          Default
+        </button>
+        <button
+          text-sm op75 text-button hover:text-orange hover:op100
+          @click="emptyState()"
+        >
+          <div i-ri-blur-off-line />
+          No Preprocessing
         </button>
       </div>
     </template>
