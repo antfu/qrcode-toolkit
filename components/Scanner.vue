@@ -18,8 +18,23 @@ const result = ref<ScanResult>()
 const reading = ref(false)
 const loading = ref(true)
 const error = ref<any>()
-const randomTrying = ref(false)
-const randomTryingCount = ref(0)
+const controlling = ref(false)
+const triesCount = ref(0)
+
+const dimension = ref<{
+  upload?: {
+    width: number
+    height: number
+  }
+  preprocessed?: {
+    width: number
+    height: number
+  }
+  matched?: {
+    width: number
+    height: number
+  }
+}>({})
 
 const [DefineLock, ReuseLock] = createReusableTemplate<{
   name: keyof State['scanner']
@@ -47,6 +62,13 @@ async function loadImage() {
     img.src = dataUrlScannerUpload.value
     await promise
     image.value = img
+    dimension.value.upload = {
+      width: img.width,
+      height: img.height,
+    }
+  }
+  else {
+    dimension.value.upload = undefined
   }
 }
 
@@ -83,6 +105,10 @@ async function runEager(display = true) {
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
+  dimension.value.preprocessed = {
+    width: w,
+    height: h,
+  }
   const ctx = canvas.getContext('2d')!
   ctx.filter = [
     state.value.grayscale ? 'grayscale(1)' : '',
@@ -109,6 +135,10 @@ async function runEager(display = true) {
       const ctx = canvasRect.value!.getContext('2d')!
       ctx.clearRect(0, 0, canvasRect.value!.width, canvasRect.value!.height)
       ctx.drawImage(result.value.rectCanvas, 0, 0)
+      dimension.value.matched = {
+        width: result.value.rectCanvas.width,
+        height: result.value.rectCanvas.height,
+      }
     }
 
     return result.value
@@ -129,9 +159,9 @@ const { copy, copied } = useClipboard()
 watch(
   () => [state.value, image.value],
   () => {
-    if (randomTrying.value)
+    if (controlling.value)
       return
-    randomTryingCount.value = 0
+    triesCount.value = 0
     if (!canvasPreview.value || !canvasRect.value || !dataUrlScannerUpload.value || !image.value)
       return
     run()
@@ -143,6 +173,8 @@ function clear() {
   error.value = null
   reading.value = false
   result.value = undefined
+  dimension.value.preprocessed = undefined
+  dimension.value.matched = undefined
   canvasPreview.value?.getContext('2d')!.clearRect(0, 0, canvasPreview.value!.width, canvasPreview.value!.height)
   canvasRect.value?.getContext('2d')!.clearRect(0, 0, canvasRect.value!.width, canvasRect.value!.height)
 }
@@ -161,23 +193,88 @@ function random() {
 }
 
 async function randomTries() {
-  randomTrying.value = true
-  randomTryingCount.value = 0
+  if (controlling.value)
+    return
+  controlling.value = true
+  triesCount.value = 0
   const tries = 50
   try {
     for (let i = 0; i <= tries; i++) {
       await new Promise(resolve => setTimeout(resolve, 0))
-      randomTryingCount.value = i
+      triesCount.value = i
       random()
       const result = await runEager(false)
       if (result?.text)
         break
     }
-    await runEager(true)
   }
   finally {
-    randomTrying.value = false
+    controlling.value = false
   }
+  await runEager(true)
+}
+
+async function narrowDown() {
+  if (!result.value?.text || controlling.value)
+    return
+
+  controlling.value = true
+  triesCount.value = 0
+
+  const steps = [
+    ['contrast', 100, 20, Math.round] as const,
+    ['brightness', 100, 20, Math.round] as const,
+    ['blur', 0, 0.1, (x: number) => Math.round(x * 10) / 10] as const,
+  ]
+
+  let maxIterations = 100
+  try {
+    while (maxIterations--) {
+      if (!steps.length)
+        break
+
+      const [key, targetValue, incremental, roundup] = steps[0]
+      if (state.value.locks.includes(key)) {
+        steps.shift()
+        continue
+      }
+
+      console.log('Narrow down', key)
+
+      await new Promise(resolve => setTimeout(resolve, 0))
+      triesCount.value += 1
+      const clone = { ...state.value }
+
+      let changed = false
+
+      const delta = state.value[key] - targetValue
+      const sign = delta > 0 ? 1 : -1
+      const move = Math.min(Math.abs(delta), incremental) * sign
+      console.log('Narrow down', key, `Move:${move}`, `Distance:${delta}`)
+      if (move !== 0) {
+        state.value[key] -= move
+        changed = true
+      }
+
+      if (!changed) {
+        steps.shift()
+        continue
+      }
+
+      const result = await runEager(false)
+      // no result, revert
+      if (!result?.text) {
+        Object.assign(state.value, clone)
+        steps.shift()
+        continue
+      }
+    }
+  }
+  finally {
+    controlling.value = false
+  }
+
+  await runEager(true)
 }
 
 function reset() {
@@ -224,13 +321,13 @@ const { isOverDropZone } = useDropZone(document.body, {
 <template>
   <div flex="~ col gap-3">
     <div grid="~ cols-3 gap-2" mt8>
-      <div text-center text-xs op50>
+      <div text-center text-sm op50>
         Upload
       </div>
-      <div text-center text-xs op50>
+      <div text-center text-sm op50>
         Preprocessed
       </div>
-      <div text-center text-xs op50>
+      <div text-center text-sm op50>
         Matched
       </div>
       <ImageDrop
@@ -247,6 +344,15 @@ const { isOverDropZone } = useDropZone(document.body, {
         <canvas v-show="result?.rectCanvas" ref="canvasRect" ma h-full w-full object-contain />
         <div v-if="!result?.rectCanvas" i-ri-prohibited-line ma text-4xl op20 />
       </div>
+      <div text-center text-xs font-mono op50>
+        {{ dimension.upload ? `${dimension.upload.width}x${dimension.upload.height}` : '' }}
+      </div>
+      <div text-center text-xs font-mono op50>
+        {{ dimension.preprocessed ? `${dimension.preprocessed.width}x${dimension.preprocessed.height}` : '' }}
+      </div>
+      <div text-center text-xs font-mono op50>
+        {{ dimension.matched ? `${dimension.matched.width}x${dimension.matched.height}` : '' }}
+      </div>
     </div>
     <div
       rounded p4 border="~ base op50"
@@ -260,7 +366,7 @@ const { isOverDropZone } = useDropZone(document.body, {
               ? 'text-true-gray:80'
               : result?.text
                 ? 'bg-green-500:10 text-green border-current'
-                : (reading || randomTrying)
+                : (reading || controlling)
                   ? 'bg-gray-500:10 text-gray'
                   : 'bg-orange-500:10 text-orange border-current'
       "
@@ -275,7 +381,7 @@ const { isOverDropZone } = useDropZone(document.body, {
                 ? 'i-ri-qr-scan-2-line'
                 : result?.text
                   ? 'i-ri-checkbox-circle-fill'
-                  : (reading || randomTrying)
+                  : (reading || controlling)
                     ? 'i-ri-loader-4-fill animate-spin'
                     : 'i-ri-error-warning-fill'
         "
@@ -289,8 +395,8 @@ const { isOverDropZone } = useDropZone(document.body, {
       <div v-else-if="!dataUrlScannerUpload">
         Upload a image to scan
       </div>
-      <div v-else-if="reading || randomTrying" animate-pulse>
-        Scanning... <span v-if="randomTryingCount" text-xs op50>(x{{ randomTryingCount }})</span>
+      <div v-else-if="reading || controlling" animate-pulse>
+        Scanning... <span v-if="triesCount" text-xs op50>(x{{ triesCount }})</span>
       </div>
       <template v-else-if="result?.text">
         <div font-mono>
@@ -355,15 +461,25 @@ const { isOverDropZone } = useDropZone(document.body, {
         </button>
         <button
           text-sm op75 text-button hover:text-yellow hover:op100
-          :disabled="randomTrying"
-          :class="randomTrying ? 'op50 pointer-events-none' : ''"
+          :disabled="controlling"
+          :class="controlling ? 'op50 pointer-events-none' : ''"
           @click="randomTries()"
         >
           <div i-ri-refresh-fill />
           Random Tries (x50 times)
         </button>
-        <div v-if="randomTryingCount" text-xs op50>
-          {{ randomTryingCount }} tries
+        <button
+          v-if="result?.text"
+          text-sm op75 text-button hover:text-yellow hover:op100
+          :disabled="controlling"
+          :class="controlling ? 'op50 pointer-events-none' : ''"
+          @click="narrowDown()"
+        >
+          <div i-ri-align-vertically rotate-90 />
+          Narrow Down
+        </button>
+        <div v-if="triesCount" text-xs op50>
+          {{ triesCount }} tries
         </div>
         <div flex-auto />
         <button
