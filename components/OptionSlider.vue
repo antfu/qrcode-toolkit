@@ -14,9 +14,14 @@ const value = defineModel<number>('modelValue', {
 
 <template>
   <div relative h-22px w-60 flex-auto>
-    <input v-model.number="value" type="range" class="slider" v-bind="props" w-full align-top>
+    <input
+      v-model.number="value" type="range" class="slider"
+      v-bind="props"
+      absolute bottom-0 left-0 right-0 top-0 z-10 w-full align-top
+    >
     <span
-      v-if="props.default != null" border="r base " absolute bottom-0 top-0 h-full w-1px op50
+      v-if="props.default != null"
+      border="r base" absolute bottom-0 top-0 h-full w-1px op75
       :style="{
         left: `${(props.default - min) / (max - min) * 100}%`,
       }"

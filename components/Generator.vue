@@ -279,12 +279,12 @@ watch(
           :full-customizable="true"
         />
 
-        <OptionItem title="Margin Noise">
+        <OptionItem title="Margin Noise" description="Add some random data points to the margin">
           <OptionCheckbox v-model="state.marginNoise" />
         </OptionItem>
 
         <template v-if="state.marginNoise">
-          <OptionItem title="Noise Rate" nested>
+          <OptionItem title="Noise Rate" nested description="Percentage of whether a black point should be placed">
             <OptionSlider v-model="state.marginNoiseRate" :min="0" :max="1" :step="0.01" />
           </OptionItem>
 
@@ -394,7 +394,7 @@ watch(
             <OptionSlider v-model="state.effectLiquidifyRadius" :min="1" :max="40" :step="1" />
           </OptionItem>
           <OptionItem title="Threshold" nested @reset="state.effectLiquidifyThreshold = 128">
-            <OptionSlider v-model="state.effectLiquidifyThreshold" :min="1" :max="254" :step="1" />
+            <OptionSlider v-model="state.effectLiquidifyThreshold" :min="1" :max="254" :step="1" unit="/256" />
           </OptionItem>
         </template>
 
@@ -411,13 +411,13 @@ watch(
 
         <OptionItem title="Transform" />
         <OptionItem title="Perspective X" nested @reset="state.transformPerspectiveX = 0">
-          <OptionSlider v-model="state.transformPerspectiveX" :min="-0.5" :max="0.5" :step="0.01" />
+          <OptionSlider v-model="state.transformPerspectiveX" :min="-0.5" :max="0.5" :step="0.01" :default="0" />
         </OptionItem>
         <OptionItem title="Perspective Y" nested @reset="state.transformPerspectiveY = 0">
-          <OptionSlider v-model="state.transformPerspectiveY" :min="-0.5" :max="0.5" :step="0.01" />
+          <OptionSlider v-model="state.transformPerspectiveY" :min="-0.5" :max="0.5" :step="0.01" :default="0" />
         </OptionItem>
         <OptionItem title="Scale" nested @reset="state.transformScale = 1">
-          <OptionSlider v-model="state.transformScale" :min="0.5" :max="2" :step="0.01" />
+          <OptionSlider v-model="state.transformScale" :min="0.5" :max="2" :step="0.01" :default="1" />
         </OptionItem>
       </div>
       <div flex="~ gap-2">
@@ -529,6 +529,9 @@ watch(
         </div>
         <div v-if="state.transformPerspectiveX !== 0 || state.transformPerspectiveY !== 0 || state.transformScale !== 1" border="~ yellow-6/60 rounded" bg-yellow-5:10 px3 py2 text-sm text-yellow-6>
           The <b>compare tab</b> does not support transformations. If you generated with this QR Code, you'll need to verify the result manually.
+        </div>
+        <div v-if="state.renderPointsType !== 'all'" border="~ indigo/60 rounded" bg-indigo-5:10 px3 py2 text-sm text-indigo>
+          This is a partial QR Code. It does <b>not</b> contain all the necessary data to be scannable.
         </div>
       </div>
     </div>
