@@ -29,10 +29,18 @@ html, body , #__nuxt {
   height: 100vh;
   margin: 0;
   padding: 0;
+}
+
+html {
+  color: #222;
+  accent-color: #888;
+  color-scheme: light;
+}
+
+html.dark {
   background: black;
   color: white;
   color-scheme: dark;
-  accent-color: #888;
 }
 
 /* Overrides Floating Vue */

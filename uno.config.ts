@@ -16,7 +16,7 @@ export default defineConfig({
       'bg-base': 'bg-white dark:bg-black',
       'bg-secondary': 'bg-gray:10',
       'bg-active': 'bg-gray:15',
-      'border-base': 'border-#303030',
+      'border-base': 'border-#aaa3',
       'flex-prefer-row': 'flex flex-col md:flex-row',
       'flex-prefer-col': 'flex flex-col md:flex-row',
       'border-box': 'border border-base rounded',

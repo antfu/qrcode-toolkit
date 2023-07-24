@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { hasParentWindow, storeIndex } from '~/logic/state'
+import { hasParentWindow, storeIndex, toggleDark } from '~/logic/state'
 
 const config = useRuntimeConfig()
 const buildTime = useTimeAgo(config.public.buildTime as any)
@@ -75,6 +75,9 @@ const buildTime = useTimeAgo(config.public.buildTime as any)
       <div my4 h-1px border="t base" w-10 />
 
       <div flex="~ gap-3 items-center">
+        <button op50 hover:op100 @click="toggleDark()">
+          <div dark:i-ri-moon-fill i-ri-sun-fill />
+        </button>
         <a href="https://github.com/antfu/qrcode-toolkit" target="_blank" text-lg op50 hover:op100>
           <div i-ri-github-fill />
         </a>
@@ -82,7 +85,7 @@ const buildTime = useTimeAgo(config.public.buildTime as any)
           <div i-ri-discord-fill />
         </a>
         <a href="https://antfu.me" target="_blank" ml--0.5 text-lg op50 hover:op100>
-          <img src="https://antfu.me/favicon.svg" h-1.2em w-1.2em>
+          <img src="https://antfu.me/logo.svg" h-1.2em w-1.2em dark:invert>
         </a>
         <div flex="~ gap-1 items-center" ml-3>
           <span op35>Made with </span> <a mt--2 href="https://nuxt.com" target="_blank" flex="~ inline gap-1 items-center" translate-y-0.9 op75 hover:op100><div i-logos-nuxt-icon /> <span font-bold op65>Nuxt</span></a><br>

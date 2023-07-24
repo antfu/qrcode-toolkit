@@ -13,7 +13,10 @@ export const dataUrlScannerUpload = ref<string>()
 export const dataUrlGeneratedSize = ref<number>(25)
 export const generateQRCodeInfo = ref<GeneratedQRInfo>()
 
+export const isDark = useDark()
 export const isLargeScreen = useBreakpoints(breakpointsTailwind).greater('lg')
+
+export const toggleDark = useToggle(isDark)
 
 export function defaultGeneratorState(): QRCodeGeneratorState {
   return {

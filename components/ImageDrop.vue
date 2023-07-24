@@ -14,7 +14,9 @@ function clear() {
 
 <template>
   <div
-    border="1 base rounded" flex="~ col items-center justify-center"
+    border="1 base rounded"
+    flex="~ col items-center justify-center"
+    hover="bg-hex-88888809"
     :class="value ? '' : 'border-dashed'"
     relative aspect-ratio-1 h-50 w-50 cursor-pointer of-hidden
   >
@@ -29,7 +31,7 @@ function clear() {
         Upload
       </div>
     </template>
-    <button v-if="value" absolute right-0 top-0 z-20 m1 rounded-full bg-black:80 p1 op50 hover:op75 title="Remove image">
+    <button v-if="value" absolute right-0 top-0 z-20 m1 rounded-full bg-hex-8882 p1 op50 hover:op75 title="Remove image">
       <div i-carbon-close @click="clear" />
     </button>
     <ImageUpload v-model="value" />

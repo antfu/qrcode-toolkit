@@ -147,7 +147,7 @@ onKeyStroke('Escape', close)
       class="fixed inset-0 bg-black/20 backdrop-blur-10"
       @click="close()"
     />
-    <div class="relative z-10 max-w-full w-[35rem] rounded-lg p-6" flex="~ col gap-4" border="~ base">
+    <div class="relative z-10 max-w-full w-[35rem] rounded-lg p-6 bg-base" flex="~ col gap-4" border="~ base">
       <div border="~ base rounded-lg" relative of-hidden>
         <canvas ref="canvas" w-full />
         <div absolute inset-0 z--1 class="transparent-background" />
