@@ -362,11 +362,11 @@ const { isOverDropZone } = useDropZone(document.body, {
       </div>
     </div>
     <div
-      rounded p4 border="~ base op50"
+      rounded p4 border="~ base"
       flex="~ gap-2 items-center"
       :class="
         error
-          ? 'bg-red-500:10 text-red'
+          ? 'bg-red-500:10 text-red border-current'
           : loading
             ? 'text-cyan'
             : !dataUrlScannerUpload
@@ -374,7 +374,7 @@ const { isOverDropZone } = useDropZone(document.body, {
               : result?.text
                 ? 'bg-green-500:10 text-green border-current'
                 : (reading || controlling)
-                  ? 'bg-gray-500:10 text-gray'
+                  ? 'text-true-gray:80'
                   : 'bg-orange-500:10 text-orange border-current'
       "
     >
