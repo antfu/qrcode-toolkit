@@ -3,7 +3,7 @@ import type { ScanResult } from 'qrcode-opencv-wechat'
 import { scan } from 'qrcode-opencv-wechat'
 import type { State } from '~/logic/types'
 
-const props = defineProps<{
+defineProps<{
   state: State
 }>()
 
@@ -15,6 +15,7 @@ const isScanning = ref(false)
 let stream: MediaStream | null = null
 
 const { devices } = useDevicesList({
+  requestPermissions: true,
   constraints: {
     audio: false,
     video: true,
@@ -108,10 +109,14 @@ onUnmounted(dispose)
     <div border="~ base rounded" flex="~ col gap-2" p4>
       <OptionItem title="Camera" div>
         <OptionSelectGroup
+          v-if="cameras.length"
           v-model="selectedCamera"
           :titles="cameras.map(i => i.label)"
           :options="cameras.map(i => i.deviceId)"
         />
+        <div v-else>
+          No camera founded
+        </div>
       </OptionItem>
     </div>
     <div relative mxa aspect-ratio-1 max-w-full w-120>
