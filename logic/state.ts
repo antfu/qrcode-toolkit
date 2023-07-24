@@ -94,6 +94,8 @@ export function defaultScannerState(): ScannerState {
     blur: 0.2,
     resize: 300,
     locks: ['grayscale'],
+    cameraMirror: false,
+    cameraViewMode: 'processed',
   }
 }
 

@@ -166,6 +166,8 @@ export interface ScannerState {
   brightness: number
   grayscale: boolean
   locks: string[]
+  cameraMirror: boolean
+  cameraViewMode: 'original' | 'processed'
 }
 
 export interface State {

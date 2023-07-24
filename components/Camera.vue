@@ -3,16 +3,19 @@ import type { ScanResult } from 'qrcode-opencv-wechat'
 import { scan } from 'qrcode-opencv-wechat'
 import type { State } from '~/logic/types'
 
-defineProps<{
+const props = defineProps<{
   state: State
 }>()
 
 const videoEl = ref<HTMLVideoElement>()
+const canvasEl = ref<HTMLCanvasElement>()
 
 const error = ref()
 const isScanning = ref(false)
 
 let stream: MediaStream | null = null
+
+const state = computed(() => props.state.scanner)
 
 const { devices } = useDevicesList({
   requestPermissions: true,
@@ -71,10 +74,16 @@ async function scanFrame() {
   if (!isScanning.value)
     return
   count.value += 1
-  const canvas = document.createElement('canvas')
+  const canvas = canvasEl.value!
   canvas.width = videoEl.value!.videoWidth
   canvas.height = videoEl.value!.videoHeight
   const ctx = canvas.getContext('2d')!
+  ctx.filter = [
+    state.value.grayscale ? 'grayscale(1)' : '',
+    `contrast(${state.value.contrast / 100})`,
+    `brightness(${state.value.brightness / 100})`,
+    `blur(${state.value.blur}px)`,
+  ].filter(Boolean).join(' ')
   ctx.drawImage(videoEl.value!, 0, 0, canvas.width, canvas.height)
   try {
     result.value = await scan(canvas)
@@ -92,6 +101,7 @@ async function scanFrame() {
 
 function start() {
   if (!isScanning.value) {
+    count.value = 0
     result.value = undefined
     videoEl.value?.play()
     isScanning.value = true
@@ -118,9 +128,44 @@ onUnmounted(dispose)
           No camera founded
         </div>
       </OptionItem>
+
+      <template v-if="selectedCamera">
+        <OptionItem title="View" div>
+          <OptionSelectGroup
+            v-model="state.cameraViewMode"
+            :options="['oringal', 'processed']"
+          />
+        </OptionItem>
+        <OptionItem title="Mirror" div>
+          <OptionCheckbox v-model="state.cameraMirror" />
+        </OptionItem>
+
+        <div border="t base" my1 />
+
+        <OptionItem title="Grayscale">
+          <OptionCheckbox v-model="state.grayscale" />
+        </OptionItem>
+        <OptionItem title="Contrast" @reset="state.contrast = 100">
+          <OptionSlider v-model="state.contrast" :min="0" :max="1000" :default="100" :step="10" unit="%" />
+        </OptionItem>
+        <OptionItem title="Brightness" @reset="state.brightness = 100">
+          <OptionSlider v-model="state.brightness" :min="0" :max="1000" :default="100" :step="10" unit="%" />
+        </OptionItem>
+        <OptionItem title="Blur">
+          <OptionSlider v-model="state.blur" :min="0" :max="10" :step="0.05" unit="px" />
+        </OptionItem>
+      </template>
     </div>
-    <div relative mxa aspect-ratio-1 max-w-full w-120>
-      <video ref="videoEl" border="~ base rounded" aspect-ratio-1 w-full />
+    <div relative mxa aspect-ratio-1 max-w-full w-120 border="~ base rounded" of-hidden>
+      <video
+        ref="videoEl" aspect-ratio-1 w-full
+        :class="state.cameraMirror ? 'scale-x--100' : ''"
+      />
+      <canvas
+        v-show="state.cameraViewMode === 'processed'" ref="canvasEl"
+        absolute bottom-0 left-0 right-0 top-0 aspect-ratio-1 w-full
+        :class="state.cameraMirror ? 'scale-x--100' : ''"
+      />
       <div absolute bottom-0 right-0 p2 text-sm font-mono op50>
         x{{ count }}
       </div>
