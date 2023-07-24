@@ -1,3 +1,4 @@
+import { breakpointsTailwind } from '@vueuse/core'
 import type { QrCode } from '../vendor/qrcodegen'
 import type { ComparionState, GeneratedQRInfo, QRCodeGeneratorState, ScannerState, State } from './types'
 
@@ -11,6 +12,8 @@ export const dataUrlGeneratedQRCode = ref<string>()
 export const dataUrlScannerUpload = ref<string>()
 export const dataUrlGeneratedSize = ref<number>(25)
 export const generateQRCodeInfo = ref<GeneratedQRInfo>()
+
+export const isLargeScreen = useBreakpoints(breakpointsTailwind).greater('lg')
 
 export function defaultGeneratorState(): QRCodeGeneratorState {
   return {

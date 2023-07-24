@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { deepMerge } from '@antfu/utils'
 import { sendParentEvent } from '~/logic/messaging'
-import { dataUrlScannerUpload, defaultState, hasParentWindow, showGridHelper, storeIndex } from '~/logic/state'
+import { dataUrlScannerUpload, defaultState, hasParentWindow, isLargeScreen, showGridHelper, storeIndex } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 
@@ -62,9 +62,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div flex="~ gap-2 items-center">
+  <div flex="~ gap-2 items-center wrap">
     <button
-      flex="~ gap-1.5 items-center" text-button
+      flex="~ gap-1.5  items-center" text-button
       :class="view === 'generator' ? 'bg-secondary' : 'op50'"
       @click="view = 'generator'"
     >
@@ -105,7 +105,10 @@ onMounted(() => {
     <Generator :state="state" />
   </div>
   <div v-show="view === 'compare'" w-full>
-    <Compare :state="state" />
+    <div v-if="!isLargeScreen" flex px20 py50 text-center op50>
+      This app is not supported on mobile devices. Please try with a bigger screen.
+    </div>
+    <Compare v-else :state="state" hidden md:block />
   </div>
   <div v-if="view === 'scan'" w-full>
     <Scanner :state="state" />

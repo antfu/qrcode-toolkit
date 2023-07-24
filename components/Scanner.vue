@@ -458,7 +458,7 @@ const { isOverDropZone } = useDropZone(document.body, {
         </OptionItem>
       </div>
 
-      <div flex="~ gap-2 items-center">
+      <div flex="~ gap-2 items-center wrap">
         <button
           text-sm op75 text-button hover:op100
           @click="random()"

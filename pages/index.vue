@@ -6,11 +6,8 @@ const buildTime = useTimeAgo(config.public.buildTime as any)
 </script>
 
 <template>
-  <div flex px20 py50 text-center op50 md:hidden>
-    This app is not supported on mobile devices. Please try with a bigger screen.
-  </div>
-  <div flex="justify-center" hidden p10 pb15 md:flex>
-    <div flex="~ col gap-4" class="min-h-[calc(100vh-100px)] w-250">
+  <div flex="~ justify-center" p10 pb15>
+    <div flex="~ col gap-4" class="max-w-full min-h-[calc(100vh-100px)] w-250">
       <div fixed right-5 top-14 flex="col gap-2" hidden xl:flex>
         <VTooltip v-for="n in 10" :key="n" placement="left" distance="10">
           <button

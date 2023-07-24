@@ -2,7 +2,7 @@
 import { debounce } from 'perfect-debounce'
 import { sendParentEvent } from '~/logic/messaging'
 import { generateQRCode } from '~/logic/generate'
-import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, qrcode } from '~/logic/state'
+import { dataUrlGeneratedQRCode, defaultGeneratorState, generateQRCodeInfo, hasParentWindow, isLargeScreen, qrcode } from '~/logic/state'
 import { view } from '~/logic/view'
 import type { State } from '~/logic/types'
 import { MarkerSubShapeIcons, MarkerSubShapes, PixelStyleIcons, PixelStyles } from '~/logic/types'
@@ -16,7 +16,7 @@ const rightPanelEl = ref<HTMLElement>()
 const uploadTarget = ref<'image' | 'qrcode'>()
 const state = computed(() => props.state.qrcode)
 const rightPanelRect = reactive(useElementBounding(rightPanelEl))
-const floating = computed(() => rightPanelRect.top < 10)
+const floating = computed(() => rightPanelRect.top < 10 && isLargeScreen.value)
 
 const canvas = ref<HTMLCanvasElement>()
 
@@ -195,7 +195,7 @@ watch(
 </script>
 
 <template>
-  <div grid="~ cols-[38rem_1fr] gap-2">
+  <div grid="~ cols-[38rem_1fr] gap-2" lt-lg="flex flex-col-reverse">
     <div flex="~ col gap-2">
       <textarea
         v-model="state.text"
@@ -534,6 +534,8 @@ watch(
           This is a partial QR Code. It does <b>not</b> contain all the necessary data to be scannable.
         </div>
       </div>
+
+      <div my8 h-1px border="t base" w-10 lg:hidden />
     </div>
   </div>
 
