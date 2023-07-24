@@ -307,7 +307,7 @@ function toggleLock(name: keyof State['scanner']) {
 
 const { isOverDropZone } = useDropZone(document.body, {
   onDrop(files) {
-    if (view.value !== 'scan')
+    if (view.value !== 'verify')
       return
     if (!files)
       return

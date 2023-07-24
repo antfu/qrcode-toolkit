@@ -40,7 +40,7 @@ useEventListener(window, 'message', (event) => {
       case 'setScannerImage':
         hasParentWindow.value = true
         dataUrlScannerUpload.value = json.data
-        view.value = 'scan'
+        view.value = 'verify'
         break
       case 'init':
         hasParentWindow.value = true
@@ -81,18 +81,25 @@ onMounted(() => {
     </button>
     <button
       flex="~ gap-1.5 items-center" text-button
-      :class="view === 'scan' ? 'bg-secondary' : 'op50'"
-      @click="view = 'scan'"
+      :class="view === 'verify' ? 'bg-secondary' : 'op50'"
+      @click="view = 'verify'"
     >
       <div i-ri-qr-scan-2-line />
-      Scanner
+      Verify
+    </button>
+    <button
+      flex="~ gap-1.5 items-center" text-button
+      :class="view === 'camera' ? 'bg-secondary' : 'op50'"
+      @click="view = 'camera'"
+    >
+      <div i-ri-camera-line />
+      Camera
     </button>
     <div flex-auto />
     <div>
       <a href="https://antfu.me" target="_blank" op75 hover:underline hover:op100>Anthony Fu</a><span op50>'s QR Toolkit</span>
     </div>
     <button
-
       flex="~ gap-1.5 items-center" ml2 text-sm text-button
       :class="view === 'credit' ? 'bg-secondary' : 'op50'"
       @click="view = 'credit'"
@@ -110,8 +117,11 @@ onMounted(() => {
     </div>
     <Compare v-else :state="state" hidden md:block />
   </div>
-  <div v-if="view === 'scan'" w-full>
+  <div v-if="view === 'verify'" w-full>
     <Scanner :state="state" />
+  </div>
+  <div v-if="view === 'camera'" w-full>
+    <Camera :state="state" />
   </div>
   <div v-if="view === 'credit'" w-full>
     <Credits />

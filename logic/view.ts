@@ -1,6 +1,10 @@
-export const view = ref<'generator' | 'compare' | 'credit' | 'scan'>(location.hash.slice(1) as any || 'generator')
+export const view = ref<'generator' | 'compare' | 'credit' | 'verify' | 'camera'>(location.hash.slice(1) as any || 'generator')
 
-if (!['generator', 'compare', 'credit', 'scan'].includes(view.value))
+// @ts-expect-error back
+if (view.value === 'scan')
+  view.value = 'verify'
+
+if (!['generator', 'compare', 'credit', 'verify', 'camera'].includes(view.value))
   view.value = 'generator'
 
 watchEffect(() => {
