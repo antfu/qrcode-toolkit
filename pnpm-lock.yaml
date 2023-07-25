@@ -79,9 +79,9 @@ devDependencies:
   pinia:
     specifier: ^2.1.4
     version: 2.1.4(typescript@5.1.6)(vue@3.3.4)
-  qrcode-opencv-wechat:
-    specifier: ^0.0.1
-    version: 0.0.1
+  qr-scanner-wechat:
+    specifier: ^0.1.1
+    version: 0.1.1
   simple-git:
     specifier: ^3.19.1
     version: 3.19.1
@@ -7095,8 +7095,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /qrcode-opencv-wechat@0.0.1:
-    resolution: {integrity: sha512-7VBBb0sgUw75BE1/DuKb38TV6jTNj+QBzafwRNXUscxCA2Md6romPMC03daWYOg+MtKDE2MU55+mvHxa1Aj1Sw==}
+  /qr-scanner-wechat@0.1.1:
+    resolution: {integrity: sha512-OqUSFyXR4luqG7ozLWs2Wy/dz3Ht0Vx2c0/zk1+1xyRU5DvTAXijs9iK28GgFgGIdZKJoix3+pWZ6lrklncl+A==}
     dev: true
 
   /queue-microtask@1.2.3:

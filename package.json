@@ -41,7 +41,7 @@
     "floating-vue": "2.0.0-beta.24",
     "nuxt": "^3.6.5",
     "pinia": "^2.1.4",
-    "qrcode-opencv-wechat": "^0.0.1",
+    "qr-scanner-wechat": "^0.1.1",
     "simple-git": "^3.19.1",
     "stackblur-canvas": "^2.6.0",
     "typescript": "^5.1.6",

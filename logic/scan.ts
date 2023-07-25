@@ -1,5 +1,5 @@
-import type { ScanResult } from 'qrcode-opencv-wechat'
-import { scan } from 'qrcode-opencv-wechat'
+import type { ScanResult } from 'qr-scanner-wechat'
+import { scan } from 'qr-scanner-wechat'
 
 export async function scanQRCodeFromDataUrl(dataurl: string) {
   const image = new Image()

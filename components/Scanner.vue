@@ -1,8 +1,8 @@
 <!-- eslint-disable no-console -->
 <script setup lang="ts">
 import { debounce } from 'perfect-debounce'
-import type { ScanResult } from 'qrcode-opencv-wechat'
-import { ready, scan } from 'qrcode-opencv-wechat'
+import type { ScanResult } from 'qr-scanner-wechat'
+import { ready, scan } from 'qr-scanner-wechat'
 import { shuffle } from '@antfu/utils'
 import { dataUrlScannerUpload, defaultScannerState } from '~/logic/state'
 import { view } from '~/logic/view'
@@ -520,7 +520,7 @@ const { isOverDropZone } = useDropZone(document.body, {
         <p>
           The detection and decoding is done completely local in your browser.
           This is made possible by compiling OpenCV with the WeChat's scanner into WebAssembly.
-          If you are interested in learning more, check out <a href="https://github.com/antfu/qrcode-opencv-wechat" target="_blank" font-mono op75 hover:underline hover:op100>qrcode-opencv-wechat</a>.
+          If you are interested in learning more, check out <a href="https://github.com/antfu/qr-scanner-wechat" target="_blank" font-mono op75 hover:underline hover:op100>qr-scanner-wechat</a>.
         </p>
       </div>
     </div>
