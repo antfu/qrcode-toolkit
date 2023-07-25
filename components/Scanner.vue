@@ -524,6 +524,14 @@ const { isOverDropZone } = useDropZone(document.body, {
         </p>
       </div>
     </div>
+    <div flex="~ gap-3" border="~ base rounded" p4 op45 transition hover:op75>
+      <span i-ri-folder-2-line flex-none text-lg text-yellow />
+      <div flex="~ col gap-4">
+        <p>
+          Have a lot images to verify? Try <a href="https://github.com/antfu/qr-verify-cli" target="_blank" font-mono op75 hover:underline hover:op100>qr-verify</a> to do so in batch!
+        </p>
+      </div>
+    </div>
   </div>
 
   <div v-if="isOverDropZone" fixed bottom-0 left-0 right-0 top-0 z-200 flex bg-black:20 backdrop-blur-10>
