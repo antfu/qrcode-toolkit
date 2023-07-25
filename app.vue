@@ -29,17 +29,16 @@ html, body , #__nuxt {
   height: 100vh;
   margin: 0;
   padding: 0;
-}
-
-html {
   color: #222;
   accent-color: #888;
   color-scheme: light;
 }
 
-html.dark {
-  background: black;
-  color: white;
+html.dark,
+.dark body,
+.dark #__nuxt {
+  background: black !important;
+  color: white !important;
   color-scheme: dark;
 }
 
