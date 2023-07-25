@@ -168,6 +168,7 @@ export interface ScannerState {
   locks: string[]
   cameraMirror: boolean
   cameraViewMode: 'original' | 'processed'
+  cameraSampleDelay: number
 }
 
 export interface State {

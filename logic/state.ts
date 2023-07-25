@@ -96,6 +96,7 @@ export function defaultScannerState(): ScannerState {
     locks: ['grayscale'],
     cameraMirror: false,
     cameraViewMode: 'processed',
+    cameraSampleDelay: 100,
   }
 }
 

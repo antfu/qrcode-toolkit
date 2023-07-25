@@ -97,6 +97,8 @@ async function scanFrame() {
   catch (e) {
     console.error(e)
   }
+
+  setTimeout(scanFrame, state.value.cameraSampleDelay)
 }
 
 function start() {
@@ -105,9 +107,7 @@ function start() {
     result.value = undefined
     videoEl.value?.play()
     isScanning.value = true
-    setInterval(() => {
-      scanFrame()
-    }, 100)
+    scanFrame()
   }
 }
 
@@ -138,6 +138,12 @@ onUnmounted(dispose)
         </OptionItem>
         <OptionItem title="Mirror" div>
           <OptionCheckbox v-model="state.cameraMirror" />
+        </OptionItem>
+        <OptionItem
+          title="Sample Delay" description="Delay for a few milesecond before scaning the next frame. Lower value indicates more frequent scans."
+          @reset="state.cameraSampleDelay = 100"
+        >
+          <OptionSlider v-model="state.cameraSampleDelay" :min="50" :max="1000" :default="100" :step="10" unit="ms" />
         </OptionItem>
 
         <div border="t base" my1 />
