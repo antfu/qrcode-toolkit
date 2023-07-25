@@ -41,8 +41,6 @@ function dispose() {
   stream = null
 }
 
-const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')
-
 function display() {
   dispose()
 
@@ -95,6 +93,7 @@ async function scanFrame() {
     if (result.value?.text) {
       videoEl.value?.pause()
       isScanning.value = false
+      return
     }
   }
   catch (e) {
