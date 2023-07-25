@@ -326,6 +326,7 @@ const { isOverDropZone } = useDropZone(document.body, {
 </script>
 
 <template>
+  <SafariWarning />
   <div flex="~ col gap-3">
     <div grid="~ cols-3 gap-2" mt8>
       <div text-center text-sm op50>

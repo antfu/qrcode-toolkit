@@ -6,7 +6,7 @@ const buildTime = useTimeAgo(config.public.buildTime as any)
 </script>
 
 <template>
-  <div flex="~ justify-center" px3 py10 pb15 lg:p10>
+  <div flex="~ justify-center" px3 py4 lg:p10 lg:py10>
     <div flex="~ col gap-4" class="max-w-full min-h-[calc(100vh-100px)] w-250">
       <div fixed right-5 top-14 flex="col gap-2" hidden xl:flex>
         <VTooltip v-for="n in 10" :key="n" placement="left" distance="10">

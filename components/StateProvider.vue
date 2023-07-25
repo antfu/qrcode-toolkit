@@ -115,7 +115,7 @@ onMounted(() => {
     <div v-if="!isLargeScreen" flex px20 py50 text-center op50>
       This app is not supported on mobile devices. Please try with a bigger screen.
     </div>
-    <Compare v-else :state="state" hidden md:block />
+    <Compare v-else :state="state" />
   </div>
   <div v-if="view === 'verify'" w-full>
     <Scanner :state="state" />

@@ -117,6 +117,7 @@ onUnmounted(dispose)
 </script>
 
 <template>
+  <SafariWarning />
   <div flex="~ col gap-2">
     <div border="~ base rounded" flex="~ col gap-2" p4>
       <OptionItem title="Camera" div>
