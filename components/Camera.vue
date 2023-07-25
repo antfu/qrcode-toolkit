@@ -41,6 +41,8 @@ function dispose() {
   stream = null
 }
 
+const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')
+
 function display() {
   dispose()
 
@@ -55,6 +57,7 @@ function display() {
     })
     .then((_stream) => {
       stream = _stream
+
       videoEl.value!.srcObject = stream
       videoEl.value!.play()
 
@@ -164,7 +167,9 @@ onUnmounted(dispose)
     </div>
     <div relative mxa aspect-ratio-1 max-w-full w-120 border="~ base rounded" of-hidden>
       <video
-        ref="videoEl" aspect-ratio-1 w-full
+        ref="videoEl"
+        autoplay muted playsinline
+        aspect-ratio-1 w-full
         :class="state.cameraMirror ? 'scale-x--100' : ''"
       />
       <canvas
