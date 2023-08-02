@@ -17,8 +17,6 @@ export default defineConfig({
       'bg-secondary': 'bg-gray:10',
       'bg-active': 'bg-gray:15',
       'border-base': 'border-#aaa3',
-      'flex-prefer-row': 'flex flex-col md:flex-row',
-      'flex-prefer-col': 'flex flex-col md:flex-row',
       'border-box': 'border border-base rounded',
       'text-button': 'border-box bg-secondary hover:bg-active px3 py1 flex gap-1 items-center justify-center',
       'icon-button': 'border-box bg-secondary hover:bg-active p1',

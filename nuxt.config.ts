@@ -23,6 +23,8 @@ export default defineNuxtConfig({
     },
   },
 
+  spaLoadingTemplate: false,
+
   vite: {
     vue: {
       script: {
