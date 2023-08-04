@@ -475,7 +475,7 @@ watch(
               Mask
             </div>
             <div>
-              {{ qrcode.mask }}
+              {{ qrcode.maskPattern }}
             </div>
             <div text-sm op50>
               Version

@@ -1,5 +1,5 @@
 import { breakpointsTailwind } from '@vueuse/core'
-import type { QrCode } from '../vendor/qrcodegen'
+import type { QrCodeGenerateResult } from 'uqr'
 import type { ComparionState, GeneratedQRInfo, QRCodeGeneratorState, ScannerState, State } from './types'
 
 export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -10,7 +10,7 @@ export const showGridHelper = ref<boolean>(false)
 export const showDownloadDialog = ref<boolean>(false)
 export const hasParentWindow = ref<boolean>(false)
 
-export const qrcode = shallowRef<QrCode>()
+export const qrcode = shallowRef<QrCodeGenerateResult>()
 export const dataUrlGeneratedQRCode = ref<string>()
 export const dataUrlScannerUpload = ref<string>()
 export const dataUrlGeneratedSize = ref<number>(25)

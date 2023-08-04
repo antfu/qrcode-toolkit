@@ -1,18 +1,11 @@
 import seedrandom from 'seedrandom'
 
+import { QrCodeDataType, encode } from 'uqr'
 import Perspective from '../vendor/perspective'
-import { QrCode, QrCodeEcc, QrSegment } from '../vendor/qrcodegen'
 import type { QRCodeGeneratorState, QrCodeGeneratorMarkerState } from './types'
 import { generateQRCodeInfo, qrcode } from './state'
 import { effects } from './effects'
 import { resolveMargin } from './utils'
-
-const eccMap = {
-  L: QrCodeEcc.LOW,
-  M: QrCodeEcc.MEDIUM,
-  Q: QrCodeEcc.QUARTILE,
-  H: QrCodeEcc.HIGH,
-}
 
 interface MarkerInfo {
   x: number
@@ -116,6 +109,18 @@ export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCode
     }
   }
 
+  function getModule(x: number, y: number) {
+    if (x < 0 || y < 0 || x >= qr.size || y >= qr.size)
+      return false
+    return qr.data[y][x]
+  }
+
+  function getType(x: number, y: number) {
+    if (x < 0 || y < 0 || x >= qr.size || y >= qr.size)
+      return QrCodeDataType.Border
+    return qr.types[y][x]
+  }
+
   function getInfo(x: number, y: number): PixelInfo {
     let isBorder = marginNoiseSpace === 'full'
       ? x < -1 || y < -1 || x > qr.size || y > qr.size
@@ -127,12 +132,12 @@ export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCode
       isDark = rand(x, y, 'border-noise') < marginNoiseRate
     }
     else {
-      isDark = qr.getModule(x, y)
-      if (renderPointsType === 'data' && qr.isFunctional(x, y)) {
+      isDark = getModule(x, y)
+      if (renderPointsType === 'data' && getType(x, y) !== QrCodeDataType.Data) {
         isDark = false
         isIgnored = true
       }
-      else if ((renderPointsType === 'function' || renderPointsType === 'guide' || renderPointsType === 'marker') && !qr.isFunctional(x, y)) {
+      else if ((renderPointsType === 'function' || renderPointsType === 'guide' || renderPointsType === 'marker') && getType(x, y) < QrCodeDataType.Function) {
         isDark = false
         isIgnored = true
       }
@@ -203,13 +208,13 @@ export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCode
     else if (x >= qr.size - 7 && x < qr.size && y >= 0 && y < 7) {
       marker = createMarker(x - qr.size + 7, y, 'top-right')
     }
-    else if (qr.isSubMarker(x, y)) {
+    else if (getType(x, y) === QrCodeDataType.Alignment) {
       let dx = x
       let dy = y
-      while (qr.isSubMarker(dx, dy))
+      while (getType(dx, dy) === QrCodeDataType.Alignment)
         dx -= 1
       dx += 1
-      while (qr.isSubMarker(dx, dy))
+      while (getType(dx, dy) === QrCodeDataType.Alignment)
         dy -= 1
       dy += 1
       marker = createMarker(x - dx, y - dy, 'sub')
@@ -868,15 +873,14 @@ export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCode
 }
 
 function createQrInstance(state: QRCodeGeneratorState) {
-  const seg = QrSegment.makeSegments(state.text || 'qrcode.antfu.me')
-  const qr = QrCode.encodeSegments(
-    seg,
-    eccMap[state.ecc],
-    state.minVersion,
-    state.maxVersion,
-    state.maskPattern,
-    state.boostECC,
-  )
+  const qr = encode(state.text || 'qrcode.antfu.me', {
+    minVersion: state.minVersion,
+    maxVersion: state.maxVersion,
+    ecc: state.ecc,
+    maskPattern: state.maskPattern,
+    boostEcc: state.boostECC,
+    border: 0,
+  })
   qrcode.value = qr
   return qr
 }
