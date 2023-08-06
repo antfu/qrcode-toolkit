@@ -31,6 +31,7 @@ html, body , #__nuxt {
   padding: 0;
   color: #222;
   accent-color: #888;
+  background: white;
   color-scheme: light;
 }
 
