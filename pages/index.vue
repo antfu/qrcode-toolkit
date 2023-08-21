@@ -76,7 +76,7 @@ const buildTime = useTimeAgo(config.public.buildTime as any)
 
       <div flex="~ gap-3 items-center">
         <button op50 hover:op100 @click="toggleDark()">
-          <div dark:i-ri-moon-fill i-ri-sun-fill />
+          <div i-ri-sun-fill dark:i-ri-moon-fill />
         </button>
         <a href="https://github.com/antfu/qrcode-toolkit" target="_blank" text-lg op50 hover:op100>
           <div i-ri-github-fill />
