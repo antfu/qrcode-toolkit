@@ -860,11 +860,11 @@ export async function generateQRCode(outCanvas: HTMLCanvasElement, state: QRCode
         await new Promise(resolve => img.onload = resolve).then()
         // draw the image full cover the canvas with aspect ratio
         const imgRatio = img.width / img.height
-        const canvasRatio = outCanvas.width / outCanvas.height
+        const canvasRatio = width / height
         if (imgRatio < canvasRatio)
-          ctx.drawImage(img, 0, (outCanvas.height - outCanvas.width / imgRatio) / 2, outCanvas.width, outCanvas.width / imgRatio)
+          ctx.drawImage(img, 0, (height - width / imgRatio) / 2, width, width / imgRatio)
         else
-          ctx.drawImage(img, (outCanvas.width - outCanvas.height * imgRatio) / 2, 0, outCanvas.height * imgRatio, outCanvas.height)
+          ctx.drawImage(img, (width - height * imgRatio) / 2, 0, height * imgRatio, height)
       }
     }
 
